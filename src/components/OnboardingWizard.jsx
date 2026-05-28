@@ -199,8 +199,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         <div className="wz-stepper-premium">
           <div className="wz-stepper-info">
             <span className="wz-stepper-step-badge">Paso {step} de {totalSteps}</span>
-            <span className="wz-stepper-dot-separator">•</span>
-            <span className="wz-stepper-step-name">{stepLabels[step]}</span>
           </div>
           <div className="wz-stepper-segments">
             {Array.from({ length: totalSteps }).map((_, idx) => {
@@ -779,9 +777,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           font-family:'Plus Jakarta Sans',sans-serif;
         }
         .wz-stepper-step-badge {
-          font-size:0.65rem; font-weight:800; text-transform:uppercase;
-          letter-spacing:1px; color:var(--bc); background:var(--bg);
-          padding:0.2rem 0.6rem; border-radius:50px; border:1px solid rgba(56,189,248,0.1);
+          font-size:0.75rem; font-weight:800; text-transform:uppercase;
+          letter-spacing:1px; color:var(--bc);
         }
         .wz-stepper-dot-separator {
           color:#cbd5e1; font-size:0.75rem;
