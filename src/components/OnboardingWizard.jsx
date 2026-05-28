@@ -17,31 +17,36 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const [activeProtocol, setActiveProtocol] = useState(0);
   const [generatedCode, setGeneratedCode] = useState('');
   const [formData, setFormData] = useState({
-    nombre: '', correo: '', marca: '',
+    nombre: '', correo: '', marca: '', documento: '', fechaNacimiento: '',
     aceptaMetodologia: false,
     aceptaSabado: false, aceptaDomingo: false, aceptaLunes: false,
-    aceptaProtocolo: false, aceptaAsistencia: false, aceptaPrograma: false,
+    aceptaProtocolo: false, aceptaAsistencia: false, aceptaTop: false,
+    telefono: '', metodoPago: '', metodoPagoOtro: '', numeroCuenta: '', direccion: '',
+    cvFile: null, fotoFile: null,
+    softwares: '', cursoSonado: '', mejoraAdmin: '', comentarios: '',
   });
 
-  const totalSteps = 7;
+  const totalSteps = 10;
 
   const marcaConfig = {
-    ciip: { nombre: 'CIIP Latam', color: '#0284c7', telefono: '51925084564', bgGlow: 'rgba(2,132,199,0.12)' },
-    geomina: { nombre: 'Geomina', color: '#0ea5e9', telefono: '51925084564', bgGlow: 'rgba(14,165,233,0.12)' },
-    biomedic: { nombre: 'Biomedic', color: '#06b6d4', telefono: '51925084564', bgGlow: 'rgba(6,182,212,0.1)' },
+    ciip: { nombre: 'CIIP Latam', color: '#0284c7', telefono: '51956006498', coordinador: 'Nicol', bgGlow: 'rgba(2,132,199,0.12)' },
+    geomina: { nombre: 'Geomina', color: '#0ea5e9', telefono: '51925084564', coordinador: 'Fiorella', bgGlow: 'rgba(14,165,233,0.12)' },
+    biomedic: { nombre: 'Biomedic', color: '#06b6d4', telefono: '51956006498', coordinador: 'Nicol', bgGlow: 'rgba(6,182,212,0.1)' },
+    ambos: { nombre: 'CIIP Latam & Geomina', color: '#7c3aed', telefono: '51956006498', coordinador: 'Nicol y Fiorella', bgGlow: 'rgba(124,58,237,0.1)' },
   };
 
   const handleNext = () => {
-    if (step === 1 && (!formData.nombre.trim() || !formData.correo.trim() || !formData.marca)) return;
+    if (step === 1 && (!formData.nombre.trim() || !formData.correo.trim() || !formData.marca || !formData.documento.trim() || !formData.fechaNacimiento)) return;
     if (step === 2 && !formData.aceptaMetodologia) return;
     if (step === 3 && (!formData.aceptaSabado || !formData.aceptaDomingo || !formData.aceptaLunes)) return;
-    if (step === 3) {
-      setShowPenaltyAlert(true);
-      return;
-    }
+    if (step === 3) { setShowPenaltyAlert(true); return; }
     if (step === 4 && !formData.aceptaProtocolo) return;
     if (step === 5 && !formData.aceptaAsistencia) return;
-    if (step === 6 && !formData.aceptaPrograma) return;
+    if (step === 6 && !formData.aceptaTop) return;
+    if (step === 7 && (!formData.telefono.trim() || !formData.metodoPago || !formData.numeroCuenta.trim() || !formData.direccion.trim())) return;
+    if (step === 7 && formData.metodoPago === 'otro' && !formData.metodoPagoOtro.trim()) return;
+    if (step === 8 && (!formData.cvFile || !formData.fotoFile)) return;
+    if (step === 9 && (!formData.softwares.trim() || !formData.cursoSonado.trim() || !formData.mejoraAdmin.trim())) return;
     if (step < totalSteps) setStep(s => s + 1);
   };
 
@@ -54,8 +59,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
   const downloadCSV = (uniqueCode) => {
     const brandName = formData.marca ? marcaConfig[formData.marca].nombre : 'N/A';
-    const headers = ['Codigo','Docente','Correo','Institucion','Metodologia','Sabado','Domingo','Lunes','Protocolo','Asistencia','Programa TOP','Fecha'];
-    const values = [uniqueCode,formData.nombre,formData.correo,brandName,'Aceptado','Confirmado','Confirmado','Confirmado','Aceptado','Aceptado','Aceptado',new Date().toLocaleString()];
+    const metodo = formData.metodoPago === 'otro' ? formData.metodoPagoOtro : formData.metodoPago;
+    const headers = ['Codigo','Docente','Correo','Documento','Nacimiento','Institucion','Telefono','MetodoPago','NumeroCuenta','Direccion','Softwares','CursoDeseado','MejoraAdmin','Comentarios','Fecha'];
+    const values = [uniqueCode,formData.nombre,formData.correo,formData.documento,formData.fechaNacimiento,brandName,formData.telefono,metodo,formData.numeroCuenta,formData.direccion,formData.softwares,formData.cursoSonado,formData.mejoraAdmin,formData.comentarios,new Date().toLocaleString()];
     const csv = "\uFEFF" + [headers.join(';'), values.map(v=>`"${v}"`).join(';')].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -70,20 +76,21 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     const cfg = marcaConfig[formData.marca];
     setGeneratedCode(code);
     downloadCSV(code);
-    const msg = `*DECLARACIÓN DE CONFORMIDAD DOCENTE*\n\n*Código:* ${code}\n*Docente:* ${formData.nombre}\n*Correo:* ${formData.correo}\n*Institución:* ${cfg.nombre}\n\n"Confirmo que acepto el Manual Operativo del Docente. Comprendo la metodología práctica y los horarios de entrega innegociables: Sábado y Domingo 1:00 PM y Lunes 9:00 AM. Acepto el sistema de penalidades por inasistencias y autorizo el uso de mi firma digital para certificados."\n\n*Fecha:* ${new Date().toLocaleDateString()}`;
+    const metodo = formData.metodoPago === 'otro' ? formData.metodoPagoOtro : formData.metodoPago?.toUpperCase();
+    const msg = `*📋 FORMULARIO DOCENTE – CONFORMIDAD*\n\n*Código:* ${code}\n*Docente:* ${formData.nombre}\n*Documento:* ${formData.documento}\n*Correo:* ${formData.correo}\n*Institución:* ${cfg.nombre}\n*Teléfono:* ${formData.telefono}\n\n💳 *Datos de Pago:*\n• Método: ${metodo}\n• Cuenta: ${formData.numeroCuenta}\n• Dirección: ${formData.direccion}\n\n💻 *Softwares:* ${formData.softwares}\n🚀 *Curso deseado:* ${formData.cursoSonado}\n🤝 *Mejora sugerida:* ${formData.mejoraAdmin}\n${formData.comentarios ? `💬 *Comentarios:* ${formData.comentarios}` : ''}\n\n✅ *Compromisos Aceptados:*\n• Metodología Doing by Learning\n• Fechas de corte innegociables\n• Protocolo de imagen\n• Política de asistencia\n• Programa Docente TOP\n\n*Fecha:* ${new Date().toLocaleDateString()}`;
     window.open(`https://wa.me/${cfg.telefono}?text=${encodeURIComponent(msg)}`, '_blank');
     setIsFinished(true);
   };
 
   const handleReset = () => {
-    setFormData({ nombre:'',correo:'',marca:'',aceptaMetodologia:false,aceptaSabado:false,aceptaDomingo:false,aceptaLunes:false,aceptaProtocolo:false,aceptaAsistencia:false,aceptaPrograma:false });
+    setFormData({ nombre:'',correo:'',marca:'',documento:'',fechaNacimiento:'',aceptaMetodologia:false,aceptaSabado:false,aceptaDomingo:false,aceptaLunes:false,aceptaProtocolo:false,aceptaAsistencia:false,aceptaTop:false,telefono:'',metodoPago:'',metodoPagoOtro:'',numeroCuenta:'',direccion:'',cvFile:null,fotoFile:null,softwares:'',cursoSonado:'',mejoraAdmin:'',comentarios:'' });
     setStep(1); setIsFinished(false); setGeneratedCode(''); onClose();
   };
 
   const brandColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
   const brandGlow = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14,165,233,0.12)';
 
-  const stepWidths = { 1: '820px', 2: '680px', 3: '700px', 4: '940px', 5: '880px', 6: '900px', 7: '620px' };
+  const stepWidths = { 1: '820px', 2: '680px', 3: '700px', 4: '940px', 5: '880px', 6: '900px', 7: '780px', 8: '700px', 9: '740px', 10: '640px' };
 
   return (
     <div className="wz" style={{ '--bc': brandColor, '--bg': brandGlow }}>
@@ -108,7 +115,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             const geo = mkLogo('geomina', geominaWhite, '');
             const bio = mkLogo('biomedic', logobiomedic, 'lg-bio', { filter:'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' });
             const sep = (k) => <div key={k} className="wz-sep" />;
-            if (step > 1) { return formData.marca === 'ciip' ? ciip : formData.marca === 'geomina' ? geo : bio; }
+            if (step > 1) { if (formData.marca === 'ambos') return [ciip, sep('s1'), geo]; return formData.marca === 'ciip' ? ciip : formData.marca === 'geomina' ? geo : bio; }
             if (!formData.marca) return [ciip, sep('s1'), geo, sep('s2'), bio];
             if (formData.marca === 'ciip') return [geo, sep('s1'), ciip, sep('s2'), bio];
             if (formData.marca === 'geomina') return [ciip, sep('s1'), geo, sep('s2'), bio];
@@ -154,7 +161,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               {/* ═══ PASO 1 ═══ */}
               {step === 1 && (
                 <div className="wz-fade">
-                  <h2 className="wz-title">Información Docente</h2>
+                  <h2 className="wz-title">Datos Personales</h2>
                   <p className="wz-sub">Ingresa tus datos y selecciona tu institución.</p>
                   <div className="wz-grid-2" style={{ gridTemplateColumns:'280px 1fr' }}>
                     <div>
@@ -179,11 +186,17 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                             </div>
                           );
                         })}
+                        <div onClick={() => setFormData({...formData, marca:'ambos'})}
+                          className={`wz-brand-card ambos ${formData.marca === 'ambos' ? 'on' : ''}`}
+                          style={{ '--bc': marcaConfig.ambos.color }}>
+                          <div className={`wz-radio ${formData.marca==='ambos'?'on':''}`} />
+                          <span style={{ fontSize:'0.75rem', fontWeight:700, color: formData.marca==='ambos' ? '#7c3aed' : '#64748b' }}>Ambas instituciones</span>
+                        </div>
                       </div>
                     </div>
-                    <div style={{ display:'flex', flexDirection:'column', gap:'1.25rem', justifyContent:'center' }}>
+                    <div style={{ display:'flex', flexDirection:'column', gap:'1rem', justifyContent:'center' }}>
                       <div className="wz-field">
-                        <span className="wz-label">Nombre y Apellido completo</span>
+                        <span className="wz-label">Nombre completo</span>
                         <input type="text" placeholder="Ej. Juan Pérez" value={formData.nombre}
                           onChange={e => setFormData({...formData, nombre:e.target.value})} className="wz-input" autoComplete="off" />
                       </div>
@@ -192,11 +205,21 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                         <input type="email" placeholder="juan.perez@ejemplo.com" value={formData.correo}
                           onChange={e => setFormData({...formData, correo:e.target.value})} className="wz-input" autoComplete="off" />
                       </div>
+                      <div className="wz-field">
+                        <span className="wz-label">Documento de Identidad</span>
+                        <input type="text" placeholder="DNI / Pasaporte / CE" value={formData.documento}
+                          onChange={e => setFormData({...formData, documento:e.target.value})} className="wz-input" autoComplete="off" />
+                      </div>
+                      <div className="wz-field">
+                        <span className="wz-label">Fecha de Nacimiento</span>
+                        <input type="date" value={formData.fechaNacimiento}
+                          onChange={e => setFormData({...formData, fechaNacimiento:e.target.value})} className="wz-input" />
+                      </div>
                     </div>
                   </div>
                   <div className="wz-nav">
                     <button onClick={onClose} className="wz-btn-ghost">Cancelar</button>
-                    <button onClick={handleNext} disabled={!formData.nombre.trim()||!formData.correo.trim()||!formData.marca} className="wz-btn-main">Continuar</button>
+                    <button onClick={handleNext} disabled={!formData.nombre.trim()||!formData.correo.trim()||!formData.marca||!formData.documento.trim()||!formData.fechaNacimiento} className="wz-btn-main">Continuar</button>
                   </div>
                 </div>
               )}
@@ -416,25 +439,157 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 7: DECLARACIÓN ═══ */}
+              {/* ═══ PASO 7: CONTACTO Y PAGO ═══ */}
               {step === 7 && (
                 <div className="wz-fade">
+                  <h2 className="wz-title">Contacto y Datos de Pago</h2>
+                  <p className="wz-sub">Datos necesarios para la gestión de honorarios y comunicación directa.</p>
+                  
+                  <div className="wz-field" style={{ marginBottom:'1.25rem' }}>
+                    <span className="wz-label">Número de WhatsApp (con código de país)</span>
+                    <input type="tel" placeholder="+51 999 999 999" value={formData.telefono}
+                      onChange={e => setFormData({...formData, telefono:e.target.value})} className="wz-input" />
+                  </div>
+
+                  <span className="wz-label" style={{ display:'block', marginBottom:'0.75rem' }}>Cuenta de abono preferente</span>
+                  <div className="wz-payment-grid">
+                    {[
+                      { key:'yape', label:'YAPE' },
+                      { key:'bcp', label:'BCP' },
+                      { key:'bolivia', label:'Banco de Bolivia' },
+                      { key:'paypal', label:'PayPal' },
+                      { key:'falabella', label:'Banco Falabella' },
+                      { key:'otro', label:'Otro' },
+                    ].map(m => {
+                      const on = formData.metodoPago === m.key;
+                      return (
+                        <div key={m.key} className={`wz-pay-card ${on?'on':''}`} onClick={() => setFormData({...formData, metodoPago:m.key})}>
+                          <div className={`wz-radio ${on?'on':''}`} />
+                          <span>{m.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {formData.metodoPago === 'otro' && (
+                    <div className="wz-field" style={{ marginTop:'0.75rem' }}>
+                      <input type="text" placeholder="Especifique su método de pago" value={formData.metodoPagoOtro}
+                        onChange={e => setFormData({...formData, metodoPagoOtro:e.target.value})} className="wz-input" />
+                    </div>
+                  )}
+
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem', marginTop:'1.25rem' }}>
+                    <div className="wz-field">
+                      <span className="wz-label">Número de cuenta o celular de abono</span>
+                      <input type="text" placeholder="Ej. 191-XXX-XXXXXXX" value={formData.numeroCuenta}
+                        onChange={e => setFormData({...formData, numeroCuenta:e.target.value})} className="wz-input" />
+                    </div>
+                    <div className="wz-field">
+                      <span className="wz-label">Dirección de vivienda</span>
+                      <input type="text" placeholder="Av. Principal 123, Lima" value={formData.direccion}
+                        onChange={e => setFormData({...formData, direccion:e.target.value})} className="wz-input" />
+                    </div>
+                  </div>
+
+                  <div className="wz-nav">
+                    <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
+                    <button onClick={handleNext} disabled={!formData.telefono.trim()||!formData.metodoPago||!formData.numeroCuenta.trim()||!formData.direccion.trim()||(formData.metodoPago==='otro'&&!formData.metodoPagoOtro.trim())} className="wz-btn-main">Siguiente</button>
+                  </div>
+                </div>
+              )}
+
+              {/* ═══ PASO 8: DOCUMENTACIÓN ═══ */}
+              {step === 8 && (
+                <div className="wz-fade">
+                  <h2 className="wz-title">Documentación</h2>
+                  <p className="wz-sub">Adjunta tu CV actualizado y una fotografía profesional.</p>
+                  
+                  <div className="wz-upload-section">
+                    <div className="wz-upload-zone" onClick={() => document.getElementById('cv-upload').click()}>
+                      <input id="cv-upload" type="file" accept=".pdf,.doc,.docx" style={{ display:'none' }}
+                        onChange={e => setFormData({...formData, cvFile: e.target.files[0]})} />
+                      <div className="wz-upload-icon">📄</div>
+                      <h4>Curriculum Vitae</h4>
+                      <p>PDF o DOC • Máximo 10 MB</p>
+                      {formData.cvFile && <span className="wz-upload-filename">{formData.cvFile.name}</span>}
+                    </div>
+                    <div className="wz-upload-zone" onClick={() => document.getElementById('foto-upload').click()}>
+                      <input id="foto-upload" type="file" accept="image/*" style={{ display:'none' }}
+                        onChange={e => setFormData({...formData, fotoFile: e.target.files[0]})} />
+                      <div className="wz-upload-icon">📸</div>
+                      <h4>Fotografía Profesional</h4>
+                      <p>JPG o PNG • Máximo 10 MB</p>
+                      {formData.fotoFile && <span className="wz-upload-filename">{formData.fotoFile.name}</span>}
+                    </div>
+                  </div>
+
+                  <div className="wz-alert info" style={{ marginTop:'1.5rem' }}>
+                    <strong>Nota:</strong> Los archivos serán referenciados en tu declaración. Envíalos directamente a coordinación académica por WhatsApp o correo.
+                  </div>
+
+                  <div className="wz-nav">
+                    <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
+                    <button onClick={handleNext} disabled={!formData.cvFile||!formData.fotoFile} className="wz-btn-main">Siguiente</button>
+                  </div>
+                </div>
+              )}
+
+              {/* ═══ PASO 9: PERFIL PROFESIONAL ═══ */}
+              {step === 9 && (
+                <div className="wz-fade">
+                  <h2 className="wz-title">Perfil Profesional</h2>
+                  <p className="wz-sub">Queremos conocerte mejor. Tu opinión nos ayuda a crecer juntos.</p>
+                  
+                  <div className="wz-field" style={{ marginBottom:'1.25rem' }}>
+                    <span className="wz-label">Softwares especializados que domina</span>
+                    <textarea placeholder="Ej. AutoCAD, SAP2000, ETABS, Civil 3D, ArcGIS..." value={formData.softwares}
+                      onChange={e => setFormData({...formData, softwares:e.target.value})} className="wz-textarea" rows={3} />
+                  </div>
+                  <div className="wz-field" style={{ marginBottom:'1.25rem' }}>
+                    <span className="wz-label">¿Qué curso o especialización le gustaría dictar como reto profesional?</span>
+                    <textarea placeholder="Cuéntenos el tema y por qué le apasionaría desarrollarlo..." value={formData.cursoSonado}
+                      onChange={e => setFormData({...formData, cursoSonado:e.target.value})} className="wz-textarea" rows={3} />
+                  </div>
+                  <div className="wz-field" style={{ marginBottom:'1.25rem' }}>
+                    <span className="wz-label">¿Qué proceso académico o administrativo optimizaría?</span>
+                    <textarea placeholder="Desde su perspectiva como docente, ¿qué mejoraría?" value={formData.mejoraAdmin}
+                      onChange={e => setFormData({...formData, mejoraAdmin:e.target.value})} className="wz-textarea" rows={3} />
+                  </div>
+                  <div className="wz-field">
+                    <span className="wz-label">Comentarios adicionales <span style={{ color:'#94a3b8', fontWeight:500 }}>(opcional)</span></span>
+                    <textarea placeholder="¿Alguna observación, recomendación o información adicional?" value={formData.comentarios}
+                      onChange={e => setFormData({...formData, comentarios:e.target.value})} className="wz-textarea" rows={2} />
+                  </div>
+
+                  <div className="wz-nav">
+                    <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
+                    <button onClick={handleNext} disabled={!formData.softwares.trim()||!formData.cursoSonado.trim()||!formData.mejoraAdmin.trim()} className="wz-btn-main">Siguiente</button>
+                  </div>
+                </div>
+              )}
+
+              {/* ═══ PASO 10: DECLARACIÓN ═══ */}
+              {step === 10 && (
+                <div className="wz-fade">
                   <h2 className="wz-title">Declaración de Conformidad</h2>
-                  <p className="wz-sub">Lee el texto de confirmación y envíalo por WhatsApp para finalizar.</p>
+                  <p className="wz-sub">Revisa tus datos y envía tu conformidad por WhatsApp a {marcaConfig[formData.marca]?.coordinador}.</p>
                   <div className="wz-declaration">
-                    <p>"Confirmo que acepto el Manual Operativo del Docente. Comprendo la metodología práctica y los horarios de entrega innegociables: Sábado y Domingo 1:00 PM y Lunes 9:00 AM. Acepto el sistema de penalidades por inasistencias y autorizo el uso de mi firma digital para certificados."</p>
+                    <p>"Confirmo que acepto el Manual Operativo del Docente. Comprendo la metodología práctica y los horarios de entrega innegociables. Acepto el sistema de penalidades y autorizo el uso de mi firma digital para certificados."</p>
                   </div>
                   <div className="wz-summary">
                     <div className="wz-sum-row"><span>Docente</span><strong>{formData.nombre}</strong></div>
+                    <div className="wz-sum-row"><span>Documento</span><strong>{formData.documento}</strong></div>
                     <div className="wz-sum-row"><span>Correo</span><strong>{formData.correo}</strong></div>
-                    <div className="wz-sum-row"><span>Ecosistema</span><strong style={{ color:brandColor }}>{marcaConfig[formData.marca]?.nombre}</strong></div>
+                    <div className="wz-sum-row"><span>Institución</span><strong style={{ color:brandColor }}>{marcaConfig[formData.marca]?.nombre}</strong></div>
+                    <div className="wz-sum-row"><span>Teléfono</span><strong>{formData.telefono}</strong></div>
+                    <div className="wz-sum-row"><span>Método de Pago</span><strong>{formData.metodoPago === 'otro' ? formData.metodoPagoOtro : formData.metodoPago?.toUpperCase()}</strong></div>
                     <div className="wz-sum-row" style={{ borderBottom:'none' }}><span>Compromisos</span><strong style={{ color:'#22c55e' }}>Todos Aceptados</strong></div>
                   </div>
                   <div className="wz-nav">
                     <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
                     <button onClick={handleFinish} className="wz-btn-wa">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                      Enviar por WhatsApp
+                      Enviar a {marcaConfig[formData.marca]?.coordinador}
                     </button>
                   </div>
                   <p className="wz-footer">CIIP LATAM • GEOMINA • BIOMEDIC | © 2026</p>
@@ -807,6 +962,42 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           to { opacity:1; transform:translateY(0); }
         }
 
+        /* ── PAYMENT GRID (PASO 7) ── */
+        .wz-payment-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:0.75rem; margin-bottom:1rem; }
+        .wz-pay-card {
+          display:flex; align-items:center; gap:0.75rem; padding:0.85rem 1rem;
+          border:1px solid #e8ecf1; border-radius:12px; cursor:pointer;
+          background:#fff; transition:all 0.2s; font-size:0.88rem; font-weight:600; color:#334155;
+        }
+        .wz-pay-card:hover { border-color:#cbd5e1; }
+        .wz-pay-card.on { border-color:var(--bc); background:var(--bg); }
+
+        /* ── UPLOAD ZONE (PASO 8) ── */
+        .wz-upload-section { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1rem; }
+        .wz-upload-zone {
+          border:2px dashed #e2e8f0; border-radius:20px; padding:2.5rem 1.5rem;
+          text-align:center; cursor:pointer; background:#fff; transition:all 0.3s;
+          display:flex; flex-direction:column; align-items:center; gap:0.5rem;
+        }
+        .wz-upload-zone:hover { border-color:var(--bc); background:var(--bg); }
+        .wz-upload-icon { font-size:2.5rem; line-height:1; margin-bottom:0.25rem; }
+        .wz-upload-zone h4 { font-size:1rem; font-weight:800; color:#0f172a; margin:0; }
+        .wz-upload-zone p { font-size:0.8rem; color:#94a3b8; margin:0; font-weight:500; }
+        .wz-upload-filename {
+          font-size:0.78rem; color:var(--bc); font-weight:700;
+          background:var(--bg); padding:0.3rem 0.8rem; border-radius:8px; margin-top:0.5rem;
+        }
+
+        /* ── TEXTAREA (PASO 9) ── */
+        .wz-textarea {
+          width:100%; padding:0.85rem 1rem; border:1px solid #e2e8f0; border-radius:12px;
+          background:#fff; font-family:inherit; font-size:0.88rem; color:#1e293b;
+          resize:vertical; outline:none; transition:all 0.2s; font-weight:500; line-height:1.5;
+          box-sizing:border-box;
+        }
+        .wz-textarea:focus { border-color:var(--bc); box-shadow:0 0 0 3px var(--bg); }
+        .wz-textarea::placeholder { color:#94a3b8; font-weight:400; }
+
         /* ── GRID HELPER ── */
         .wz-grid-2 { display:grid; gap:2rem; margin-bottom:0.5rem; }
 
@@ -858,6 +1049,10 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           
           .wz-modal-box { width:95%; padding:1.5rem; border-radius:24px; }
           .wz-modal-title { font-size:1.8rem; }
+
+          .wz-payment-grid { grid-template-columns:1fr 1fr !important; }
+          .wz-upload-section { grid-template-columns:1fr !important; }
+          .wz-upload-zone { padding:1.5rem 1rem; }
         }
       `}</style>
 
