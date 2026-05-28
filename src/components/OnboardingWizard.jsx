@@ -116,7 +116,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               );
             };
             const ciip = mkLogo('ciip', biomedicWhite, 'lg-ciip');
-            const geo = mkLogo('geomina', geominaWhite, '');
+            const geo = mkLogo('geomina', geominaWhite, 'lg-geo');
             const bio = mkLogo('biomedic', logobiomedic, 'lg-bio', { filter:'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' });
             const sep = (k) => <div key={k} className="wz-sep" />;
             if (step > 1) {
@@ -642,7 +642,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-h-right { justify-content:flex-end; }
         .wz-h-center { display:flex; align-items:center; gap:1rem; }
         .wz-logo { height:42px; width:auto; object-fit:contain; transition:all 0.4s ease; }
-        .wz-logo.lg-bio { height:40px; }
+        .wz-logo.lg-geo { height:48px; transform:translateY(4px); }
+        .wz-logo.lg-bio { height:52px; }
         .wz-sep { width:1px; height:24px; background:linear-gradient(to bottom,transparent,rgba(56,189,248,0.2),transparent); }
         .wz-back {
           background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
