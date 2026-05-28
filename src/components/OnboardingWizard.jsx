@@ -182,8 +182,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                               <div className={`wz-radio ${on?'on':''}`} />
                               <img src={b.logo} alt={b.key} style={{
                                 height:b.h, objectFit:'contain',
-                                filter: b.key==='biomedic' ? 'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' : 'none',
-                                opacity: on ? 1 : 0.8, transition: 'opacity 0.2s'
+                                filter: b.key==='biomedic' ? 'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' : 'none'
                               }} />
                               {partOfAmbos && (
                                 <span className="wz-brand-badge">Incluido</span>
@@ -195,12 +194,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                           className={`wz-brand-card ambos-card ${formData.marca === 'ambos' ? 'on' : ''}`}
                           style={{ '--bc': '#38bdf8' }}>
                           <div className={`wz-radio ${formData.marca==='ambos'?'on':''}`} />
-                          <div className="ambos-logos-wrapper">
-                            <img src={biomedicWhite} alt="CIIP" className="ambos-mini-logo" style={{ height:'16px', objectFit:'contain' }} />
-                            <span className="ambos-plus">+</span>
-                            <img src={geominaWhite} alt="Geomina" className="ambos-mini-logo" style={{ height:'11px', objectFit:'contain' }} />
+                          <div className="ambos-content">
+                            <span className="ambos-text">Ambas instituciones</span>
+                            <div className="ambos-logos-wrapper">
+                              <img src={biomedicWhite} alt="CIIP" className="ambos-mini-logo" style={{ height:'14px', objectFit:'contain' }} />
+                              <span className="ambos-plus">+</span>
+                              <img src={geominaWhite} alt="Geomina" className="ambos-mini-logo" style={{ height:'10px', objectFit:'contain' }} />
+                            </div>
                           </div>
-                          <span className="ambos-text">Ambas instituciones (CIIP & Geomina)</span>
                         </div>
                       </div>
                     </div>
@@ -703,32 +704,52 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         /* ── BRAND SELECTOR (PASO 1) ── */
         .wz-brand-list { display:flex; flex-direction:column; gap:0.65rem; }
         .wz-brand-card {
-          background:#0b1526; border:2px solid transparent; border-radius:12px;
+          background:#09111e; border:2px solid transparent; border-radius:12px;
           padding:0.75rem 1.25rem; display:flex; align-items:center; gap:1rem;
-          cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); opacity:0.45;
+          cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           position:relative; overflow:hidden;
         }
-        .wz-brand-card:hover { opacity:0.8; background:#0f1e34; }
+        .wz-brand-card img {
+          opacity: 0.35;
+          transition: all 0.3s ease;
+        }
+        .wz-brand-card:hover {
+          background:#0f1e34;
+          border-color:rgba(255, 255, 255, 0.08);
+        }
+        .wz-brand-card:hover img {
+          opacity: 0.7;
+        }
         .wz-brand-card.on {
-          opacity:1; border-color:var(--bc);
+          border-color:var(--bc);
           box-shadow:0 0 0 2px var(--bc), 0 8px 24px -6px var(--bc);
           background:#0f1e34;
         }
+        .wz-brand-card.on img {
+          opacity: 1;
+        }
         .wz-brand-card.part-of-ambos {
-          opacity:0.9;
-          border-color:rgba(56, 189, 248, 0.4);
-          box-shadow:0 0 0 1px rgba(56, 189, 248, 0.3);
-          background:linear-gradient(90deg, #0b1526 0%, rgba(14, 165, 233, 0.08) 100%);
+          border-color:rgba(56, 189, 248, 0.45);
+          box-shadow:0 0 0 1px rgba(56, 189, 248, 0.25);
+          background:#0f1e34;
+        }
+        .wz-brand-card.part-of-ambos img {
+          opacity: 1;
         }
         .wz-brand-card.ambos-card {
-          background:linear-gradient(135deg, #091322 0%, #15263f 100%);
-          border:2px dashed rgba(255, 255, 255, 0.1);
+          background:linear-gradient(135deg, #080f1a 0%, #122137 100%);
+          border:2px dashed rgba(255, 255, 255, 0.08);
+          padding:0.65rem 1.25rem;
+        }
+        .wz-brand-card.ambos-card:hover {
+          border-color:rgba(56, 189, 248, 0.2);
+          background:linear-gradient(135deg, #0b1626 0%, #172d4b 100%);
         }
         .wz-brand-card.ambos-card.on {
           border-style:solid;
           border-color:#38bdf8;
-          box-shadow:0 0 0 2px #38bdf8, 0 8px 30px -6px rgba(56, 189, 248, 0.3);
-          background:linear-gradient(135deg, #0b1e36 0%, #17375e 100%);
+          box-shadow:0 0 0 2px #38bdf8, 0 8px 30px -6px rgba(56, 189, 248, 0.35);
+          background:linear-gradient(135deg, #0c1c30 0%, #1a3c66 100%);
         }
         
         .wz-brand-badge {
@@ -736,8 +757,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           font-size:0.6rem;
           font-weight:800;
           color:#38bdf8;
-          background:rgba(56, 189, 248, 0.15);
-          border:1px solid rgba(56, 189, 248, 0.3);
+          background:rgba(56, 189, 248, 0.12);
+          border:1px solid rgba(56, 189, 248, 0.25);
           padding:0.2rem 0.5rem;
           border-radius:6px;
           text-transform:uppercase;
@@ -755,32 +776,39 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         .wz-brand-card.on .wz-radio {
           border-color:var(--bc); background:var(--bc);
-          box-shadow:inset 0 0 0 3px #0b1526;
+          box-shadow:inset 0 0 0 3px #0f1e34;
         }
         .wz-brand-card.ambos-card.on .wz-radio {
           border-color:#38bdf8; background:#38bdf8;
-          box-shadow:inset 0 0 0 3px #0b1526;
+          box-shadow:inset 0 0 0 3px #0c1c30;
         }
         .wz-brand-card.part-of-ambos .wz-radio {
           border-color:rgba(56, 189, 248, 0.7);
-          background:rgba(56, 189, 248, 0.2);
-          box-shadow:inset 0 0 0 3px #0b1526;
+          background:rgba(56, 189, 248, 0.25);
+          box-shadow:inset 0 0 0 3px #0f1e34;
         }
 
-        .ambos-logos-wrapper {
-          display:flex; align-items:center; gap:0.4rem;
-        }
-        .ambos-plus {
-          color:#64748b; font-weight:800; font-size:0.85rem;
-        }
-        .wz-brand-card.ambos-card.on .ambos-plus {
-          color:#38bdf8;
+        .ambos-content {
+          display:flex; flex-direction:column; gap:0.25rem; align-items:flex-start;
         }
         .ambos-text {
-          font-size:0.78rem; font-weight:700; color:#94a3b8; transition:color 0.2s;
+          font-size:0.8rem; font-weight:700; color:#94a3b8; transition:color 0.2s;
+          line-height:1.2;
         }
         .wz-brand-card.ambos-card.on .ambos-text {
           color:#fff;
+        }
+        .ambos-logos-wrapper {
+          display:flex; align-items:center; gap:0.35rem; opacity:0.6; transition:opacity 0.2s;
+        }
+        .wz-brand-card.ambos-card.on .ambos-logos-wrapper {
+          opacity:1;
+        }
+        .ambos-plus {
+          color:#64748b; font-weight:800; font-size:0.75rem;
+        }
+        .wz-brand-card.ambos-card.on .ambos-plus {
+          color:#38bdf8;
         }
 
         /* ── PILARES (PASO 2 - MANIFIESTO TIPOGRÁFICO) ── */
