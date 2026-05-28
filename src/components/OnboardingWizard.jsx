@@ -157,7 +157,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const brandColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
   const brandGlow = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14,165,233,0.12)';
 
-  const stepWidths = { 1: '820px', 2: '680px', 3: '700px', 4: '940px', 5: '880px', 6: '900px', 7: '780px', 8: '700px', 9: '740px', 10: '640px' };
+  const stepWidths = { 1: '720px', 2: '600px', 3: '620px', 4: '760px', 5: '720px', 6: '740px', 7: '680px', 8: '600px', 9: '640px', 10: '580px' };
 
   return (
     <div className="wz" style={{ '--bc': brandColor, '--bg': brandGlow }}>
@@ -242,7 +242,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 <div className="wz-fade">
                   <h2 className="wz-title">Datos Personales</h2>
                   <p className="wz-sub">Ingresa tus datos y selecciona tu institución.</p>
-                  <div className="wz-grid-2" style={{ gridTemplateColumns:'280px 1fr' }}>
+                  <div className="wz-grid-2" style={{ gridTemplateColumns:'220px 1fr' }}>
                     <div>
                       <span className="wz-label" style={{ marginBottom:'0.75rem', display:'block' }}>Institución</span>
                       <div className="wz-brand-list">
@@ -1037,12 +1037,12 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-cl-tag.ban { background:rgba(220,38,38,0.06); color:#991b1b; }
         
         .wz-protocol-image-container {
-          width:420px; flex-shrink:0; background:#f8fafc; border-radius:24px;
+          width:320px; flex-shrink:0; background:#f8fafc; border-radius:24px;
           border:1px solid #e2e8f0; overflow:hidden; position:relative;
           display:flex; align-items:center; justify-content:center;
         }
         .wz-pi-placeholder {
-          width:100%; height:100%; min-height:340px; display:flex; align-items:center; justify-content:center;
+          width:100%; height:100%; min-height:280px; display:flex; align-items:center; justify-content:center;
           color:#64748b; font-size:0.9rem; font-weight:700; font-family:'Outfit',sans-serif; text-align:center; padding:2rem;
           background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
           background-size: 20px 20px;
@@ -1210,6 +1210,31 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
         /* ── GRID HELPER ── */
         .wz-grid-2 { display:grid; gap:2rem; margin-bottom:0.5rem; }
+
+        /* ── ELITE PROGRAM (PASO 6) ── */
+        .wz-elite-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1rem; }
+        .wz-elite-card { padding:1.75rem; border-radius:20px; transition:all 0.3s; }
+        .wz-elite-card.benefits {
+          background:#060e1a; color:#fff; border:1px solid rgba(56,189,248,0.1);
+          box-shadow: 0 10px 30px -15px rgba(6,14,26,0.5);
+        }
+        .wz-elite-card.requirements { background:#fff; border:1px solid #e8ecf1; }
+        .wz-ec-title { font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:850; margin:0 0 1.25rem; letter-spacing:-0.4px; color:#0f172a; }
+        .wz-ec-title.gold { color:#f59e0b; }
+        .wz-elite-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.75rem; }
+        .wz-elite-list li { display:flex; align-items:flex-start; gap:0.65rem; font-size:0.85rem; line-height:1.45; font-weight:500; color:#cbd5e1; }
+        .wz-elite-check {
+          width:16px; height:16px; border-radius:50%; background:rgba(34,197,94,0.12); color:#22c55e;
+          display:flex; align-items:center; justify-content:center; font-size:0.6rem; font-weight:900; flex-shrink:0; margin-top:2.5px;
+        }
+        .wz-elite-metric { display:flex; justify-content:space-between; align-items:center; padding:0.85rem 0; border-bottom:1px solid #f1f5f9; }
+        .wz-em-label { font-size:0.8rem; font-weight:700; color:#64748b; }
+        .wz-em-value { font-family:'Outfit',sans-serif; font-size:2rem; font-weight:900; color:var(--bc); line-height:1; letter-spacing:-1px; }
+        .wz-em-value small { font-size:0.85rem; color:#64748b; font-weight:700; }
+        .wz-em-tag {
+          font-size:0.65rem; font-weight:800; text-transform:uppercase; color:#b45309; background:rgba(245,158,11,0.08);
+          padding:0.3rem 0.65rem; border-radius:6px; letter-spacing:0.5px;
+        }
 
         /* ── RESPONSIVE ── */
         @media (max-width:960px) {
