@@ -194,14 +194,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                           className={`wz-brand-card ambos-card ${formData.marca === 'ambos' ? 'on' : ''}`}
                           style={{ '--bc': '#38bdf8' }}>
                           <div className={`wz-radio ${formData.marca==='ambos'?'on':''}`} />
-                          <div className="ambos-content">
-                            <span className="ambos-text">Ambas instituciones</span>
-                            <div className="ambos-logos-wrapper">
-                              <img src={biomedicWhite} alt="CIIP" className="ambos-mini-logo" style={{ height:'14px', objectFit:'contain' }} />
-                              <span className="ambos-plus">+</span>
-                              <img src={geominaWhite} alt="Geomina" className="ambos-mini-logo" style={{ height:'10px', objectFit:'contain' }} />
-                            </div>
-                          </div>
+                          <span className="ambos-text">Ambas instituciones (CIIP & Geomina)</span>
                         </div>
                       </div>
                     </div>
@@ -788,27 +781,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           box-shadow:inset 0 0 0 3px #0f1e34;
         }
 
-        .ambos-content {
-          display:flex; flex-direction:column; gap:0.25rem; align-items:flex-start;
-        }
         .ambos-text {
-          font-size:0.8rem; font-weight:700; color:#94a3b8; transition:color 0.2s;
-          line-height:1.2;
+          font-size:0.78rem; font-weight:700; color:#94a3b8; transition:color 0.2s;
         }
         .wz-brand-card.ambos-card.on .ambos-text {
           color:#fff;
-        }
-        .ambos-logos-wrapper {
-          display:flex; align-items:center; gap:0.35rem; opacity:0.6; transition:opacity 0.2s;
-        }
-        .wz-brand-card.ambos-card.on .ambos-logos-wrapper {
-          opacity:1;
-        }
-        .ambos-plus {
-          color:#64748b; font-weight:800; font-size:0.75rem;
-        }
-        .wz-brand-card.ambos-card.on .ambos-plus {
-          color:#38bdf8;
         }
 
         /* ── PILARES (PASO 2 - MANIFIESTO TIPOGRÁFICO) ── */
