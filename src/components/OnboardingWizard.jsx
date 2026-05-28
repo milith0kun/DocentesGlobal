@@ -172,9 +172,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                       <span className="wz-label" style={{ marginBottom:'0.75rem', display:'block' }}>Institución</span>
                       <div className="wz-brand-list">
                         {[
-                          { key:'ciip', logo:biomedicWhite, h:'42px' },
-                          { key:'geomina', logo:geominaWhite, h:'26px' },
-                          { key:'biomedic', logo:logobiomedic, h:'28px' },
+                          { key:'ciip', logo:biomedicWhite, h:'56px' },
+                          { key:'geomina', logo:geominaWhite, h:'35px' },
+                          { key:'biomedic', logo:logobiomedic, h:'50px' },
                         ].map(b => {
                           const directSelected = formData.marca === b.key;
                           const partOfAmbos = formData.marca === 'ambos' && (b.key === 'ciip' || b.key === 'geomina');
@@ -642,8 +642,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-h-right { justify-content:flex-end; }
         .wz-h-center { display:flex; align-items:center; gap:1rem; }
         .wz-logo { height:42px; width:auto; object-fit:contain; transition:all 0.4s ease; }
-        .wz-logo.lg-geo { height:48px; transform:translateY(4px); }
-        .wz-logo.lg-bio { height:52px; }
+        .wz-logo.lg-ciip { height:56px; }
+        .wz-logo.lg-geo { height:35px; transform:translateY(5px); }
+        .wz-logo.lg-bio { height:50px; }
         .wz-sep { width:1px; height:24px; background:linear-gradient(to bottom,transparent,rgba(56,189,248,0.2),transparent); }
         .wz-back {
           background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
