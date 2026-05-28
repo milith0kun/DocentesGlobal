@@ -699,7 +699,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-brand-list { display:flex; flex-direction:column; gap:0.65rem; }
         .wz-brand-card {
           background:#09111e; border:2px solid transparent; border-radius:12px;
-          padding:0.75rem 1.25rem; display:flex; align-items:center; justify-content:center; gap:1rem;
+          padding:0.75rem 1.25rem 0.75rem 3.5rem; display:flex; align-items:center; justify-content:flex-start; gap:1rem;
           cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           position:relative; overflow:hidden;
         }
@@ -733,7 +733,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-brand-card.ambos-card {
           background:linear-gradient(135deg, #080f1a 0%, #122137 100%);
           border:2px dashed rgba(255, 255, 255, 0.08);
-          padding:0.65rem 1.25rem;
+          padding:0.65rem 1.25rem 0.65rem 3.5rem;
         }
         .wz-brand-card.ambos-card:hover {
           border-color:rgba(56, 189, 248, 0.2);
@@ -766,7 +766,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
 
         .ambos-text {
-          font-size:0.78rem; font-weight:700; color:#94a3b8; transition:color 0.2s;
+          font-size:0.75rem; font-weight:700; color:#94a3b8; transition:color 0.2s;
+          line-height:1.3; text-align:left;
         }
         .wz-brand-card.ambos-card.on .ambos-text {
           color:#fff;
