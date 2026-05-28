@@ -157,7 +157,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const brandColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
   const brandGlow = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14,165,233,0.12)';
 
-  const stepWidths = { 1: '640px', 2: '600px', 3: '620px', 4: '760px', 5: '720px', 6: '740px', 7: '680px', 8: '600px', 9: '640px', 10: '580px' };
+  const stepWidths = { 1: '820px', 2: '600px', 3: '620px', 4: '760px', 5: '720px', 6: '740px', 7: '680px', 8: '600px', 9: '640px', 10: '580px' };
 
   return (
     <div className="wz" style={{ '--bc': brandColor, '--bg': brandGlow }}>
@@ -242,14 +242,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 <div className="wz-fade">
                   <h2 className="wz-title">Datos Personales</h2>
                   <p className="wz-sub">Ingresa tus datos y selecciona tu institución.</p>
-                  <div className="wz-grid-2" style={{ gridTemplateColumns:'200px 1px 1fr', gap:'1.5rem' }}>
+                  <div className="wz-grid-2" style={{ gridTemplateColumns:'280px 1fr' }}>
                     <div>
                       <span className="wz-label" style={{ marginBottom:'0.75rem', display:'block' }}>Institución</span>
                       <div className="wz-brand-list">
                         {[
-                          { key:'ciip', logo:biomedicWhite, h:'42px' },
-                          { key:'geomina', logo:geominaWhite, h:'26px' },
-                          { key:'biomedic', logo:logobiomedic, h:'36px' },
+                          { key:'ciip', logo:biomedicWhite, h:'56px' },
+                          { key:'geomina', logo:geominaWhite, h:'35px' },
+                          { key:'biomedic', logo:logobiomedic, h:'50px' },
                         ].map(b => {
                           const directSelected = formData.marca === b.key;
                           const partOfAmbos = formData.marca === 'ambos' && (b.key === 'ciip' || b.key === 'geomina');
@@ -274,10 +274,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                         </div>
                       </div>
                     </div>
-                    
-                    {/* Línea Divisoria Vertical */}
-                    <div style={{ width: '1px', background: '#cbd5e1', alignSelf: 'stretch', margin: '0.5rem 0' }} />
-                    
                     <div style={{ display:'flex', flexDirection:'column', gap:'1rem', justifyContent:'center' }}>
                       <div className="wz-field">
                         <span className="wz-label">Documento de Identidad</span>
@@ -848,7 +844,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-brand-list { display:flex; flex-direction:column; gap:0.65rem; }
         .wz-brand-card {
           background:#09111e; border:2px solid transparent; border-radius:12px;
-          padding:0.65rem 1rem 0.65rem 2.25rem; display:flex; align-items:center; justify-content:center; gap:1rem;
+          padding:0.75rem 2.5rem; display:flex; align-items:center; justify-content:center; gap:1rem;
           cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           position:relative; overflow:hidden;
         }
@@ -882,7 +878,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-brand-card.ambos-card {
           background:linear-gradient(135deg, #080f1a 0%, #122137 100%);
           border:2px dashed rgba(255, 255, 255, 0.08);
-          padding:0.55rem 1rem 0.55rem 2.25rem;
+          padding:0.65rem 2.5rem;
         }
         .wz-brand-card.ambos-card:hover {
           border-color:rgba(56, 189, 248, 0.2);
@@ -915,8 +911,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
 
         .ambos-text {
-          font-size:0.72rem; font-weight:700; color:#94a3b8; transition:color 0.2s;
-          line-height:1.2; text-align:left;
+          font-size:0.75rem; font-weight:700; color:#94a3b8; transition:color 0.2s;
+          line-height:1.25; text-align:center;
         }
         .wz-brand-card.ambos-card.on .ambos-text {
           color:#fff;
@@ -1118,10 +1114,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
 
         /* ── BUTTONS ── */
-        .wz-nav {
-          display:flex; justify-content:space-between; align-items:center;
-          margin-top:1.75rem; padding-top:1.25rem; border-top:1px solid #e8ecf1;
-        }
+        .wz-nav { display:flex; justify-content:space-between; align-items:center; margin-top:1.25rem; }
         .wz-btn-main {
           padding:0.7rem 1.8rem; font-size:0.88rem; font-weight:750; color:#fff;
           background:var(--bc); border:none; border-radius:10px; cursor:pointer;
