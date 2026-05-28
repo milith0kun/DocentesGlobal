@@ -693,14 +693,19 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         /* ── BRAND SELECTOR (PASO 1) ── */
         .wz-brand-list { display:flex; flex-direction:column; gap:0.65rem; }
         .wz-brand-card {
-          background:#0b1526; border:1.5px solid rgba(255,255,255,0.06); border-radius:12px;
+          background:#f1f5f9; border:1.5px solid #e2e8f0; border-radius:12px;
           padding:0.65rem 1rem; display:flex; align-items:center; gap:1rem;
-          cursor:pointer; transition:all 0.25s;
+          cursor:pointer; transition:all 0.3s ease;
         }
-        .wz-brand-card:hover { border-color:rgba(56,189,248,0.2); }
-        .wz-brand-card.on { border-color:var(--bc); box-shadow:0 0 0 1px var(--bc); }
+        .wz-brand-card img { filter:brightness(0) !important; }
+        .wz-brand-card:hover { border-color:#94a3b8; background:#e2e8f0; }
+        .wz-brand-card.on {
+          background:#0b1526; border-color:var(--bc); box-shadow:0 0 0 1px var(--bc);
+        }
+        .wz-brand-card.on img { filter:none !important; }
+        .wz-brand-card.ambos.on img { filter:none !important; }
         .wz-radio {
-          width:16px; height:16px; border:2px solid rgba(255,255,255,0.2);
+          width:16px; height:16px; border:2px solid #94a3b8;
           border-radius:50%; flex-shrink:0; transition:all 0.2s; position:relative;
         }
         .wz-radio.on {
