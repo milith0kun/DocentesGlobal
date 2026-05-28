@@ -97,13 +97,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
       {/* ── HEADER ── */}
       <header className="wz-header">
         <div className="wz-h-left">
-          {!isFinished && (
-            <button onClick={step > 1 ? handleBack : onClose} className="wz-back" aria-label="Atrás">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
-              </svg>
-            </button>
-          )}
+          {/* El botón de ir atrás se movió a la parte inferior del flujo */}
         </div>
         <div className="wz-h-center">
           {(() => {
@@ -127,16 +121,38 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           })()}
         </div>
         <div className="wz-h-right">
-          {!isFinished ? (
-            <span className="wz-step-badge">{step}/{totalSteps}</span>
-          ) : (
-            <button onClick={handleReset} className="wz-back" style={{ borderRadius:10, width:'auto', padding:'0 1rem', fontSize:'0.8rem', fontWeight:800 }}>✕</button>
-          )}
+          <button onClick={handleReset} className="wz-back" aria-label="Cerrar" style={{ fontSize:'0.9rem', fontWeight:800 }}>✕</button>
         </div>
-        {!isFinished && (
-          <div className="wz-progress"><div className="wz-progress-fill" style={{ width:`${((step-1)/(totalSteps-1))*100}%`, background: brandColor }} /></div>
-        )}
       </header>
+
+      {/* ── STEPPER / INDICADOR DE FLUJO ── */}
+      {!isFinished && (
+        <div className="wz-stepper-bar">
+          <div className="wz-stepper-steps">
+            {[
+              { num: 1, label: 'Datos' },
+              { num: 2, label: 'Filosofía' },
+              { num: 3, label: 'Plazos' },
+              { num: 4, label: 'Protocolo' },
+              { num: 5, label: 'Asistencia' },
+              { num: 6, label: 'Calidad' },
+              { num: 7, label: 'Pagos' },
+              { num: 8, label: 'Archivos' },
+              { num: 9, label: 'Perfil' },
+              { num: 10, label: 'Firma' },
+            ].map(s => {
+              const active = step === s.num;
+              const done = step > s.num;
+              return (
+                <div key={s.num} className={`wz-step-item ${active ? 'active' : ''} ${done ? 'done' : ''}`}>
+                  <div className="wz-step-dot">{s.num}</div>
+                  <span className="wz-step-label">{s.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* ── MAIN ── */}
       <main className="wz-main">
@@ -635,7 +651,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
         /* ── HEADER ── */
         .wz-header {
-          height:80px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between;
+          height:92px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between;
           padding:0 2rem; background:linear-gradient(135deg,#060e1a 0%,#0a1e35 100%); position:relative;
         }
         .wz-h-left, .wz-h-right { width:80px; display:flex; align-items:center; }
@@ -652,13 +668,47 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           display:flex; align-items:center; justify-content:center; transition:all 0.2s;
         }
         .wz-back:hover { background:rgba(56,189,248,0.12); color:#38bdf8; border-color:rgba(56,189,248,0.3); }
-        .wz-step-badge {
-          font-size:0.72rem; font-weight:800; color:var(--bc);
-          background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
-          padding:0.35rem 0.85rem; border-radius:50px; letter-spacing:0.5px;
+
+        /* ── STEPPER DEBAJO DEL HEADER ── */
+        .wz-stepper-bar {
+          background:#fff; border-bottom:1px solid #e8ecf1;
+          padding:0.75rem 2rem; display:flex; justify-content:center; align-items:center;
+          flex-shrink:0; position:relative; z-index:10;
         }
-        .wz-progress { position:absolute; bottom:0; left:0; right:0; height:2px; background:rgba(255,255,255,0.04); }
-        .wz-progress-fill { height:100%; transition:width 0.4s cubic-bezier(0.16,1,0.3,1); }
+        .wz-stepper-steps {
+          display:flex; align-items:center; justify-content:space-between;
+          width:100%; max-width:920px; position:relative;
+        }
+        .wz-stepper-steps::before {
+          content:''; position:absolute; left:0; right:0; top:12px; height:2px;
+          background:#e8ecf1; z-index:1;
+        }
+        .wz-step-item {
+          display:flex; flex-direction:column; align-items:center; gap:0.35rem;
+          position:relative; z-index:2; cursor:default;
+        }
+        .wz-step-dot {
+          width:24px; height:24px; border-radius:50%; background:#fff;
+          border:2px solid #cbd5e1; display:flex; align-items:center; justify-content:center;
+          font-size:0.7rem; font-weight:800; color:#64748b; transition:all 0.3s ease;
+        }
+        .wz-step-label {
+          font-size:0.68rem; font-weight:700; color:#64748b; transition:all 0.3s ease;
+          letter-spacing:-0.2px;
+        }
+        .wz-step-item.active .wz-step-dot {
+          border-color:var(--bc); background:var(--bc); color:#fff;
+          box-shadow:0 0 0 4px var(--bg);
+        }
+        .wz-step-item.active .wz-step-label {
+          color:#0f172a; font-weight:800;
+        }
+        .wz-step-item.done .wz-step-dot {
+          border-color:var(--bc); background:#fff; color:var(--bc);
+        }
+        .wz-step-item.done .wz-step-label {
+          color:#334155;
+        }
 
         /* ── MAIN AREA ── */
         .wz-main {
