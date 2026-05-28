@@ -157,7 +157,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const brandColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
   const brandGlow = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14,165,233,0.12)';
 
-  const stepWidths = { 1: '720px', 2: '600px', 3: '620px', 4: '760px', 5: '720px', 6: '740px', 7: '680px', 8: '600px', 9: '640px', 10: '580px' };
+  const stepWidths = { 1: '820px', 2: '600px', 3: '620px', 4: '760px', 5: '720px', 6: '740px', 7: '680px', 8: '600px', 9: '640px', 10: '580px' };
 
   return (
     <div className="wz" style={{ '--bc': brandColor, '--bg': brandGlow }}>
@@ -242,7 +242,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 <div className="wz-fade">
                   <h2 className="wz-title">Datos Personales</h2>
                   <p className="wz-sub">Ingresa tus datos y selecciona tu institución.</p>
-                  <div className="wz-grid-2" style={{ gridTemplateColumns:'220px 1fr' }}>
+                  <div className="wz-grid-2" style={{ gridTemplateColumns:'280px 1fr' }}>
                     <div>
                       <span className="wz-label" style={{ marginBottom:'0.75rem', display:'block' }}>Institución</span>
                       <div className="wz-brand-list">
