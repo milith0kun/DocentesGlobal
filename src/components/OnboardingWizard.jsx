@@ -107,10 +107,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         </div>
         <div className="wz-h-center">
           {(() => {
-            const mkLogo = (key, src, cls, extraStyle) => (
-              <img key={key} src={src} alt={key} className={`wz-logo ${cls||''}`}
-                style={{ opacity: step===1 ? (!formData.marca ? 0.85 : formData.marca===key ? 1 : 0.2) : 1, ...extraStyle, transition:'all 0.4s ease' }} />
-            );
+            const mkLogo = (key, src, cls, extraStyle) => {
+              const isSelected = formData.marca === key || (formData.marca === 'ambos' && (key === 'ciip' || key === 'geomina'));
+              const opacity = step === 1 ? (!formData.marca ? 0.85 : isSelected ? 1 : 0.2) : 1;
+              return (
+                <img key={key} src={src} alt={key} className={`wz-logo ${cls||''}`}
+                  style={{ opacity, ...extraStyle, transition:'all 0.4s ease' }} />
+              );
+            };
             const ciip = mkLogo('ciip', biomedicWhite, 'lg-ciip');
             const geo = mkLogo('geomina', geominaWhite, '');
             const bio = mkLogo('biomedic', logobiomedic, 'lg-bio', { filter:'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' });
@@ -184,9 +188,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                                 height:b.h, objectFit:'contain',
                                 filter: b.key==='biomedic' ? 'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' : 'none'
                               }} />
-                              {partOfAmbos && (
-                                <span className="wz-brand-badge">Incluido</span>
-                              )}
                             </div>
                           );
                         })}
@@ -698,7 +699,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-brand-list { display:flex; flex-direction:column; gap:0.65rem; }
         .wz-brand-card {
           background:#09111e; border:2px solid transparent; border-radius:12px;
-          padding:0.75rem 1.25rem; display:flex; align-items:center; gap:1rem;
+          padding:0.75rem 1.25rem; display:flex; align-items:center; justify-content:center; gap:1rem;
           cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           position:relative; overflow:hidden;
         }
@@ -744,28 +745,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           box-shadow:0 0 0 2px #38bdf8, 0 8px 30px -6px rgba(56, 189, 248, 0.35);
           background:linear-gradient(135deg, #0c1c30 0%, #1a3c66 100%);
         }
-        
-        .wz-brand-badge {
-          margin-left:auto;
-          font-size:0.6rem;
-          font-weight:800;
-          color:#38bdf8;
-          background:rgba(56, 189, 248, 0.12);
-          border:1px solid rgba(56, 189, 248, 0.25);
-          padding:0.2rem 0.5rem;
-          border-radius:6px;
-          text-transform:uppercase;
-          letter-spacing:0.5px;
-          animation: pulseGlow 2s infinite ease-in-out;
-        }
-        @keyframes pulseGlow {
-          0%, 100% { opacity: 0.8; }
-          50% { opacity: 1; box-shadow: 0 0 6px rgba(56, 189, 248, 0.3); }
-        }
 
         .wz-radio {
           width:16px; height:16px; border:2px solid rgba(255,255,255,0.25);
-          border-radius:50%; flex-shrink:0; transition:all 0.2s; position:relative;
+          border-radius:50%; flex-shrink:0; transition:all 0.2s;
+          position:absolute; left:1.25rem; top:50%; transform:translateY(-50%);
         }
         .wz-brand-card.on .wz-radio {
           border-color:var(--bc); background:var(--bc);
