@@ -157,7 +157,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const brandColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
   const brandGlow = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14,165,233,0.12)';
 
-  const stepWidths = { 1: '820px', 2: '600px', 3: '620px', 4: '760px', 5: '720px', 6: '740px', 7: '680px', 8: '600px', 9: '640px', 10: '580px' };
+  const stepWidths = { 1: '740px', 2: '600px', 3: '620px', 4: '760px', 5: '720px', 6: '740px', 7: '680px', 8: '600px', 9: '640px', 10: '580px' };
 
   return (
     <div className="wz" style={{ '--bc': brandColor, '--bg': brandGlow }}>
