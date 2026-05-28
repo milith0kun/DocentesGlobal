@@ -1,4 +1,3 @@
-import React from 'react';
 import geominaWhite from '../assets/geomina-new.png';
 import biomedicWhite from '../assets/biomedic-white.png';
 import logobiomedic from '../assets/logobiomedic.png';
@@ -7,7 +6,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer style={{
+    <footer className="site-footer" style={{
       background: 'linear-gradient(180deg, rgba(6, 14, 26, 0) 0%, #060e1a 100%)',
       color: '#94a3b8',
       padding: '3rem 0 2rem',
@@ -15,7 +14,7 @@ export default function Footer() {
       zIndex: 10
     }}>
       {/* Subtle line separator */}
-      <div style={{
+      <div className="footer-separator" style={{
         height: '1px',
         background: 'linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.1), transparent)',
         marginBottom: '2rem'
@@ -31,7 +30,7 @@ export default function Footer() {
         }} className="footer-bar-content">
           
           {/* Left Side: Copyright */}
-          <p style={{ 
+          <p className="footer-copy" style={{ 
             fontSize: '0.82rem', 
             fontWeight: 500, 
             margin: 0, 
@@ -42,32 +41,23 @@ export default function Footer() {
           </p>
 
           {/* Right Side: Partners inline (sutil y sin botones redundantes) */}
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '1.25rem' 
-          }}>
+          <div className="footer-partners">
             <img 
               src={biomedicWhite} 
               alt="CIIP" 
-              style={{ height: '18px', opacity: 0.65, objectFit: 'contain' }} 
+              className="footer-logo footer-logo-ciip"
             />
-            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.06)' }} />
+            <div className="footer-logo-sep" />
             <img 
               src={geominaWhite} 
               alt="Geomina" 
-              style={{ height: '18px', opacity: 0.65, objectFit: 'contain' }} 
+              className="footer-logo footer-logo-geomina"
             />
-            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.06)' }} />
+            <div className="footer-logo-sep" />
             <img 
               src={logobiomedic} 
               alt="Biomedic" 
-              style={{ 
-                height: '14px', 
-                opacity: 0.65, 
-                objectFit: 'contain',
-                filter: 'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)'
-              }} 
+              className="footer-logo footer-logo-biomedic"
             />
           </div>
 
@@ -75,15 +65,120 @@ export default function Footer() {
       </div>
 
       <style>{`
+        .footer-logo {
+          opacity: 0.65;
+          object-fit: contain;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .footer-logo:hover {
+          opacity: 0.95;
+          transform: scale(1.04);
+        }
+        .footer-logo-ciip {
+          height: 28px;
+        }
+        .footer-logo-geomina {
+          height: 18px;
+          margin-top: 2px;
+        }
+        .footer-logo-biomedic {
+          height: 25px;
+          filter: invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.15) url(#remove-black-footer);
+        }
+        .footer-logo-sep {
+          width: 1px;
+          height: 16px;
+          background: rgba(255, 255, 255, 0.08);
+        }
+
         @media (max-width: 640px) {
+          .site-footer {
+            padding: 2rem 0 1.35rem !important;
+            background: linear-gradient(180deg, rgba(6, 14, 26, 0) 0%, #09192a 28%, #050b14 100%) !important;
+          }
+          .footer-separator {
+            margin-bottom: 1.1rem !important;
+          }
           .footer-bar-content {
             flex-direction: column !important;
             text-align: center !important;
             justify-content: center !important;
-            gap: 1.25rem !important;
+            gap: 0.95rem !important;
+          }
+          .footer-partners {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.9rem !important;
+            width: 100%;
+            max-width: 22rem;
+            flex-wrap: nowrap;
+            margin: 0 auto;
+          }
+          .footer-copy {
+            max-width: 17.5rem;
+            font-size: 0.76rem !important;
+            line-height: 1.45 !important;
+            color: #e2e8f0 !important;
+          }
+          .footer-logo {
+            opacity: 0.92 !important;
+            flex: 0 1 auto;
+            object-fit: contain;
+          }
+          .footer-logo-ciip {
+            height: 32px !important;
+            max-width: 90px;
+          }
+          .footer-logo-geomina {
+            height: 20px !important;
+            max-width: 90px;
+            margin-top: 2px !important;
+          }
+          .footer-logo-biomedic {
+            height: 28px !important;
+            max-width: 82px;
+            filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.15) url(#remove-black-footer) !important;
+          }
+          .footer-logo-sep {
+            height: 16px !important;
+            background: rgba(255, 255, 255, 0.16) !important;
+          }
+        }
+
+        @media (max-width: 380px) {
+          .footer-partners {
+            gap: 0.7rem !important;
+            max-width: 20rem;
+          }
+          .footer-logo-ciip {
+            height: 28px !important;
+            max-width: 80px;
+          }
+          .footer-logo-geomina {
+            height: 18px !important;
+            max-width: 80px;
+            margin-top: 1px !important;
+          }
+          .footer-logo-biomedic {
+            height: 25px !important;
+            max-width: 70px;
+            filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.15) url(#remove-black-footer) !important;
           }
         }
       `}</style>
+      <svg style={{ position:'absolute', width:0, height:0, pointerEvents:'none' }} width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="remove-black-footer">
+            <feColorMatrix type="matrix" values="
+              1 0 0 0 0
+              0 1 0 0 0
+              0 0 1 0 0
+              1.2 1.2 1.2 0 -0.15
+            "/>
+          </filter>
+        </defs>
+      </svg>
     </footer>
   );
 }
