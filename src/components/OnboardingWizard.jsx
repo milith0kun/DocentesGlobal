@@ -53,6 +53,23 @@ export default function OnboardingWizard({ isOpen, onClose }) {
       setLoadingDni(false);
     }
   };
+
+  const handleFechaNacimientoChange = (e) => {
+    let val = e.target.value.replace(/\D/g, '');
+    if (val.length > 8) val = val.substring(0, 8);
+    
+    let formatted = '';
+    if (val.length > 0) {
+      formatted = val.substring(0, 2);
+      if (val.length > 2) {
+        formatted += '/' + val.substring(2, 4);
+        if (val.length > 4) {
+          formatted += '/' + val.substring(4, 8);
+        }
+      }
+    }
+    setFormData(prev => ({ ...prev, fechaNacimiento: formatted }));
+  };
   const [formData, setFormData] = useState({
     nombre: '', correo: '', marca: '', documento: '', fechaNacimiento: '',
     aceptaMetodologia: false,
@@ -86,7 +103,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   };
 
   const handleNext = () => {
-    if (step === 1 && (!formData.nombre.trim() || !formData.correo.trim() || !formData.marca || !formData.documento.trim() || !formData.fechaNacimiento)) return;
+    if (step === 1 && (!formData.nombre.trim() || !formData.correo.trim() || !formData.marca || !formData.documento.trim() || formData.fechaNacimiento.length !== 10)) return;
     if (step === 2 && !formData.aceptaMetodologia) return;
     if (step === 3 && (!formData.aceptaSabado || !formData.aceptaDomingo || !formData.aceptaLunes)) return;
     if (step === 3) { setShowPenaltyAlert(true); return; }
@@ -259,22 +276,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     </div>
                     <div style={{ display:'flex', flexDirection:'column', gap:'1rem', justifyContent:'center' }}>
                       <div className="wz-field">
-                        <span className="wz-label">Nombre completo</span>
-                        <div style={{ position: 'relative' }}>
-                          <input type="text" placeholder={loadingDni ? "Buscando nombre en RENIEC..." : "Ej. Juan Pérez"} value={formData.nombre}
-                            disabled={loadingDni}
-                            onChange={e => setFormData({...formData, nombre:e.target.value})} className="wz-input" autoComplete="off" style={{ paddingRight: loadingDni ? '2.5rem' : '1rem' }} />
-                          {loadingDni && (
-                            <span className="wz-input-spinner" />
-                          )}
-                        </div>
-                      </div>
-                      <div className="wz-field">
-                        <span className="wz-label">Correo Electrónico</span>
-                        <input type="email" placeholder="juan.perez@ejemplo.com" value={formData.correo}
-                          onChange={e => setFormData({...formData, correo:e.target.value})} className="wz-input" autoComplete="off" />
-                      </div>
-                      <div className="wz-field">
                         <span className="wz-label">Documento de Identidad</span>
                         <input type="text" placeholder="DNI / Pasaporte / CE" value={formData.documento}
                           onChange={e => {
@@ -286,15 +287,46 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                           }} className="wz-input" autoComplete="off" />
                       </div>
                       <div className="wz-field">
+                        <span className="wz-label">Nombre completo</span>
+                        <div style={{ position: 'relative' }}>
+                          <input type="text"
+                            placeholder={loadingDni ? "Buscando nombre en RENIEC..." : (formData.documento.trim() ? "Ej. Juan Pérez" : "Escribe tu Documento primero...")}
+                            value={formData.nombre}
+                            disabled={!formData.documento.trim() || loadingDni}
+                            onChange={e => setFormData({...formData, nombre:e.target.value})}
+                            className="wz-input"
+                            autoComplete="off"
+                            style={{ paddingRight: loadingDni ? '2.5rem' : '1rem' }} />
+                          {loadingDni && (
+                            <span className="wz-input-spinner" />
+                          )}
+                        </div>
+                      </div>
+                      <div className="wz-field">
+                        <span className="wz-label">Correo Electrónico</span>
+                        <input type="email"
+                          placeholder={formData.documento.trim() ? "juan.perez@ejemplo.com" : "Escribe tu Documento primero..."}
+                          value={formData.correo}
+                          disabled={!formData.documento.trim()}
+                          onChange={e => setFormData({...formData, correo:e.target.value})}
+                          className="wz-input"
+                          autoComplete="off" />
+                      </div>
+                      <div className="wz-field">
                         <span className="wz-label">Fecha de Nacimiento</span>
-                        <input type="date" value={formData.fechaNacimiento}
-                          onChange={e => setFormData({...formData, fechaNacimiento:e.target.value})} className="wz-input" />
+                        <input type="text"
+                          placeholder={formData.documento.trim() ? "DD/MM/AAAA" : "Escribe tu Documento primero..."}
+                          value={formData.fechaNacimiento}
+                          disabled={!formData.documento.trim()}
+                          onChange={handleFechaNacimientoChange}
+                          className="wz-input"
+                          maxLength={10} />
                       </div>
                     </div>
                   </div>
                   <div className="wz-nav">
                     <button onClick={onClose} className="wz-btn-ghost">Cancelar</button>
-                    <button onClick={handleNext} disabled={!formData.nombre.trim()||!formData.correo.trim()||!formData.marca||!formData.documento.trim()||!formData.fechaNacimiento} className="wz-btn-main">Continuar</button>
+                    <button onClick={handleNext} disabled={!formData.nombre.trim()||!formData.correo.trim()||!formData.marca||!formData.documento.trim()||formData.fechaNacimiento.length !== 10} className="wz-btn-main">Continuar</button>
                   </div>
                 </div>
               )}
