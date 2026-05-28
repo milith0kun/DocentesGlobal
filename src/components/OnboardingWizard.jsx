@@ -157,7 +157,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const brandColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
   const brandGlow = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14,165,233,0.12)';
 
-  const stepWidths = { 1: '680px', 2: '600px', 3: '620px', 4: '760px', 5: '720px', 6: '740px', 7: '680px', 8: '600px', 9: '640px', 10: '580px' };
+  const stepWidths = { 1: '800px', 2: '600px', 3: '620px', 4: '760px', 5: '720px', 6: '740px', 7: '680px', 8: '600px', 9: '640px', 10: '580px' };
 
   return (
     <div className="wz" style={{ '--bc': brandColor, '--bg': brandGlow }}>
@@ -242,7 +242,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 <div className="wz-fade">
                   <h2 className="wz-title">Datos Personales</h2>
                   <p className="wz-sub">Ingresa tus datos y selecciona tu institución.</p>
-                  <div className="wz-grid-2" style={{ gridTemplateColumns:'240px 1px 1fr', gap:'1.5rem' }}>
+                  <div className="wz-grid-2" style={{ gridTemplateColumns:'280px 1px 1fr', gap:'2.5rem' }}>
                     <div>
                       <span className="wz-label" style={{ marginBottom:'0.75rem', display:'block' }}>Institución</span>
                       <div className="wz-brand-list">
@@ -276,9 +276,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     </div>
                     
                     {/* Línea Divisoria Vertical */}
-                    <div style={{ width: '1px', background: '#e8ecf1', alignSelf: 'stretch', margin: '0.5rem 0' }} />
+                    <div style={{ width: '1px', background: '#cbd5e1', alignSelf: 'stretch', margin: '0.5rem 0' }} />
                     
-                    <div style={{ display:'flex', flexDirection:'column', gap:'1rem', justifyContent:'center' }}>
+                    <div style={{ display:'flex', flexDirection:'column', gap:'1rem', justifyContent:'center', maxWidth:'360px', width:'100%' }}>
                       <div className="wz-field">
                         <span className="wz-label">Documento de Identidad</span>
                         <input type="text" placeholder="DNI / Pasaporte / CE" value={formData.documento}
@@ -848,7 +848,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-brand-list { display:flex; flex-direction:column; gap:0.65rem; }
         .wz-brand-card {
           background:#09111e; border:2px solid transparent; border-radius:12px;
-          padding:0.75rem 1.25rem; display:flex; align-items:center; justify-content:center; gap:1rem;
+          padding:0.75rem 2.5rem; display:flex; align-items:center; justify-content:center; gap:1rem;
           cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           position:relative; overflow:hidden;
         }
@@ -882,7 +882,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-brand-card.ambos-card {
           background:linear-gradient(135deg, #080f1a 0%, #122137 100%);
           border:2px dashed rgba(255, 255, 255, 0.08);
-          padding:0.65rem 1.25rem;
+          padding:0.65rem 2.5rem;
         }
         .wz-brand-card.ambos-card:hover {
           border-color:rgba(56, 189, 248, 0.2);
