@@ -1,4 +1,3 @@
-import React from 'react';
 import logociip from '../assets/logociip.png';
 import logogeomina from '../assets/logogeomina.png';
 import logobiomedic from '../assets/logobiomedic.png';
@@ -181,16 +180,40 @@ export default function Logos() {
           }
           .logos-section .logo-grid {
             grid-template-columns: 1fr !important;
-            gap: 1.25rem !important;
+            gap: 0.9rem !important;
           }
           .logos-section .logos-card {
-            padding: 2rem 1.5rem !important;
+            padding: 1.5rem 1rem !important;
+            border-radius: 22px !important;
           }
           .logo-item-premium {
-            padding: 2rem 1.5rem 1.75rem !important;
+            min-height: 96px;
+            padding: 1.15rem 1rem !important;
+            border-radius: 18px !important;
           }
           .partner-logo-premium {
-            max-height: 52px !important;
+            max-height: 44px !important;
+            max-width: min(170px, 72vw);
+            margin-bottom: 0.8rem !important;
+          }
+          .logos-footer {
+            gap: 0.75rem !important;
+            margin-top: 1.5rem !important;
+          }
+          .logos-subtitle {
+            font-size: 0.62rem !important;
+            letter-spacing: 1.4px !important;
+            line-height: 1.45;
+          }
+        }
+
+        @media (max-width: 380px) {
+          .partner-logo-premium {
+            max-height: 38px !important;
+            max-width: 68vw;
+          }
+          .logo-item-premium {
+            min-height: 88px;
           }
         }
 

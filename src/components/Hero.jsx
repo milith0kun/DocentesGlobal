@@ -1,16 +1,8 @@
-import React from 'react';
 import mascot from '../assets/ciip-latam.png';
 
 export default function Hero({ onStartWizard }) {
-  const handleStart = () => {
-    const el = document.getElementById('filosofia');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
-    <section className="hero-section" style={{ textAlign: 'left', padding: '11rem 0 7rem' }}>
+    <section className="hero-section home-hero">
       {/* Animated gradient background with multiple glowing orbs */}
       <div className="hero-background">
         <div className="bg-glow glow-1" style={{
@@ -37,10 +29,7 @@ export default function Hero({ onStartWizard }) {
       </div>
 
       <div className="container hero-container">
-        <div style={{
-          display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: '4rem',
-          alignItems: 'center', minHeight: '480px'
-        }}>
+        <div className="home-hero-grid">
           {/* Left: Text Content */}
           <div className="hero-content" style={{ maxWidth: 'none', margin: 0 }}>
             <span className="hero-badge" style={{
@@ -52,11 +41,11 @@ export default function Hero({ onStartWizard }) {
               ✦ ESTÁNDAR OPERATIVO 2026
             </span>
             <h1 className="hero-title" style={{
-              fontSize: '4.2rem', lineHeight: 1.05, letterSpacing: '-3px',
+              fontSize: '4.2rem', lineHeight: 1.05, letterSpacing: 0,
               marginBottom: '2rem', fontFamily: 'var(--font-heading)'
             }}>
               Manual Digital{' '}
-              <br />
+              <br className="hero-title-break" />
               <span className="animated-gradient-text">
                 Docente de Excelencia
               </span>
@@ -75,7 +64,7 @@ export default function Hero({ onStartWizard }) {
               <button onClick={onStartWizard} className="btn-primary-hero-premium">
                 <span style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                   Comenzar Manual
-                  <span className="btn-arrow-premium">→</span>
+                  <span className="btn-arrow-premium">-&gt;</span>
                 </span>
                 <span className="btn-shine"></span>
               </button>
@@ -83,20 +72,17 @@ export default function Hero({ onStartWizard }) {
           </div>
 
           {/* Right: Mascot Illustration */}
-          <div style={{
-            display: 'flex', justifyContent: 'center', alignItems: 'center',
-            position: 'relative'
-          }}>
+          <div className="hero-visual">
             {/* Decorative ring behind mascot */}
-            <div style={{
-              position: 'absolute', width: '380px', height: '380px',
+            <div className="hero-visual-ring" style={{
+              position: 'absolute',
               borderRadius: '50%',
               background: 'conic-gradient(from 0deg, rgba(14,165,233,0.08), rgba(6,182,212,0.12), rgba(14,165,233,0.04), rgba(6,182,212,0.1), rgba(14,165,233,0.08))',
               animation: 'heroSpin 20s linear infinite'
             }} />
             {/* Glow behind mascot */}
-            <div style={{
-              position: 'absolute', width: '280px', height: '280px',
+            <div className="hero-visual-glow" style={{
+              position: 'absolute',
               borderRadius: '50%', filter: 'blur(60px)',
               background: 'radial-gradient(circle, rgba(14,165,233,0.2) 0%, rgba(6,182,212,0.1) 50%, transparent 70%)'
             }} />
@@ -121,8 +107,8 @@ export default function Hero({ onStartWizard }) {
             <img
               src={mascot}
               alt="Mascota CIIP Latam"
+              className="home-hero-mascot"
               style={{
-                width: '340px',
                 height: 'auto',
                 position: 'relative',
                 zIndex: 2,
@@ -136,6 +122,42 @@ export default function Hero({ onStartWizard }) {
 
       {/* Styles injected via style tag */}
        <style>{`
+        .home-hero {
+          text-align: left;
+          padding: clamp(6.25rem, 9vw, 10rem) 0 clamp(3.5rem, 7vw, 7rem) !important;
+        }
+
+        .home-hero-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+          gap: clamp(2rem, 5vw, 4rem);
+          align-items: center;
+          min-height: min(520px, calc(100svh - 7rem));
+        }
+
+        .hero-visual {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          min-height: clamp(260px, 38vw, 420px);
+          overflow: visible;
+        }
+
+        .hero-visual-ring {
+          width: clamp(220px, 32vw, 380px);
+          height: clamp(220px, 32vw, 380px);
+        }
+
+        .hero-visual-glow {
+          width: clamp(180px, 24vw, 280px);
+          height: clamp(180px, 24vw, 280px);
+        }
+
+        .home-hero-mascot {
+          width: clamp(220px, 29vw, 340px);
+        }
+
         .animated-gradient-text {
           background: linear-gradient(
             135deg, 
@@ -155,16 +177,29 @@ export default function Hero({ onStartWizard }) {
         .btn-primary-hero-premium {
           padding: 0.95rem 2.4rem;
           font-size: 0.98rem;
-          border-radius: 15px;
+          border-radius: 18px;
           border: none;
           cursor: pointer;
           position: relative;
           overflow: hidden;
           color: #fff;
-          font-weight: 700;
-          background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%);
-          box-shadow: 0 10px 24px -6px rgba(14,165,233,0.4);
+          font-weight: 850;
+          letter-spacing: 0;
+          background: linear-gradient(135deg, #075985 0%, #0284c7 46%, #06b6d4 100%);
+          box-shadow:
+            0 14px 28px -10px rgba(2, 132, 199, 0.68),
+            inset 0 1px 0 rgba(255, 255, 255, 0.24),
+            inset 0 -2px 0 rgba(3, 105, 161, 0.36);
           transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-primary-hero-premium::after {
+          content: '';
+          position: absolute;
+          inset: 1px;
+          border-radius: 17px;
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          pointer-events: none;
         }
 
         .btn-primary-hero-premium:hover {
@@ -173,6 +208,13 @@ export default function Hero({ onStartWizard }) {
             0 16px 36px -8px rgba(14, 165, 233, 0.5),
             0 0 0 1.5px rgba(14, 165, 233, 0.2) !important;
           background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+        }
+
+        .btn-primary-hero-premium:active {
+          transform: translateY(-1px) scale(0.99);
+          box-shadow:
+            0 9px 20px -10px rgba(2, 132, 199, 0.72),
+            inset 0 2px 8px rgba(7, 89, 133, 0.28);
         }
 
         .btn-primary-hero-premium:hover .btn-arrow-premium {
@@ -245,12 +287,13 @@ export default function Hero({ onStartWizard }) {
 
         @media (max-width: 992px) {
           .hero-section {
-            padding: 8rem 0 4rem !important;
+            padding: 7rem 0 3.5rem !important;
           }
           .hero-section .hero-container > div {
             grid-template-columns: 1fr !important;
             text-align: center;
-            gap: 4rem !important;
+            gap: 2.75rem !important;
+            min-height: auto;
           }
           .hero-section .hero-content {
             text-align: center;
@@ -263,7 +306,7 @@ export default function Hero({ onStartWizard }) {
           }
           .hero-section .hero-title {
             font-size: 3rem !important;
-            letter-spacing: -2px !important;
+            letter-spacing: 0 !important;
           }
           .hero-section .hero-subtitle {
             margin: 0 auto 3rem !important;
@@ -275,12 +318,17 @@ export default function Hero({ onStartWizard }) {
         }
 
         @media (max-width: 768px) {
-          .hero-section .hero-title {
-            font-size: 2.5rem !important;
-            letter-spacing: -1.5px !important;
+          .home-hero {
+            padding-top: 7rem !important;
+            padding-bottom: 2.25rem !important;
           }
-          .hero-section img[alt="Mascota CIIP Latam"] {
-            width: 260px !important;
+          .hero-section .hero-title {
+            font-size: clamp(2.15rem, 12vw, 2.8rem) !important;
+            letter-spacing: 0 !important;
+            margin-bottom: 1.25rem !important;
+          }
+          .hero-section .hero-badge {
+            display: none !important;
           }
           .mascot-shadow {
             width: 140px;
@@ -297,6 +345,75 @@ export default function Hero({ onStartWizard }) {
             width: 100%;
             justify-content: center;
             text-align: center;
+            min-height: 52px;
+          }
+          .btn-primary-hero-premium {
+            padding: 0.98rem 1.35rem;
+            font-size: 0.98rem;
+          }
+          .hero-title-break {
+            display: none;
+          }
+          .hero-section .hero-badge {
+            max-width: 100%;
+            white-space: normal;
+            line-height: 1.35;
+            letter-spacing: 1.5px !important;
+          }
+          .hero-section .hero-subtitle {
+            font-size: 1rem !important;
+            line-height: 1.65 !important;
+            margin-bottom: 1.75rem !important;
+          }
+          .hero-visual {
+            min-height: 170px;
+          }
+          .home-hero-mascot {
+            width: 180px;
+          }
+          .hero-visual-ring {
+            width: 190px;
+            height: 190px;
+          }
+          .hero-visual-glow {
+            width: 150px;
+            height: 150px;
+          }
+          .bg-glow {
+            transform: scale(0.65);
+          }
+        }
+
+        @media (max-width: 480px) {
+          .home-hero {
+            padding-top: 7.35rem !important;
+            padding-bottom: 1.75rem !important;
+          }
+          .hero-section .hero-container > div {
+            gap: 1rem !important;
+          }
+          .hero-visual {
+            display: flex;
+            min-height: 135px;
+            order: 2;
+            margin-top: 0.45rem;
+          }
+          .home-hero-mascot {
+            width: 142px;
+          }
+          .hero-visual-ring {
+            width: 156px;
+            height: 156px;
+          }
+          .hero-visual-glow {
+            width: 118px;
+            height: 118px;
+            filter: blur(34px) !important;
+          }
+          .mascot-shadow {
+            width: 92px;
+            height: 10px;
+            bottom: 1px;
           }
         }
 

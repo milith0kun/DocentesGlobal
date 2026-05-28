@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import logociip from '../assets/logociip.png';
+import { useState, useEffect } from 'react';
 import logobiomedic from '../assets/logobiomedic.png';
 import geominaWhite from '../assets/geomina-new.png';
 import biomedicWhite from '../assets/biomedic-white.png';
@@ -44,7 +43,7 @@ export default function Navbar() {
         .nav-container {
           max-width: 1240px;
           margin: 0 auto;
-          padding: 0 1.5rem;
+          padding: 0 clamp(0.75rem, 4vw, 1.5rem);
           display: flex;
           align-items: center;
           justify-content: center; /* Centrado absoluto de los logos para un diseño simétrico premium */
@@ -55,8 +54,10 @@ export default function Navbar() {
         .nav-logos-group {
           display: flex;
           align-items: center;
-          gap: 1.25rem;
+          justify-content: center;
+          gap: clamp(0.55rem, 3vw, 1.25rem);
           min-height: 44px;
+          width: 100%;
           flex-shrink: 0;
         }
 
@@ -68,8 +69,10 @@ export default function Navbar() {
 
         .nav-partner-logo {
           width: auto;
+          max-width: 28vw;
           object-fit: contain;
           opacity: 0.92;
+          flex: 0 1 auto;
           filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -120,10 +123,30 @@ export default function Navbar() {
         }
 
         @media (max-width: 768px) {
+          .premium-navbar { padding: 0.95rem 0; }
           .nav-partner-logo.logo-biomedic { height: 38px; }
           .nav-partner-logo.logo-geomina { height: 27px; }
           .nav-partner-logo.logo-ciip { height: 42px; }
           .nav-logo-sep { height: 24px; }
+        }
+
+        @media (max-width: 480px) {
+          .premium-navbar { padding: 0.75rem 0; }
+          .premium-navbar.scrolled { padding: 0.55rem 0; }
+          .nav-logos-group { gap: 0.5rem; min-width: 0; }
+          .nav-logo-sep { height: 20px; }
+          .nav-partner-logo.logo-biomedic,
+          .premium-navbar.scrolled .logo-biomedic { height: 30px; }
+          .nav-partner-logo.logo-geomina,
+          .premium-navbar.scrolled .logo-geomina { height: 21px; }
+          .nav-partner-logo.logo-ciip,
+          .premium-navbar.scrolled .logo-ciip { height: 34px; }
+        }
+
+        @media (max-width: 360px) {
+          .nav-logos-group { gap: 0.45rem; }
+          .nav-logo-sep { display: none; }
+          .nav-partner-logo { max-width: 30vw; }
         }
       `}</style>
 

@@ -70,7 +70,7 @@ export default function DocenteTop() {
         }}>
           {/* Decorative elements */}
           <div className="top-banner-overlay"></div>
-          <div style={{
+          <div className="top-sponsors-responsive" style={{
             position: 'absolute', top: '-80px', right: '-80px', width: '300px', height: '300px',
             background: 'radial-gradient(circle, rgba(251,191,36,0.1) 0%, transparent 70%)',
             borderRadius: '50%', pointerEvents: 'none', zIndex: 1
@@ -264,19 +264,19 @@ export default function DocenteTop() {
             <p style={{ textAlign: 'center', fontSize: '0.7rem', fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '1.5rem' }}>
               Con el respaldo de
             </p>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '3.5rem', flexWrap: 'wrap' }}>
-              <div style={{ opacity: 0.55, transition: 'all 0.3s ease', cursor: 'default' }}
+            <div className="top-sponsors-row" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '3.5rem', flexWrap: 'wrap' }}>
+              <div className="top-sponsor-logo-wrap" style={{ opacity: 0.55, transition: 'all 0.3s ease', cursor: 'default' }}
                 onMouseEnter={e => { e.currentTarget.style.opacity = '0.92'; e.currentTarget.style.transform = 'scale(1.04)'; }}
                 onMouseLeave={e => { e.currentTarget.style.opacity = '0.55'; e.currentTarget.style.transform = 'scale(1)'; }}
               >
-                <img src={geominaWhite} alt="Geomina" style={{ height: '30px', width: 'auto', objectFit: 'contain' }} />
+                <img className="top-sponsor-logo top-sponsor-geomina" src={geominaWhite} alt="Geomina" style={{ height: '30px', width: 'auto', objectFit: 'contain' }} />
               </div>
-              <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.1)' }} />
-              <div style={{ opacity: 0.55, transition: 'all 0.3s ease', cursor: 'default' }}
+              <div className="top-sponsor-sep" style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.1)' }} />
+              <div className="top-sponsor-logo-wrap" style={{ opacity: 0.55, transition: 'all 0.3s ease', cursor: 'default' }}
                 onMouseEnter={e => { e.currentTarget.style.opacity = '0.92'; e.currentTarget.style.transform = 'scale(1.04)'; }}
                 onMouseLeave={e => { e.currentTarget.style.opacity = '0.55'; e.currentTarget.style.transform = 'scale(1)'; }}
               >
-                <img src={biomedicWhite} alt="Biomedic" style={{ height: '30px', width: 'auto', objectFit: 'contain' }} />
+                <img className="top-sponsor-logo top-sponsor-biomedic" src={biomedicWhite} alt="Biomedic" style={{ height: '30px', width: 'auto', objectFit: 'contain' }} />
               </div>
             </div>
           </div>
@@ -303,6 +303,54 @@ export default function DocenteTop() {
           }
           .top-banner-card {
             padding: 3.5rem 2rem !important;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .top-sponsors-responsive {
+            margin-top: 2.5rem !important;
+            padding-top: 1.5rem !important;
+          }
+          .top-sponsors-row {
+            flex-wrap: nowrap !important;
+            gap: 1rem !important;
+            max-width: 18rem;
+            margin: 0 auto;
+          }
+          .top-sponsor-logo-wrap {
+            opacity: 0.9 !important;
+            flex: 0 1 auto;
+          }
+          .top-sponsor-logo {
+            width: auto !important;
+            object-fit: contain;
+            filter: brightness(1.25) contrast(1.05) drop-shadow(0 2px 8px rgba(56, 189, 248, 0.16));
+          }
+          .top-sponsor-geomina {
+            height: 19px !important;
+            max-width: 88px;
+          }
+          .top-sponsor-biomedic {
+            height: 24px !important;
+            max-width: 92px;
+          }
+          .top-sponsor-sep {
+            height: 18px !important;
+            background: rgba(255, 255, 255, 0.16) !important;
+          }
+        }
+
+        @media (max-width: 360px) {
+          .top-sponsors-row {
+            gap: 0.7rem !important;
+          }
+          .top-sponsor-geomina {
+            height: 17px !important;
+            max-width: 78px;
+          }
+          .top-sponsor-biomedic {
+            height: 22px !important;
+            max-width: 82px;
           }
         }
       `}</style>
