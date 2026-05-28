@@ -635,7 +635,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
         /* ── HEADER ── */
         .wz-header {
-          height:64px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between;
+          height:80px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between;
           padding:0 2rem; background:linear-gradient(135deg,#060e1a 0%,#0a1e35 100%); position:relative;
         }
         .wz-h-left, .wz-h-right { width:80px; display:flex; align-items:center; }
@@ -1083,7 +1083,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         @media (max-width:680px) {
           .wz { padding: 0.5rem; }
-          .wz-header { padding:0 0.5rem; }
+          .wz-header { padding:0 0.5rem; height: 60px; }
           .wz-logo { height:28px !important; }
           .wz-logo.lg-bio { height:26px !important; }
           .wz-main { padding:1.25rem 1rem; overflow-y:auto; border-radius:20px; }
