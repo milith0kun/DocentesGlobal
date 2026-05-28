@@ -6,1713 +6,865 @@ import geominaWhite from '../assets/geomina-new.png';
 import biomedicWhite from '../assets/biomedic-white.png';
 import metodoPractico from '../assets/metodo_practico.png';
 import ceroRelleno from '../assets/cero_relleno.png';
+import controlRitmo from '../assets/control_ritmo.png';
 
 export default function OnboardingWizard({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   const [step, setStep] = useState(1);
   const [isFinished, setIsFinished] = useState(false);
+  const [showPenaltyAlert, setShowPenaltyAlert] = useState(false);
+  const [activeProtocol, setActiveProtocol] = useState(0);
   const [generatedCode, setGeneratedCode] = useState('');
   const [formData, setFormData] = useState({
-    nombre: '',
-    correo: '',
-    marca: '', // 'ciip' | 'geomina' | 'biomedic'
+    nombre: '', correo: '', marca: '',
     aceptaMetodologia: false,
-    aceptaSabado: false,
-    aceptaDomingo: false,
-    aceptaLunes: false,
-    respuestaExamen: '',
-    respuestaCamara: '',
-    firma: ''
+    aceptaSabado: false, aceptaDomingo: false, aceptaLunes: false,
+    aceptaProtocolo: false, aceptaAsistencia: false, aceptaPrograma: false,
   });
 
-  const [errorCuestionario, setErrorCuestionario] = useState({
-    examen: false,
-    camara: false
-  });
-
-  const totalSteps = 6;
+  const totalSteps = 7;
 
   const marcaConfig = {
-    ciip: {
-      nombre: 'CIIP Latam',
-      color: '#0284c7', // Color azul corporativo
-      telefono: '51925084564',
-      bgGlow: 'rgba(2, 132, 199, 0.15)'
-    },
-    geomina: {
-      nombre: 'Geomina',
-      color: '#0ea5e9', // Color celeste corporativo
-      telefono: '51925084564',
-      bgGlow: 'rgba(14, 165, 233, 0.15)'
-    },
-    biomedic: {
-      nombre: 'Biomedic',
-      color: '#06b6d4', // Color cian corporativo
-      telefono: '51925084564',
-      bgGlow: 'rgba(6, 182, 212, 0.12)'
-    }
+    ciip: { nombre: 'CIIP Latam', color: '#0284c7', telefono: '51925084564', bgGlow: 'rgba(2,132,199,0.12)' },
+    geomina: { nombre: 'Geomina', color: '#0ea5e9', telefono: '51925084564', bgGlow: 'rgba(14,165,233,0.12)' },
+    biomedic: { nombre: 'Biomedic', color: '#06b6d4', telefono: '51925084564', bgGlow: 'rgba(6,182,212,0.1)' },
   };
 
   const handleNext = () => {
-    if (step === 1) {
-      if (!formData.nombre.trim() || !formData.correo.trim() || !formData.marca) {
-        return;
-      }
-    }
+    if (step === 1 && (!formData.nombre.trim() || !formData.correo.trim() || !formData.marca)) return;
     if (step === 2 && !formData.aceptaMetodologia) return;
     if (step === 3 && (!formData.aceptaSabado || !formData.aceptaDomingo || !formData.aceptaLunes)) return;
-
-    if (step === 4) {
-      const examenCorrecto = formData.respuestaExamen === 'lunes';
-      const camaraCorrecta = formData.respuestaCamara === 'obligatoria';
-      
-      setErrorCuestionario({
-        examen: !examenCorrecto,
-        camara: !camaraCorrecta
-      });
-
-      if (!examenCorrecto || !camaraCorrecta) {
-        return;
-      }
+    if (step === 3) {
+      setShowPenaltyAlert(true);
+      return;
     }
-
-    if (step === 5 && !formData.firma.trim()) return;
-
-    if (step < totalSteps) {
-      setStep(prev => prev + 1);
-    }
+    if (step === 4 && !formData.aceptaProtocolo) return;
+    if (step === 5 && !formData.aceptaAsistencia) return;
+    if (step === 6 && !formData.aceptaPrograma) return;
+    if (step < totalSteps) setStep(s => s + 1);
   };
 
-  const handleBack = () => {
-    if (step > 1) {
-      setStep(prev => prev - 1);
-      if (step === 4) {
-        setErrorCuestionario({ examen: false, camara: false });
-      }
-    }
-  };
+  const handleBack = () => { if (step > 1) setStep(s => s - 1); };
 
   const generateUniqueCode = () => {
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    const marcaLabel = formData.marca ? formData.marca.toUpperCase() : 'DOC';
-    return `MOD-${marcaLabel}-${code}`;
+    return `MOD-${(formData.marca || 'DOC').toUpperCase()}-${code}`;
   };
 
   const downloadCSV = (uniqueCode) => {
     const brandName = formData.marca ? marcaConfig[formData.marca].nombre : 'N/A';
-    
-    const headers = [
-      'Codigo Conformidad',
-      'Docente',
-      'Correo Electronico',
-      'Institucion',
-      'Acepto Metodologia',
-      'Hito Sabado 1:00 PM',
-      'Hito Domingo 1:00 PM',
-      'Hito Lunes 9:00 AM (Examen)',
-      'Firma Digital',
-      'Fecha Registro'
-    ];
-
-    const values = [
-      uniqueCode,
-      formData.nombre,
-      formData.correo,
-      brandName,
-      'Aceptado (100% Practico)',
-      'Confirmado (Material S1)',
-      'Confirmado (Material S2)',
-      'Confirmado (Examen & Caso)',
-      formData.firma,
-      new Date().toLocaleString()
-    ];
-
-    const csvContent = "\uFEFF" + [
-      headers.join(';'),
-      values.map(val => `"${val.replace(/"/g, '""')}"`).join(';')
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const headers = ['Codigo','Docente','Correo','Institucion','Metodologia','Sabado','Domingo','Lunes','Protocolo','Asistencia','Programa TOP','Fecha'];
+    const values = [uniqueCode,formData.nombre,formData.correo,brandName,'Aceptado','Confirmado','Confirmado','Confirmado','Aceptado','Aceptado','Aceptado',new Date().toLocaleString()];
+    const csv = "\uFEFF" + [headers.join(';'), values.map(v=>`"${v}"`).join(';')].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `Conformidad_${formData.nombre.replace(/\s+/g, '_')}_${brandName}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Conformidad_${formData.nombre.replace(/\s+/g,'_')}_${brandName}.csv`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
   };
 
   const handleFinish = () => {
-    const uniqueCode = generateUniqueCode();
-    const config = marcaConfig[formData.marca];
-
-    setGeneratedCode(uniqueCode);
-    downloadCSV(uniqueCode);
-
-    const textMsg = `*DECLARACIÓN DE CONFORMIDAD DOCENTE*
-
-*Código Único:* ${uniqueCode}
-*Docente:* ${formData.nombre}
-*Correo:* ${formData.correo}
-*Institución:* ${config.nombre}
-
-*Compromisos Aceptados:*
-✓ Metodología Doing by Learning (100% Práctico)
-✓ Entregas Sábado (Material S1 - Límite 1:00 PM)
-✓ Entregas Domingo (Material S2 - Límite 1:00 PM)
-✓ Entregas Lunes (Examen & Caso - Corte 9:00 AM)
-✓ Política de Cámara encendida y Fondo Virtual
-
-*Firma Digital:* ${formData.firma}
-*Fecha:* ${new Date().toLocaleDateString()}
-
-_Confirmo la aceptación total del Manual Digital Docente de Excelencia._`;
-
-    const whatsappUrl = `https://wa.me/${config.telefono}?text=${encodeURIComponent(textMsg)}`;
-    window.open(whatsappUrl, '_blank');
+    const code = generateUniqueCode();
+    const cfg = marcaConfig[formData.marca];
+    setGeneratedCode(code);
+    downloadCSV(code);
+    const msg = `*DECLARACIÓN DE CONFORMIDAD DOCENTE*\n\n*Código:* ${code}\n*Docente:* ${formData.nombre}\n*Correo:* ${formData.correo}\n*Institución:* ${cfg.nombre}\n\n"Confirmo que acepto el Manual Operativo del Docente. Comprendo la metodología práctica y los horarios de entrega innegociables: Sábado y Domingo 1:00 PM y Lunes 9:00 AM. Acepto el sistema de penalidades por inasistencias y autorizo el uso de mi firma digital para certificados."\n\n*Fecha:* ${new Date().toLocaleDateString()}`;
+    window.open(`https://wa.me/${cfg.telefono}?text=${encodeURIComponent(msg)}`, '_blank');
     setIsFinished(true);
   };
 
-  const handleResetAndClose = () => {
-    setFormData({
-      nombre: '',
-      correo: '',
-      marca: '',
-      aceptaMetodologia: false,
-      aceptaSabado: false,
-      aceptaDomingo: false,
-      aceptaLunes: false,
-      respuestaExamen: '',
-      respuestaCamara: '',
-      firma: ''
-    });
-    setStep(1);
-    setIsFinished(false);
-    setGeneratedCode('');
-    onClose();
+  const handleReset = () => {
+    setFormData({ nombre:'',correo:'',marca:'',aceptaMetodologia:false,aceptaSabado:false,aceptaDomingo:false,aceptaLunes:false,aceptaProtocolo:false,aceptaAsistencia:false,aceptaPrograma:false });
+    setStep(1); setIsFinished(false); setGeneratedCode(''); onClose();
   };
 
-  const renderProgress = () => {
-    const percentage = ((step - 1) / (totalSteps - 1)) * 100;
-    const activeColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
-    return (
-      <div className="wizard-progress-bar-container">
-        <div 
-          className="wizard-progress-bar-fill" 
-          style={{ 
-            width: `${percentage}%`, 
-            background: `linear-gradient(90deg, ${activeColor} 0%, #38bdf8 100%)`,
-            boxShadow: `0 0 10px ${activeColor}`
-          }} 
-        />
-      </div>
-    );
-  };
+  const brandColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
+  const brandGlow = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14,165,233,0.12)';
 
-  // Dynamic branding variables
-  const brandColorActive = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
-  const brandGlowActive = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14, 165, 233, 0.15)';
+  const stepWidths = { 1: '820px', 2: '680px', 3: '700px', 4: '940px', 5: '880px', 6: '900px', 7: '620px' };
 
   return (
-    <div className="wizard-backdrop" style={{ 
-      '--brand-color-active': brandColorActive,
-      '--brand-glow-active': brandGlowActive
-    }}>
-      {/* Ambient glowing orbs in background */}
-      <div className="wizard-bg-glow glow-1" />
-      <div className="wizard-bg-glow glow-2" />
-      <div className="wizard-bg-mesh" />
+    <div className="wz" style={{ '--bc': brandColor, '--bg': brandGlow }}>
+      {/* ── HEADER ── */}
+      <header className="wz-header">
+        <div className="wz-h-left">
+          {!isFinished && (
+            <button onClick={step > 1 ? handleBack : onClose} className="wz-back" aria-label="Atrás">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
+              </svg>
+            </button>
+          )}
+        </div>
+        <div className="wz-h-center">
+          {(() => {
+            const mkLogo = (key, src, cls, extraStyle) => (
+              <img key={key} src={src} alt={key} className={`wz-logo ${cls||''}`}
+                style={{ opacity: step===1 ? (!formData.marca ? 0.85 : formData.marca===key ? 1 : 0.2) : 1, ...extraStyle, transition:'all 0.4s ease' }} />
+            );
+            const ciip = mkLogo('ciip', biomedicWhite, 'lg-ciip');
+            const geo = mkLogo('geomina', geominaWhite, '');
+            const bio = mkLogo('biomedic', logobiomedic, 'lg-bio', { filter:'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' });
+            const sep = (k) => <div key={k} className="wz-sep" />;
+            if (step > 1) { return formData.marca === 'ciip' ? ciip : formData.marca === 'geomina' ? geo : bio; }
+            if (!formData.marca) return [ciip, sep('s1'), geo, sep('s2'), bio];
+            if (formData.marca === 'ciip') return [geo, sep('s1'), ciip, sep('s2'), bio];
+            if (formData.marca === 'geomina') return [ciip, sep('s1'), geo, sep('s2'), bio];
+            return [ciip, sep('s1'), bio, sep('s2'), geo];
+          })()}
+        </div>
+        <div className="wz-h-right">
+          {!isFinished ? (
+            <span className="wz-step-badge">{step}/{totalSteps}</span>
+          ) : (
+            <button onClick={handleReset} className="wz-back" style={{ borderRadius:10, width:'auto', padding:'0 1rem', fontSize:'0.8rem', fontWeight:800 }}>✕</button>
+          )}
+        </div>
+        {!isFinished && (
+          <div className="wz-progress"><div className="wz-progress-fill" style={{ width:`${((step-1)/(totalSteps-1))*100}%`, background: brandColor }} /></div>
+        )}
+      </header>
 
-      <div className="wizard-window">
-        {/* HEADER ADAPTATIVO DEL HOME (Logos unificados oscuros y separadores brillantes) */}
-        <header className="wizard-header">
-          <div className="wizard-header-left">
-            {!isFinished && (
-              <button 
-                onClick={step > 1 ? handleBack : onClose} 
-                className="wizard-back-btn" 
-                aria-label={step > 1 ? "Regresar al paso anterior" : "Cerrar e ir al Home"}
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="19" y1="12" x2="5" y2="12" />
-                  <polyline points="12 19 5 12 12 5" />
-                </svg>
-              </button>
-            )}
-          </div>
-          
-          <div className="wizard-header-center">
-            {/* Cabecera de logos unificados del Home */}
-            <div className="wizard-logos-row">
-              {(() => {
-                // Definición de los logos
-                const logoCiip = (
-                  <img 
-                    key="ciip"
-                    src={biomedicWhite} 
-                    alt="CIIP" 
-                    className="wizard-nav-logo logo-ciip" 
-                    style={{ 
-                      opacity: step === 1 
-                        ? (!formData.marca ? 0.85 : formData.marca === 'ciip' ? 1 : 0.22)
-                        : 1,
-                      transition: 'all 0.4s ease'
-                    }}
-                  />
-                );
+      {/* ── MAIN ── */}
+      <main className="wz-main">
+        <div className="wz-content" style={{ maxWidth: isFinished ? '480px' : stepWidths[step] }}>
 
-                const logoGeomina = (
-                  <img 
-                    key="geomina"
-                    src={geominaWhite} 
-                    alt="Geomina" 
-                    className="wizard-nav-logo" 
-                    style={{ 
-                      opacity: step === 1 
-                        ? (!formData.marca ? 0.85 : formData.marca === 'geomina' ? 1 : 0.22)
-                        : 1,
-                      transition: 'all 0.4s ease'
-                    }}
-                  />
-                );
-
-                const logoBiomedic = (
-                  <img 
-                    key="biomedic"
-                    src={logobiomedic} 
-                    alt="Biomedic" 
-                    className="wizard-nav-logo logo-biomedic" 
-                    style={{ 
-                      filter: 'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)',
-                      opacity: step === 1 
-                        ? (!formData.marca ? 0.95 : formData.marca === 'biomedic' ? 1 : 0.22)
-                        : 1,
-                      transition: 'all 0.4s ease'
-                    }}
-                  />
-                );
-
-                const divisor = (key) => <div key={key} className="wizard-logo-sep" />;
-
-                // Si estamos en pasos posteriores (2 a 6)
-                if (step > 1) {
-                  if (formData.marca === 'ciip') return logoCiip;
-                  if (formData.marca === 'geomina') return logoGeomina;
-                  if (formData.marca === 'biomedic') return logoBiomedic;
-                  return null;
-                }
-
-                // Si estamos en el Paso 1
-                if (!formData.marca) {
-                  // Orden original
-                  return [logoCiip, divisor('sep1'), logoGeomina, divisor('sep2'), logoBiomedic];
-                } else if (formData.marca === 'ciip') {
-                  // CIIP al centro, Geomina y Biomedic rotan a los lados
-                  return [logoGeomina, divisor('sep1'), logoCiip, divisor('sep2'), logoBiomedic];
-                } else if (formData.marca === 'geomina') {
-                  // Geomina al centro (ya lo está)
-                  return [logoCiip, divisor('sep1'), logoGeomina, divisor('sep2'), logoBiomedic];
-                } else if (formData.marca === 'biomedic') {
-                  // Biomedic al centro, CIIP y Geomina rotan a los lados
-                  return [logoCiip, divisor('sep1'), logoBiomedic, divisor('sep2'), logoGeomina];
-                }
-                return null;
-              })()}
+          {/* ═══ ÉXITO ═══ */}
+          {isFinished && (
+            <div className="wz-fade">
+              <div style={{ textAlign:'center' }}>
+                <div className="wz-success-icon">✓</div>
+                <h1 className="wz-title" style={{ textAlign:'center', fontSize:'1.8rem', marginBottom:'0.35rem' }}>¡Conformidad Registrada!</h1>
+                <p className="wz-sub" style={{ textAlign:'center', marginBottom:'1.5rem' }}>Tu declaración ha sido enviada por WhatsApp y descargada como CSV.</p>
+                <div className="wz-summary">
+                  <div className="wz-sum-row"><span>Código</span><strong style={{ color:'#22c55e' }}>{generatedCode}</strong></div>
+                  <div className="wz-sum-row"><span>Docente</span><strong>{formData.nombre}</strong></div>
+                  <div className="wz-sum-row"><span>Ecosistema</span><strong style={{ color: brandColor }}>{marcaConfig[formData.marca]?.nombre}</strong></div>
+                  <div className="wz-sum-row" style={{ borderBottom:'none' }}><span>Estado</span><strong style={{ color:'#22c55e' }}>Compromisos aceptados</strong></div>
+                </div>
+                <button onClick={handleReset} className="wz-btn-main" style={{ width:'100%', marginTop:'1.25rem' }}>Volver al Inicio</button>
+              </div>
             </div>
-          </div>
-          
-          <div className="wizard-header-right">
-            {!isFinished ? (
-              <span className="wizard-step-indicator">Paso {step} de {totalSteps}</span>
-            ) : (
-              <button onClick={handleResetAndClose} className="wizard-back-btn" aria-label="Cerrar manual" style={{ borderRadius: '12px', width: 'auto', padding: '0 1rem', fontSize: '0.85rem', fontWeight: '800' }}>
-                Cerrar ✕
-              </button>
-            )}
-          </div>
-          {!isFinished && renderProgress()}
-        </header>
+          )}
 
-        {/* WIZARD BODY (Tarjeta Glassmorphic Clara) */}
-        <div className="wizard-body">
-          <div className={`wizard-card-premium ${(step === 1 || step === 2) && !isFinished ? 'step-1-wide' : ''}`}>
-            <div className="wizard-card-content">
-
-              {/* PANTALLA DE ÉXITO FINAL */}
-              {isFinished ? (
-                <div className="step-pane animate-slide-up" style={{ textAlign: 'center' }}>
-                  <div className="wizard-illustration-wrapper">
-                    <div className="wizard-circle-glow" style={{ background: 'rgba(34, 197, 94, 0.15)' }} />
-                    <svg width="68" height="68" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'relative', zIndex: 2 }}>
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                      <polyline points="22 4 12 14.01 9 11.01" />
-                    </svg>
-                  </div>
-                  
-                  <h1 className="wizard-main-title" style={{ fontSize: '2.5rem', marginBottom: '0.5rem', color: '#0f172a' }}>¡Ficha Registrada!</h1>
-                  <p className="wizard-main-subtitle" style={{ marginBottom: '2rem', color: '#64748b' }}>
-                    Tu inducción operativa ha finalizado correctamente. Se ha generado la declaración de conformidad.
-                  </p>
-
-                  <div className="onboarding-summary-card" style={{ marginBottom: '2.5rem' }}>
-                    <div className="summary-row">
-                      <span className="summary-label">Código Único</span>
-                      <span className="summary-val" style={{ color: '#22c55e', fontSize: '1.1rem', letterSpacing: '0.5px' }}>{generatedCode}</span>
+          {!isFinished && (
+            <>
+              {/* ═══ PASO 1 ═══ */}
+              {step === 1 && (
+                <div className="wz-fade">
+                  <h2 className="wz-title">Información Docente</h2>
+                  <p className="wz-sub">Ingresa tus datos y selecciona tu institución.</p>
+                  <div className="wz-grid-2" style={{ gridTemplateColumns:'280px 1fr' }}>
+                    <div>
+                      <span className="wz-label" style={{ marginBottom:'0.75rem', display:'block' }}>Institución</span>
+                      <div className="wz-brand-list">
+                        {[
+                          { key:'ciip', logo:biomedicWhite, h:'42px' },
+                          { key:'geomina', logo:geominaWhite, h:'26px' },
+                          { key:'biomedic', logo:logobiomedic, h:'28px' },
+                        ].map(b => {
+                          const on = formData.marca === b.key;
+                          return (
+                            <div key={b.key} onClick={() => setFormData({...formData, marca:b.key})}
+                              className={`wz-brand-card ${on ? 'on' : ''}`}
+                              style={{ '--bc': marcaConfig[b.key].color }}>
+                              <div className={`wz-radio ${on?'on':''}`} />
+                              <img src={b.logo} alt={b.key} style={{
+                                height:b.h, objectFit:'contain',
+                                filter: b.key==='biomedic' ? 'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' : 'none',
+                                opacity: on ? 1 : 0.8, transition: 'opacity 0.2s'
+                              }} />
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                    <div className="summary-row">
-                      <span className="summary-label">Docente</span>
-                      <span className="summary-val">{formData.nombre}</span>
-                    </div>
-                    <div className="summary-row">
-                      <span className="summary-label">Ecosistema</span>
-                      <span className="summary-val" style={{ color: brandColorActive }}>
-                        {marcaConfig[formData.marca]?.nombre}
-                      </span>
-                    </div>
-                    <div className="summary-row" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-                      <span className="summary-label">Firma Digital</span>
-                      <span className="signature-font-mini">{formData.firma}</span>
+                    <div style={{ display:'flex', flexDirection:'column', gap:'1.25rem', justifyContent:'center' }}>
+                      <div className="wz-field">
+                        <span className="wz-label">Nombre y Apellido completo</span>
+                        <input type="text" placeholder="Ej. Juan Pérez" value={formData.nombre}
+                          onChange={e => setFormData({...formData, nombre:e.target.value})} className="wz-input" autoComplete="off" />
+                      </div>
+                      <div className="wz-field">
+                        <span className="wz-label">Correo Electrónico</span>
+                        <input type="email" placeholder="juan.perez@ejemplo.com" value={formData.correo}
+                          onChange={e => setFormData({...formData, correo:e.target.value})} className="wz-input" autoComplete="off" />
+                      </div>
                     </div>
                   </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <button
-                      onClick={handleResetAndClose}
-                      className="wizard-btn-primary"
-                      style={{ background: 'linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%)', width: '100%' }}
-                    >
-                      Volver al Inicio
-                    </button>
+                  <div className="wz-nav">
+                    <button onClick={onClose} className="wz-btn-ghost">Cancelar</button>
+                    <button onClick={handleNext} disabled={!formData.nombre.trim()||!formData.correo.trim()||!formData.marca} className="wz-btn-main">Continuar</button>
                   </div>
                 </div>
-              ) : (
-                <>
-                  {/* PASO 1: DATOS E INSTITUCIÓN */}
-                  {step === 1 && (
-                    <div className="step-pane animate-slide-up">
-                      <h2 className="step-title">Información Docente</h2>
-                      <p className="step-subtitle">Ingresa tus datos personales y selecciona la institución correspondiente.</p>
-
-                      <div className="wizard-step1-grid">
-                        {/* Lado Izquierdo: Selección de Marca */}
-                        <div className="wizard-step1-left">
-                          <label className="wizard-label" style={{ marginBottom: '0.85rem', display: 'block' }}>Institución Correspondiente</label>
-                          <div className="brand-selector-vertical">
-                            {[
-                              { key: 'ciip', logo: biomedicWhite, label: 'CIIP Latam', height: '46px' },
-                              { key: 'geomina', logo: geominaWhite, label: 'Geomina', height: '28px' },
-                              { key: 'biomedic', logo: logobiomedic, label: 'Biomedic', height: '32px' }
-                            ].map(brand => {
-                              const active = formData.marca === brand.key;
-                              const config = marcaConfig[brand.key];
-                              return (
-                                <div
-                                  key={brand.key}
-                                  onClick={() => setFormData({ ...formData, marca: brand.key })}
-                                  className={`brand-select-card-row ${active ? 'active' : ''}`}
-                                  style={{ '--brand-color-active': config.color }}
-                                >
-                                  <div className="brand-card-indicator">
-                                    <div className="brand-card-dot">
-                                      {active && (
-                                        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                                          <polyline points="20 6 9 17 4 12" />
-                                        </svg>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="brand-card-logo-container">
-                                    <img 
-                                      src={brand.logo} 
-                                      alt={brand.label} 
-                                      className={`brand-card-logo ${brand.key === 'biomedic' ? 'logo-biomedic' : ''}`}
-                                      style={{ 
-                                        height: brand.height,
-                                        filter: brand.key === 'biomedic' 
-                                          ? 'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' 
-                                          : 'none',
-                                        opacity: active ? 1 : 0.85,
-                                        transition: 'all 0.3s ease'
-                                      }}
-                                    />
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        {/* Lado Derecho: Formulario */}
-                        <div className="wizard-step1-right">
-                          <div className="wizard-form-group">
-                            <label className="wizard-label">Nombre y Apellido completo</label>
-                            <div className="input-with-icon-wrapper">
-                              <svg className="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                <circle cx="12" cy="7" r="4" />
-                              </svg>
-                              <input
-                                type="text"
-                                placeholder="Ej. Juan Pérez"
-                                value={formData.nombre}
-                                onChange={e => setFormData({ ...formData, nombre: e.target.value })}
-                                className="wizard-input-premium"
-                                autoComplete="off"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="wizard-form-group" style={{ marginBottom: '1rem' }}>
-                            <label className="wizard-label">Correo Electrónico</label>
-                            <div className="input-with-icon-wrapper">
-                              <svg className="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                                <polyline points="22,6 12,13 2,6" />
-                              </svg>
-                              <input
-                                type="email"
-                                placeholder="juan.perez@ejemplo.com"
-                                value={formData.correo}
-                                onChange={e => setFormData({ ...formData, correo: e.target.value })}
-                                className="wizard-input-premium"
-                                autoComplete="off"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="wizard-navigation-buttons" style={{ justifyContent: 'space-between', alignItems: 'center', marginTop: '2.5rem' }}>
-                        <button onClick={onClose} className="wizard-btn-secondary">
-                          Cancelar
-                        </button>
-                        <button
-                          onClick={handleNext}
-                          disabled={!formData.nombre.trim() || !formData.correo.trim() || !formData.marca}
-                          className="wizard-btn-primary"
-                        >
-                          Continuar
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* PASO 2: METODOLOGÍA */}
-                  {step === 2 && (
-                    <div className="step-pane animate-slide-up">
-                      <h2 className="step-title">Nuestra Metodología</h2>
-                      <p className="step-subtitle">Buscamos el aprendizaje práctico e interactivo para nuestros alumnos.</p>
-
-                      <div className="wizard-pillars-list">
-                        <div className="wizard-pillar-item">
-                          <div className="pillar-image-container">
-                            <img src={metodoPractico} alt="100% Práctico" className="pillar-img" />
-                          </div>
-                          <div className="pillar-text-content">
-                            <h4 className="pillar-title">100% Práctico</h4>
-                            <p className="pillar-desc">Prohibido el relleno teórico. Los estudiantes aprenden resolviendo casos reales directamente en software.</p>
-                          </div>
-                        </div>
-                        <div className="wizard-pillar-item">
-                          <div className="pillar-image-container">
-                            <img src={ceroRelleno} alt="Cero Relleno" className="pillar-img" />
-                          </div>
-                          <div className="pillar-text-content">
-                            <h4 className="pillar-title">Cero Relleno</h4>
-                            <p className="pillar-desc">Nada de videos extensos grabados o diapositivas con exceso de texto. Acción pura sobre el software.</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className={`checkbox-agreement-wrapper ${formData.aceptaMetodologia ? 'checked' : ''}`} onClick={() => setFormData({ ...formData, aceptaMetodologia: !formData.aceptaMetodologia })}>
-                        <div className={`custom-checkbox ${formData.aceptaMetodologia ? 'checked' : ''}`}>
-                          {formData.aceptaMetodologia && (
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                          )}
-                        </div>
-                        <span className="checkbox-label">He leído y comprendo la metodología Doing by Learning.</span>
-                      </div>
-
-                      <div className="wizard-navigation-buttons" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                        <button onClick={handleBack} className="wizard-btn-secondary">
-                          Atrás
-                        </button>
-                        <button
-                          onClick={handleNext}
-                          disabled={!formData.aceptaMetodologia}
-                          className="wizard-btn-primary"
-                        >
-                          Confirmar y Continuar
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* PASO 3: HORARIOS Y ENTREGAS */}
-                  {step === 3 && (
-                    <div className="step-pane animate-slide-up">
-                      <h2 className="step-title">Fechas de Corte</h2>
-                      <p className="step-subtitle">Los plazos de entrega del material son innegociables. Confirma cada hito.</p>
-
-                      <div className="wizard-switches-group">
-                        {[
-                          {
-                            key: 'aceptaSabado',
-                            title: 'Material Sesión 1 (Límite: Sábado 1:00 PM)',
-                            desc: 'Subida de diapositivas y guías del primer bloque a la carpeta compartida.'
-                          },
-                          {
-                            key: 'aceptaDomingo',
-                            title: 'Material Sesión 2 (Límite: Domingo 1:00 PM)',
-                            desc: 'Carga de guías, casos y recursos correspondientes al segundo bloque.'
-                          },
-                          {
-                            key: 'aceptaLunes',
-                            title: 'Evaluación Final (Corte: Lunes 9:00 AM)',
-                            desc: 'Subida del examen de 10 preguntas, caso práctico en PDF y solucionario.'
-                          }
-                        ].map(sw => (
-                          <div key={sw.key} className="switch-row-card" onClick={() => setFormData({ ...formData, [sw.key]: !formData[sw.key] })}>
-                            <div className="switch-text-col">
-                              <h4 className="switch-card-title">{sw.title}</h4>
-                              <p className="switch-card-desc">{sw.desc}</p>
-                            </div>
-                            <div className={`custom-switch ${formData[sw.key] ? 'on' : ''}`}>
-                              <div className="switch-knob" />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="wizard-navigation-buttons" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                        <button onClick={handleBack} className="wizard-btn-secondary">
-                          Atrás
-                        </button>
-                        <button
-                          onClick={handleNext}
-                          disabled={!formData.aceptaSabado || !formData.aceptaDomingo || !formData.aceptaLunes}
-                          className="wizard-btn-primary"
-                        >
-                          Aceptar Plazos
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* PASO 4: CUESTIONARIO */}
-                  {step === 4 && (
-                    <div className="step-pane animate-slide-up">
-                      <h2 className="step-title">Control de Calidad</h2>
-                      <p className="step-subtitle">Responde para certificar que todo el proceso operativo ha quedado claro.</p>
-
-                      <div className="cuestionario-form-group">
-                        <label className="wizard-label">1. ¿Cuál es el plazo límite para entregar el Examen Final?</label>
-                        <div className="options-stacked-list">
-                          {[
-                            { key: 'lunes', val: 'Lunes 9:00 AM (Con Solucionario y Caso)' },
-                            { key: 'sabado', val: 'Sábado 1:00 PM en aula' },
-                            { key: 'tarde', val: 'Al finalizar todo el dictado del módulo' }
-                          ].map(opt => (
-                            <div
-                              key={opt.key}
-                              onClick={() => setFormData({ ...formData, respuestaExamen: opt.key })}
-                              className={`option-choice-card ${formData.respuestaExamen === opt.key ? 'selected' : ''}`}
-                            >
-                              <div className="option-choice-circle" />
-                              <span className="option-choice-text">{opt.val}</span>
-                            </div>
-                          ))}
-                        </div>
-                        {errorCuestionario.examen && (
-                          <span className="wizard-validation-error">Respuesta incorrecta. Recuerda que los exámenes se evalúan el Lunes a las 9:00 AM.</span>
-                        )}
-                      </div>
-
-                      <div className="cuestionario-form-group" style={{ marginTop: '1.75rem' }}>
-                        <label className="wizard-label">2. ¿Cuál es la política de Imagen Personal en Cámara?</label>
-                        <div className="options-stacked-list">
-                          {[
-                            { key: 'obligatoria', val: 'Cámara encendida y uso obligatorio del Fondo Virtual de la marca' },
-                            { key: 'opcional', val: 'Opcional si el docente tiene mala iluminación' },
-                            { key: 'apagar', val: 'Apagada si comparte pantalla para mejor conexión' }
-                          ].map(opt => (
-                            <div
-                              key={opt.key}
-                              onClick={() => setFormData({ ...formData, respuestaCamara: opt.key })}
-                              className={`option-choice-card ${formData.respuestaCamara === opt.key ? 'selected' : ''}`}
-                            >
-                              <div className="option-choice-circle" />
-                              <span className="option-choice-text">{opt.val}</span>
-                            </div>
-                          ))}
-                        </div>
-                        {errorCuestionario.camara && (
-                          <span className="wizard-validation-error">Respuesta incorrecta. La cámara web debe estar encendida con fondo virtual oficial.</span>
-                        )}
-                      </div>
-
-                      <div className="wizard-navigation-buttons" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                        <button onClick={handleBack} className="wizard-btn-secondary">
-                          Atrás
-                        </button>
-                        <button
-                          onClick={handleNext}
-                          disabled={!formData.respuestaExamen || !formData.respuestaCamara}
-                          className="wizard-btn-primary"
-                        >
-                          Validar Respuestas
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* PASO 5: FIRMA DIGITAL */}
-                  {step === 5 && (
-                    <div className="step-pane animate-slide-up">
-                      <h2 className="step-title">Firma de Conformidad</h2>
-                      <p className="step-subtitle">Digita tu nombre completo para firmar electrónicamente la conformidad del manual.</p>
-
-                      <div className="wizard-form-group" style={{ marginBottom: '2rem' }}>
-                        <label className="wizard-label">Nombre del Firmante</label>
-                        <input
-                          type="text"
-                          placeholder="Escribe tu nombre para firmar"
-                          value={formData.firma}
-                          onChange={e => setFormData({ ...formData, firma: e.target.value })}
-                          className="wizard-input-premium"
-                          style={{ paddingLeft: '1.25rem' }}
-                          autoComplete="off"
-                        />
-                      </div>
-
-                      {formData.firma.trim() && (
-                        <div className="digital-signature-preview-box">
-                          <span className="signature-badge">Firma Digital Generada</span>
-                          <p className="signature-font">{formData.firma}</p>
-                          <span className="signature-hash">Verificación Electrónica Docente</span>
-                        </div>
-                      )}
-
-                      <div className="wizard-navigation-buttons" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                        <button onClick={handleBack} className="wizard-btn-secondary">
-                          Atrás
-                        </button>
-                        <button
-                          onClick={handleNext}
-                          disabled={!formData.firma.trim()}
-                          className="wizard-btn-primary"
-                        >
-                          Firmar y Continuar
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* PASO 6: RESUMEN Y ENVÍO */}
-                  {step === 6 && (
-                    <div className="step-pane animate-slide-up">
-                      <h2 className="step-title">Todo Listo</h2>
-                      <p className="step-subtitle">Tu ficha de inducción ha sido procesada de manera correcta. Completa el alta.</p>
-
-                      <div className="onboarding-summary-card">
-                        <div className="summary-row">
-                          <span className="summary-label">Docente</span>
-                          <span className="summary-val">{formData.nombre}</span>
-                        </div>
-                        <div className="summary-row">
-                          <span className="summary-label">Correo</span>
-                          <span className="summary-val">{formData.correo}</span>
-                        </div>
-                        <div className="summary-row">
-                          <span className="summary-label">Ecosistema</span>
-                          <span className="summary-val" style={{ color: brandColorActive, fontWeight: 700 }}>
-                            {marcaConfig[formData.marca]?.nombre}
-                          </span>
-                        </div>
-                        <div className="summary-row">
-                          <span className="summary-label">Compromisos</span>
-                          <span className="summary-val" style={{ color: '#22c55e', fontWeight: 700 }}>Aceptados y Verificados</span>
-                        </div>
-                        <div className="summary-row" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-                          <span className="summary-label">Firma Digital</span>
-                          <span className="signature-font-mini">{formData.firma}</span>
-                        </div>
-                      </div>
-
-                      <div className="wizard-navigation-buttons" style={{ display: 'flex', gap: '1rem', marginTop: '2.5rem' }}>
-                        <button onClick={handleBack} className="wizard-btn-secondary" style={{ flexShrink: 0, padding: '1.2rem 2rem' }}>
-                          Atrás
-                        </button>
-                        <button
-                          onClick={handleFinish}
-                          className="wizard-btn-primary"
-                          style={{ flexGrow: 1, padding: '1.2rem' }}
-                        >
-                          Confirmar, Descargar Excel & WhatsApp
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </>
               )}
 
-            </div>
+              {/* ═══ PASO 2: FILOSOFÍA ═══ */}
+              {step === 2 && (
+                <div className="wz-fade">
+                  <span className="wz-tag">Doing by Learning</span>
+                  <h2 className="wz-title">Nuestra Filosofía</h2>
+                  <p className="wz-sub" style={{ marginBottom: '2rem' }}>Transformamos carreras mediante habilidades prácticas. Este manual no es solo una guía, es el estándar de calidad que nos posiciona en Latinoamérica.</p>
+                  
+                  <div className="wz-principles-list">
+                    {[
+                      { n:'01', t:'100% Práctico', d:'Prohibido el relleno teórico. Cada concepto debe ser demostrado resolviendo casos reales directamente en software.' },
+                      { n:'02', t:'Cero Relleno', d:'Nada de videos largos ni PPTs con exceso de texto. Exigimos acción pura y directa sobre las herramientas.' },
+                      { n:'03', t:'Control de Ritmo', d:'El docente domina el tiempo. Los problemas técnicos individuales no pueden detener el aprendizaje de todo el grupo.' },
+                    ].map((p,i) => (
+                      <div key={i} className="wz-principle">
+                        <div className="wz-principle-num">{p.n}</div>
+                        <div className="wz-principle-text">
+                          <h4>{p.t}</h4>
+                          <p>{p.d}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className={`wz-check-row ${formData.aceptaMetodologia?'on':''}`} style={{ marginTop: '1.5rem' }} onClick={() => setFormData({...formData, aceptaMetodologia:!formData.aceptaMetodologia})}>
+                    <div className={`wz-checkbox ${formData.aceptaMetodologia?'on':''}`} />
+                    <span>He leído y comprendo firmemente la metodología Doing by Learning.</span>
+                  </div>
+                  <div className="wz-nav">
+                    <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
+                    <button onClick={handleNext} disabled={!formData.aceptaMetodologia} className="wz-btn-main">Confirmar</button>
+                  </div>
+                </div>
+              )}
+
+              {/* ═══ PASO 3: FECHAS DE CORTE ═══ */}
+              {step === 3 && (
+                <div className="wz-fade">
+                  <h2 className="wz-title">Fechas de Corte Innegociables</h2>
+                  <p className="wz-sub">La proactividad es tu mayor activo. No esperes recordatorios para realizar tus entregas.</p>
+                  
+                  <div className="wz-agenda">
+                    {[
+                      { key:'aceptaSabado', day:'Sábado', time:'1:00 PM', label:'Material Sesión 1', desc:'Diapositivas, guías y recursos para la clase del sábado.', color:'#0ea5e9' },
+                      { key:'aceptaDomingo', day:'Domingo', time:'1:00 PM', label:'Material Sesión 2', desc:'Diapositivas y guías de la clase dominical. Sin excepciones.', color:'#0284c7' },
+                      { key:'aceptaLunes', day:'Lunes', time:'9:00 AM', label:'Examen Final', desc:'10 preguntas de opción múltiple, caso práctico y resolución exacta.', color:'#7c3aed' },
+                    ].map((item,i) => {
+                      const on = formData[item.key];
+                      return (
+                        <div key={i} className={`wz-agenda-row ${on?'on':''}`} onClick={() => setFormData({...formData, [item.key]:!on})} style={{ '--tlc': item.color }}>
+                          <div className={`wz-agenda-check ${on?'on':''}`} />
+                          <div className="wz-agenda-time">
+                            <span className="wz-a-day">{item.day}</span>
+                            <span className="wz-a-hr" style={{ color: item.color }}>{item.time}</span>
+                          </div>
+                          <div className="wz-agenda-content">
+                            <h4 className="wz-a-label">{item.label}</h4>
+                            <p className="wz-a-desc">{item.desc}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="wz-alerts-group">
+                    <div className="wz-alert info">
+                      <strong>Drive institucional</strong>: Recibirás una notificación automática por correo cuando las carpetas de subida estén habilitadas.
+                    </div>
+                  </div>
+
+                  <div className="wz-nav">
+                    <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
+                    <button onClick={handleNext} disabled={!formData.aceptaSabado||!formData.aceptaDomingo||!formData.aceptaLunes} className="wz-btn-main">Aceptar Plazos</button>
+                  </div>
+                </div>
+              )}
+
+              {/* ═══ PASO 4: PROTOCOLO ═══ */}
+              {step === 4 && (
+                <div className="wz-fade">
+                  <h2 className="wz-title">Protocolo de Imagen & Comunicación</h2>
+                  <p className="wz-sub">Eres el rostro de nuestra marca para toda Latinoamérica. El profesionalismo digital no es opcional.</p>
+                  
+                  <div className="wz-protocol-split">
+                    {/* LADO IZQUIERDO: REGLAS */}
+                    <div className="wz-protocol-list-container">
+                      {[
+                        { title: 'Cámara y Fondo Virtual', desc: 'Cámara encendida toda la sesión con uso exclusivo del fondo institucional proporcionado.', req: true, imgStr: 'ejemplo-camara.jpg' },
+                        { title: 'Identidad Visual en PPTs', desc: 'Los logos de CIIP, Geomina o Biomedic deben estar presentes de forma obligatoria en cada material entregado.', req: true, imgStr: 'ejemplo-ppt.jpg' },
+                        { title: 'Canales Externos Prohibidos', desc: 'Queda estrictamente prohibido crear grupos paralelos de WhatsApp o Telegram con los alumnos.', req: false, imgStr: 'ejemplo-prohibido.jpg' },
+                      ].map((item, i) => (
+                        <div 
+                          key={i} 
+                          className={`wz-protocol-item ${activeProtocol === i ? 'active' : ''}`}
+                          onMouseEnter={() => setActiveProtocol(i)}
+                        >
+                          <div className="wz-pi-header">
+                            <h4 className="wz-pi-title">{item.title}</h4>
+                            <span className={`wz-cl-tag ${item.req ? 'req' : 'ban'}`}>{item.req ? 'Obligatorio' : 'Prohibido'}</span>
+                          </div>
+                          <p className="wz-pi-desc">{item.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* LADO DERECHO: IMAGEN DINÁMICA SEPARADA */}
+                    <div className="wz-protocol-image-container">
+                       {activeProtocol === 0 && <div className="wz-pi-placeholder fade-in"><span>[Imagen: ejemplo-camara.jpg]</span></div>}
+                       {activeProtocol === 1 && <div className="wz-pi-placeholder fade-in"><span>[Imagen: ejemplo-ppt.jpg]</span></div>}
+                       {activeProtocol === 2 && <div className="wz-pi-placeholder fade-in"><span>[Imagen: ejemplo-prohibido.jpg]</span></div>}
+                    </div>
+                  </div>
+
+                  <div className={`wz-check-row ${formData.aceptaProtocolo?'on':''}`} style={{ marginTop: '0.5rem' }} onClick={() => setFormData({...formData, aceptaProtocolo:!formData.aceptaProtocolo})}>
+                    <div className={`wz-checkbox ${formData.aceptaProtocolo?'on':''}`} />
+                    <span>He leído, comprendo y acepto el protocolo de imagen y comunicación.</span>
+                  </div>
+                  <div className="wz-nav">
+                    <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
+                    <button onClick={handleNext} disabled={!formData.aceptaProtocolo} className="wz-btn-main">Aceptar Protocolo</button>
+                  </div>
+                </div>
+              )}
+
+              {/* ═══ PASO 5: ASISTENCIA ═══ */}
+              {step === 5 && (
+                <div className="wz-fade">
+                  <h2 className="wz-title">Política de Asistencia</h2>
+                  <p className="wz-sub">Tu compromiso con el horario garantiza la excelencia del programa.</p>
+
+                  <div className="wz-metrics-grid">
+                    <div className="wz-metric-box">
+                      <div className="wz-metric-value">0</div>
+                      <div className="wz-metric-label">Reprogramaciones<br/>Personales</div>
+                    </div>
+                    
+                    <div className="wz-metric-box">
+                      <div className="wz-metric-value">4</div>
+                      <div className="wz-metric-label">Días de Aviso<br/>por Emergencia</div>
+                    </div>
+                    
+                    <div className="wz-metric-box danger">
+                      <div className="wz-metric-tag">Penalidad Grave</div>
+                      <div className="wz-metric-value">50%</div>
+                      <div className="wz-metric-label">de retención por más de 2<br/>inasistencias en 4 clases.</div>
+                    </div>
+                  </div>
+
+                  <div className={`wz-check-row ${formData.aceptaAsistencia?'on':''}`} onClick={() => setFormData({...formData, aceptaAsistencia:!formData.aceptaAsistencia})}>
+                    <div className={`wz-checkbox ${formData.aceptaAsistencia?'on':''}`} />
+                    <span>Acepto la política de asistencia y comprendo las penalidades.</span>
+                  </div>
+                  <div className="wz-nav">
+                    <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
+                    <button onClick={handleNext} disabled={!formData.aceptaAsistencia} className="wz-btn-main">Aceptar Política</button>
+                  </div>
+                </div>
+              )}
+
+              {/* ═══ PASO 6: PROGRAMA TOP ═══ */}
+              {step === 6 && (
+                <div className="wz-fade">
+                  <h2 className="wz-title">Programa Docente TOP</h2>
+                  <p className="wz-sub">Buscamos talentos, no solo expositores. Si demuestras excelencia, te abrimos las puertas a la categoría Élite.</p>
+                  
+                  <div className="wz-alert info" style={{ marginBottom: '2rem' }}>
+                    <strong>Sobre el Programa:</strong> [Espacio para explicar claramente los detalles de esta información. Puedes detallar aquí cómo se mide el NPS, o cualquier otro criterio importante que el docente deba entender a la perfección].
+                  </div>
+
+                  <div className="wz-elite-grid">
+                    {/* Tarjeta Oscura: Beneficios */}
+                    <div className="wz-elite-card benefits">
+                      <h3 className="wz-ec-title gold">Beneficios Exclusivos</h3>
+                      <ul className="wz-elite-list">
+                        <li>
+                          <div className="wz-elite-check">✓</div>
+                          <span>Incremento escalonado de tarifa por hora.</span>
+                        </li>
+                        <li>
+                          <div className="wz-elite-check">✓</div>
+                          <span>Asignación prioritaria de múltiples módulos.</span>
+                        </li>
+                        <li>
+                          <div className="wz-elite-check">✓</div>
+                          <span>Presencia de marca en podcasts y networking regional.</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* Tarjeta Clara: Requisitos */}
+                    <div className="wz-elite-card requirements">
+                      <h3 className="wz-ec-title">Objetivos de Calidad</h3>
+                      <div>
+                        <div className="wz-elite-metric">
+                          <span className="wz-em-label">Calificación Mínima (NPS)</span>
+                          <div className="wz-em-value">4.5<small>/5.0</small></div>
+                        </div>
+                        <div className="wz-elite-metric" style={{ marginBottom: 0 }}>
+                          <span className="wz-em-label">Asistencia Perfecta</span>
+                          <span className="wz-em-tag">Requerido</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={`wz-check-row ${formData.aceptaTop?'on':''}`} onClick={() => setFormData({...formData, aceptaTop:!formData.aceptaTop})}>
+                    <div className={`wz-checkbox ${formData.aceptaTop?'on':''}`} />
+                    <span>He leído las condiciones del Programa Docente TOP y los objetivos de calidad.</span>
+                  </div>
+                  <div className="wz-nav">
+                    <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
+                    <button onClick={handleNext} disabled={!formData.aceptaTop} className="wz-btn-main">Siguiente</button>
+                  </div>
+                </div>
+              )}
+
+              {/* ═══ PASO 7: DECLARACIÓN ═══ */}
+              {step === 7 && (
+                <div className="wz-fade">
+                  <h2 className="wz-title">Declaración de Conformidad</h2>
+                  <p className="wz-sub">Lee el texto de confirmación y envíalo por WhatsApp para finalizar.</p>
+                  <div className="wz-declaration">
+                    <p>"Confirmo que acepto el Manual Operativo del Docente. Comprendo la metodología práctica y los horarios de entrega innegociables: Sábado y Domingo 1:00 PM y Lunes 9:00 AM. Acepto el sistema de penalidades por inasistencias y autorizo el uso de mi firma digital para certificados."</p>
+                  </div>
+                  <div className="wz-summary">
+                    <div className="wz-sum-row"><span>Docente</span><strong>{formData.nombre}</strong></div>
+                    <div className="wz-sum-row"><span>Correo</span><strong>{formData.correo}</strong></div>
+                    <div className="wz-sum-row"><span>Ecosistema</span><strong style={{ color:brandColor }}>{marcaConfig[formData.marca]?.nombre}</strong></div>
+                    <div className="wz-sum-row" style={{ borderBottom:'none' }}><span>Compromisos</span><strong style={{ color:'#22c55e' }}>Todos Aceptados</strong></div>
+                  </div>
+                  <div className="wz-nav">
+                    <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
+                    <button onClick={handleFinish} className="wz-btn-wa">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                      Enviar por WhatsApp
+                    </button>
+                  </div>
+                  <p className="wz-footer">CIIP LATAM • GEOMINA • BIOMEDIC | © 2026</p>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </main>
+
+      {/* ═══ MODAL CONDICIÓN FULLSCREEN ═══ */}
+      {showPenaltyAlert && (
+        <div className="wz-modal-overlay">
+          <div className="wz-modal-content condition-modal">
+            <span className="wz-modal-tag">Término Innegociable</span>
+            <h3 className="wz-modal-title">Penalidad por Incumplimiento</h3>
+            <p className="wz-modal-desc">
+              Si la Dirección Académica se ve en la necesidad de <strong>solicitarte el material</strong> por falta de entrega a tiempo en los plazos que acabas de aceptar, se contabilizará automáticamente como una <strong>penalidad de desempeño</strong> en tu perfil. No existen recordatorios previos.
+            </p>
+            <button onClick={() => { setShowPenaltyAlert(false); setStep(4); }} className="wz-btn-firm">
+              Comprendo y Acepto la Condición
+            </button>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* STYLE INJECTED */}
+      {/* ═══ CSS ═══ */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Mrs+Saint+Delafield&display=swap');
-
-        .wizard-backdrop {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
-          background: #f0f9ff;
-          z-index: 2000;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-          color: #1e293b;
-          overflow: hidden;
-        }
-
-        /* Ambient glowing orbs */
-        .wizard-bg-glow {
-          position: absolute;
-          border-radius: 50%;
-          filter: blur(120px);
-          pointer-events: none;
-          z-index: 0;
-        }
-
-        .wizard-backdrop .glow-1 {
-          top: -15%;
-          left: 5%;
-          width: 550px;
-          height: 550px;
-          background: radial-gradient(circle, var(--brand-glow-active) 0%, rgba(255,255,255,0) 70%);
-          animation: wizardGlowPulse 10s ease-in-out infinite;
-        }
-
-        .wizard-backdrop .glow-2 {
-          bottom: -15%;
-          right: 5%;
-          width: 600px;
-          height: 600px;
-          background: radial-gradient(circle, var(--brand-glow-active) 0%, rgba(255,255,255,0) 70%);
-          animation: wizardGlowPulse 12s ease-in-out infinite reverse;
-        }
-
-        .wizard-bg-mesh {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-image: radial-gradient(circle at 1px 1px, rgba(14, 165, 233, 0.04) 1px, transparent 0);
-          background-size: 40px 40px;
-          pointer-events: none;
-          z-index: 0;
-        }
-
-        @keyframes wizardGlowPulse {
-          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
-          50% { transform: translate(15px, -10px) scale(1.08); opacity: 0.75; }
-        }
-
-        .wizard-window {
-          width: 100%;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          position: relative;
-          z-index: 1;
-        }
-
-        /* HEADER ADAPTADO DEL HOME (Logos unificados sobre fondo oscuro) */
-        .wizard-header {
-          height: 80px;
-          border-bottom: 1px solid rgba(56, 189, 248, 0.08);
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0 2.5rem;
-          position: relative;
-          background: linear-gradient(135deg, #060e1a 0%, #0a1e35 100%);
-          flex-shrink: 0;
-        }
-
-        .wizard-logos-row {
-          display: flex;
-          align-items: center;
-          gap: 1.25rem;
-        }
-
-        .wizard-logo-sep {
-          width: 1px;
-          height: 28px;
-          background: linear-gradient(to bottom, transparent, rgba(56, 189, 248, 0.25), transparent);
-        }
-
-        .wizard-nav-logo {
-          height: 48px;
-          width: auto;
-          object-fit: contain;
-          transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .wizard-nav-logo.logo-biomedic {
-          height: 47px;
-        }
-
-        .wizard-progress-bar-container {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 100%;
-          height: 3px;
-          background: rgba(255, 255, 255, 0.03);
-        }
-
-        .wizard-progress-bar-fill {
-          height: 100%;
-          transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .wizard-back-btn {
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          color: #94a3b8;
-          cursor: pointer;
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.25s ease;
-        }
-
-        .wizard-back-btn:hover {
-          background: rgba(56, 189, 248, 0.12);
-          border-color: rgba(56, 189, 248, 0.3);
-          color: #38bdf8;
-          box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
-        }
-
-        .wizard-step-indicator {
-          font-size: 0.8rem;
-          font-weight: 800;
-          color: var(--brand-color-active);
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          padding: 0.45rem 1.1rem;
-          border-radius: 50px;
-          letter-spacing: 0.5px;
-        }
-
-        /* BODY DEL WIZARD (Glassmorphism Claro) */
-        .wizard-body {
-          flex-grow: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 2rem;
-          overflow-y: auto;
-        }
-
-        .wizard-card-premium {
-          width: 100%;
-          max-width: 640px;
-          background: rgba(255, 255, 255, 0.76);
-          backdrop-filter: blur(24px);
-          -webkit-backdrop-filter: blur(24px);
-          border: 1px solid rgba(224, 242, 254, 0.8);
-          border-radius: 32px;
-          box-shadow: 
-            0 24px 48px -12px rgba(2, 132, 199, 0.08), 
-            0 4px 16px -2px rgba(2, 132, 199, 0.03);
-          overflow: hidden;
-          transition: max-width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .wizard-card-premium.step-1-wide {
-          max-width: 880px;
-        }
-
-        .wizard-card-content {
-          padding: 3rem 2.5rem;
-        }
-
-        /* TIPOGRAFÍAS DE PASO */
-        .step-title {
-          font-family: 'Outfit', sans-serif;
-          font-size: 2.1rem;
-          font-weight: 850;
-          letter-spacing: -1.2px;
-          color: #0f172a;
-          margin-bottom: 0.5rem;
-          text-align: left;
-        }
-
-        .step-subtitle {
-          font-size: 1.05rem;
-          color: #64748b;
-          line-height: 1.6;
-          margin-bottom: 2.5rem;
-          text-align: left;
-          font-weight: 500;
-        }
-
-        /* ILUSTRACIÓN PASO ÉXITO */
-        .wizard-illustration-wrapper {
-          position: relative;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 2rem;
-        }
-
-        .wizard-circle-glow {
-          position: absolute;
-          width: 110px;
-          height: 110px;
-          border-radius: 50%;
-          background: rgba(14, 165, 233, 0.08);
-          filter: blur(12px);
-        }
-
-        .wizard-main-title {
-          font-family: 'Outfit', sans-serif;
-          font-size: 3.1rem;
-          font-weight: 900;
-          letter-spacing: -2px;
-          color: #0f172a;
-          text-align: center;
-          margin-bottom: 1rem;
-        }
-
-        .wizard-main-subtitle {
-          font-size: 1.15rem;
-          color: #64748b;
-          line-height: 1.7;
-          text-align: center;
-          max-width: 480px;
-          margin: 0 auto;
-          font-weight: 500;
-        }
-
-        /* FORMULARIOS TEMA CLARO */
-        .wizard-form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 0.55rem;
-          margin-bottom: 1.5rem;
-          text-align: left;
-        }
-
-        .wizard-label {
-          font-size: 0.76rem;
-          font-weight: 800;
-          color: #64748b;
-          text-transform: uppercase;
-          letter-spacing: 1.5px;
-          transition: color 0.3s ease;
-        }
-
-        .wizard-form-group:focus-within .wizard-label {
-          color: var(--brand-color-active);
-        }
-
-        /* INPUTS CON ICONOS PREMIUM */
-        .input-with-icon-wrapper {
-          position: relative;
-          display: flex;
-          align-items: center;
-          width: 100%;
-        }
-
-        .input-icon {
-          position: absolute;
-          left: 1.15rem;
-          color: #94a3b8;
-          pointer-events: none;
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .wizard-input-premium {
-          width: 100%;
-          padding: 0.9rem 1.15rem 0.9rem 3.1rem;
-          border: 1.5px solid #e2e8f0;
-          border-radius: 14px;
-          font-size: 0.95rem;
-          font-family: inherit;
-          color: #0f172a;
-          outline: none;
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          background: rgba(248, 250, 252, 0.8);
-        }
-
-        .wizard-input-premium::placeholder {
-          color: #94a3b8;
-        }
-
-        .input-with-icon-wrapper:focus-within .input-icon {
-          color: var(--brand-color-active);
-          transform: scale(1.05) translateY(-1px);
-        }
-
-        .wizard-input-premium:focus {
-          background: #ffffff;
-          border-color: var(--brand-color-active);
-          box-shadow: 
-            0 0 0 4px var(--brand-glow-active),
-            0 10px 20px -6px rgba(14, 165, 233, 0.08);
-        }
-
-        /* GRID DE DOS COLUMNAS PASO 1 */
-        .wizard-step1-grid {
-          display: grid;
-          grid-template-columns: 290px 1fr;
-          gap: 2.5rem;
-          text-align: left;
-          margin-bottom: 0.5rem;
-          align-items: stretch;
-        }
-
-        .wizard-step1-left {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .wizard-step1-right {
-          display: flex;
-          flex-direction: column;
-          gap: 1.25rem;
-          justify-content: center;
-        }
-
-        /* SELECTOR DE MARCA VERTICAL CON FILAS OSCURAS */
-        .brand-selector-vertical {
-          display: flex;
-          flex-direction: column;
-          gap: 0.9rem;
-          width: 100%;
-          max-width: 290px;
-        }
-
-        .brand-select-card-row {
-          border: 1px solid rgba(56, 189, 248, 0.08);
-          border-radius: 16px;
-          padding: 0.75rem 1.15rem;
-          display: flex;
-          align-items: center;
-          gap: 1.25rem;
-          cursor: pointer;
-          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-          background: linear-gradient(135deg, #060e1a 0%, #0c1e35 100%);
-          position: relative;
-          overflow: hidden;
-          box-shadow: 0 4px 12px rgba(6, 14, 26, 0.08);
-        }
-
-        .brand-select-card-row::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
-          transform: translateX(-100%);
-          transition: transform 0.5s ease;
-        }
-
-        .brand-select-card-row:hover {
-          border-color: rgba(56, 189, 248, 0.25);
-          transform: translateY(-2px) scale(1.01);
-          box-shadow: 0 8px 20px rgba(6, 14, 26, 0.2);
-        }
-
-        .brand-select-card-row:hover::before {
-          transform: translateX(100%);
-        }
-
-        .brand-select-card-row.active {
-          border-color: var(--brand-color-active) !important;
-          background: linear-gradient(135deg, #060e1a 0%, #102542 100%);
-          box-shadow: 
-            0 0 0 1px var(--brand-color-active),
-            0 8px 24px -6px var(--brand-color-active);
-        }
-
-        .brand-card-indicator {
-          width: 18px;
-          height: 18px;
-          border: 2px solid rgba(255, 255, 255, 0.2);
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          background: rgba(255, 255, 255, 0.03);
-          flex-shrink: 0;
-        }
-
-        .brand-select-card-row:hover .brand-card-indicator {
-          border-color: rgba(255, 255, 255, 0.4);
-        }
-
-        .brand-select-card-row.active .brand-card-indicator {
-          border-color: var(--brand-color-active);
-          background: var(--brand-color-active);
-          box-shadow: 0 0 10px var(--brand-color-active);
-          transform: scale(1.05);
-        }
-
-        .brand-card-dot {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.25s ease;
-        }
-
-        .brand-select-card-row.active .brand-card-dot {
-          background: transparent;
-        }
-
-        .brand-card-logo-container {
-          flex-grow: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 48px;
-        }
-
-        .brand-card-logo {
-          max-height: 100%;
-          width: auto;
-          object-fit: contain;
-        }
-
-        .brand-card-logo.logo-biomedic {
-          height: 24px;
-        }
-
-        .brand-card-desc {
-          font-size: 0.78rem;
-          color: #64748b;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          transition: color 0.25s ease;
-        }
-
-        .brand-select-card.active .brand-card-desc {
-          color: #0f172a;
-          font-weight: 850;
-        }
-
-        /* PILARES DEL PASO 2 */
-        .wizard-pillars-list {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1.5rem;
-          margin-bottom: 2rem;
-          text-align: left;
-        }
-
-        .wizard-pillar-item {
-          display: flex;
-          flex-direction: column;
-          align-items: stretch;
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.72) 0%, rgba(248, 250, 252, 0.55) 100%);
-          border: 1px solid rgba(224, 242, 254, 0.85);
-          border-radius: 24px;
-          overflow: hidden;
-          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-          box-shadow: 0 4px 15px rgba(2, 132, 199, 0.02);
-        }
-
-        .wizard-pillar-item:hover {
-          transform: translateY(-5px);
-          border-color: var(--brand-color-active);
-          background: #ffffff;
-          box-shadow: 
-            0 16px 36px -12px var(--brand-glow-active),
-            0 4px 12px rgba(2, 132, 199, 0.02);
-        }
-
-        .pillar-text-content {
-          padding: 1.5rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-          flex: 1;
-        }
-
-        .pillar-image-container {
-          width: 100%;
-          height: 170px;
-          overflow: hidden;
-          flex-shrink: 0;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-          border-bottom: 1.5px solid rgba(224, 242, 254, 0.8);
-          background: #0f172a;
-          position: relative;
-          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .wizard-pillar-item:hover .pillar-image-container {
-          border-color: var(--brand-color-active);
-        }
-
-        .pillar-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .wizard-pillar-item:hover .pillar-img {
-          transform: scale(1.06);
-        }
-
-        .pillar-title {
-          font-family: 'Outfit', sans-serif;
-          font-size: 1.25rem;
-          font-weight: 850;
-          color: #0f172a;
-          margin: 0;
-          letter-spacing: -0.5px;
-        }
-
-        .pillar-desc {
-          font-size: 0.88rem;
-          color: #64748b;
-          line-height: 1.55;
-          margin: 0;
-          font-weight: 500;
-        }
-
-        /* CHECKBOXES Y SWITCHES */
-        .checkbox-agreement-wrapper {
-          display: flex;
-          align-items: center;
-          gap: 1.25rem;
-          cursor: pointer;
-          padding: 1.1rem 1.5rem;
-          text-align: left;
-          border-radius: 16px;
-          background: rgba(255, 255, 255, 0.4);
-          border: 1.5px dashed #e2e8f0;
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          margin-top: 0.5rem;
-        }
-
-        .checkbox-agreement-wrapper:hover {
-          border-color: #cbd5e1;
-          background: rgba(255, 255, 255, 0.7);
-        }
-
-        .checkbox-agreement-wrapper.checked {
-          border-color: var(--brand-color-active);
-          border-style: solid;
-          background: rgba(255, 255, 255, 0.95);
-          box-shadow: 
-            0 10px 24px -10px var(--brand-glow-active),
-            0 0 0 1px var(--brand-color-active);
-        }
-
-        .custom-checkbox {
-          width: 22px;
-          height: 22px;
-          border: 2px solid #cbd5e1;
-          border-radius: 6px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.25s ease;
-          flex-shrink: 0;
-          background: #ffffff;
-        }
-
-        .checkbox-agreement-wrapper:hover .custom-checkbox {
-          border-color: #94a3b8;
-        }
-
-        .custom-checkbox.checked {
-          background: var(--brand-color-active);
-          border-color: var(--brand-color-active);
-          box-shadow: 0 0 8px var(--brand-glow-active);
-        }
-
-        .checkbox-label {
-          font-size: 0.95rem;
-          font-weight: 600;
-          color: #334155;
-          user-select: none;
-          transition: color 0.25s ease;
-        }
-
-        .checkbox-agreement-wrapper.checked .checkbox-label {
-          color: #0f172a;
-          font-weight: 700;
-        }
-
-        .wizard-switches-group {
-          display: flex;
-          flex-direction: column;
-          gap: 1.15rem;
-          margin-bottom: 2rem;
-          text-align: left;
-        }
-
-        .switch-row-card {
-          background: rgba(255, 255, 255, 0.45);
-          border: 1px solid rgba(224, 242, 254, 0.5);
-          padding: 1.25rem 1.75rem;
-          border-radius: 20px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 1.5rem;
-          cursor: pointer;
-          transition: all 0.25s ease;
-        }
-
-        .switch-row-card:hover {
-          border-color: rgba(14, 165, 233, 0.25);
-          background: #ffffff;
-        }
-
-        .switch-card-title {
-          font-family: 'Outfit', sans-serif;
-          font-size: 1.05rem;
-          font-weight: 800;
-          color: #1e293b;
-          margin-bottom: 0.25rem;
-        }
-
-        .switch-card-desc {
-          font-size: 0.85rem;
-          color: #64748b;
-          margin: 0;
-          font-weight: 500;
-        }
-
-        .custom-switch {
-          width: 44px;
-          height: 24px;
-          background: #cbd5e1;
-          border-radius: 50px;
-          position: relative;
-          transition: background 0.3s ease;
-          flex-shrink: 0;
-        }
-
-        .custom-switch.on {
-          background: var(--brand-color-active);
-          box-shadow: 0 0 10px rgba(14, 165, 233, 0.2);
-        }
-
-        .switch-knob {
-          width: 18px;
-          height: 18px;
-          background: #ffffff;
-          border-radius: 50%;
-          position: absolute;
-          top: 3px;
-          left: 3px;
-          transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .custom-switch.on .switch-knob {
-          left: 23px;
-        }
-
-        /* CUESTIONARIO */
-        .cuestionario-form-group {
-          text-align: left;
-        }
-
-        .options-stacked-list {
-          display: flex;
-          flex-direction: column;
-          gap: 0.85rem;
-          margin-top: 0.85rem;
-        }
-
-        .option-choice-card {
-          border: 1px solid #e2e8f0;
-          border-radius: 16px;
-          padding: 1.1rem 1.35rem;
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          background: rgba(255, 255, 255, 0.45);
-        }
-
-        .option-choice-card:hover {
-          border-color: #cbd5e1;
-          background: #ffffff;
-        }
-
-        .option-choice-card.selected {
-          border-color: var(--brand-color-active) !important;
-          background: #ffffff;
-          box-shadow: 0 4px 15px -6px var(--brand-color-active);
-        }
-
-        .option-choice-circle {
-          width: 18px;
-          height: 18px;
-          border: 1.5px solid #cbd5e1;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.2s ease;
-          flex-shrink: 0;
-        }
-
-        .option-choice-card.selected .option-choice-circle {
-          border-color: var(--brand-color-active);
-          border-width: 5px;
-        }
-
-        .option-choice-text {
-          font-size: 0.95rem;
-          font-weight: 600;
-          color: #334155;
-        }
-
-        .wizard-validation-error {
-          display: block;
-          font-size: 0.8rem;
-          font-weight: 700;
-          color: #dc2626;
-          margin-top: 0.65rem;
-        }
-
-        /* FIRMA DIGITAL */
-        .digital-signature-preview-box {
-          border: 1px solid rgba(14, 165, 233, 0.15);
-          background: linear-gradient(135deg, rgba(14, 165, 233, 0.03) 0%, rgba(6, 182, 212, 0.02) 100%);
-          border-radius: 20px;
-          padding: 2.25rem 2rem;
-          text-align: center;
-          position: relative;
-        }
-
-        .signature-font {
-          font-family: 'Mrs Saint Delafield', 'Brush Script MT', cursive;
-          font-size: 4rem;
-          color: #0369a1;
-          margin: 0.5rem 0;
-          line-height: 1;
-        }
-
-        .signature-font-mini {
-          font-family: 'Mrs Saint Delafield', 'Brush Script MT', cursive;
-          font-size: 2.2rem;
-          color: #0369a1;
-          line-height: 1;
-        }
-
-        .signature-badge {
-          font-size: 0.68rem;
-          font-weight: 800;
-          color: #64748b;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          padding: 0.3rem 0.85rem;
-          border-radius: 50px;
-          display: inline-block;
-        }
-
-        .signature-hash {
-          font-size: 0.72rem;
-          font-weight: 700;
-          color: #94a3b8;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        /* RESUMEN FINAL */
-        .onboarding-summary-card {
-          background: rgba(255, 255, 255, 0.45);
-          border: 1px solid rgba(224, 242, 254, 0.5);
-          border-radius: 24px;
-          padding: 2rem 2.25rem;
-          text-align: left;
-        }
-
-        .summary-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1rem 0;
-          border-bottom: 1px solid rgba(224, 242, 254, 0.5);
-          font-size: 0.95rem;
-        }
-
-        .summary-label {
-          color: #64748b;
-          font-weight: 600;
-        }
-
-        .summary-val {
-          color: #0f172a;
-          font-weight: 750;
-        }
-
-        /* BOTONES DE ACCIÓN */
-        .wizard-navigation-buttons {
-          margin-top: 2.5rem;
-          display: flex;
-          justify-content: flex-end;
-        }
-
-        .wizard-btn-primary {
-          padding: 0.95rem 2.2rem;
-          font-size: 0.95rem;
-          font-weight: 750;
-          color: #ffffff;
-          background: var(--brand-color-active);
-          border: none;
-          border-radius: 14px;
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
-        }
-
-        .wizard-btn-primary:hover:not(:disabled) {
-          transform: translateY(-2px);
-          filter: brightness(1.05);
-          box-shadow: 0 8px 20px var(--brand-glow-active);
-        }
-
-        .wizard-btn-primary:disabled {
-          background: #e2e8f0 !important;
-          color: #94a3b8 !important;
-          cursor: not-allowed;
-          box-shadow: none !important;
-        }
-
-        .wizard-btn-secondary {
-          padding: 0.95rem 2.2rem;
-          font-size: 0.95rem;
-          font-weight: 750;
-          color: #64748b;
-          background: #f1f5f9;
-          border: none;
-          border-radius: 14px;
-          cursor: pointer;
-          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .wizard-btn-secondary:hover {
-          background: #e2e8f0;
-          color: #1e293b;
-          transform: translateY(-1px);
-        }
-
-        /* ANIMACIONES */
-        .animate-slide-up {
-          animation: slideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .animate-fade-in {
-          animation: fadeIn 0.4s ease forwards;
-        }
-
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(22px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        @media (max-width: 680px) {
-          .wizard-header {
-            padding: 0 1rem !important;
-          }
-          .wizard-logos-row {
-            gap: 0.75rem !important;
-          }
-          .wizard-nav-logo {
-            height: 32px !important;
-          }
-          .wizard-nav-logo.logo-biomedic {
-            height: 22px !important;
-          }
-          .wizard-body {
-            padding: 1.5rem 1rem !important;
-          }
-          .wizard-card-content {
-            padding: 2.25rem 1.5rem !important;
-          }
-          .step-title {
-            font-size: 1.8rem !important;
-          }
-          .wizard-card-premium.step-1-wide {
-            max-width: 100% !important;
-          }
-          .wizard-step1-grid {
-            grid-template-columns: 1fr !important;
-            gap: 1.5rem !important;
-          }
-          .wizard-step1-left {
-            gap: 1rem !important;
-          }
-          .brand-selector-vertical {
-            max-width: 100% !important;
-          }
-          .brand-select-card-row {
-            padding: 0.75rem 1rem !important;
-            gap: 1rem !important;
-          }
-          .brand-card-logo-container {
-            height: 38px !important;
-          }
-          .wizard-pillars-list {
-            grid-template-columns: 1fr !important;
-            gap: 1.25rem !important;
-          }
-          .wizard-pillar-item {
-            flex-direction: column !important;
-          }
-          .pillar-image-container {
-            height: 150px !important;
-          }
-          .pillar-text-content {
-            padding: 1.25rem !important;
-          }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        /* ── RESET & BASE ── */
+        .wz {
+          position:fixed; inset:0; z-index:2000;
+          background:#fafbfd;
+          font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+          color:#1e293b; display:flex; flex-direction:column;
+        }
+
+        /* ── HEADER ── */
+        .wz-header {
+          height:64px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between;
+          padding:0 2rem; background:linear-gradient(135deg,#060e1a 0%,#0a1e35 100%); position:relative;
+        }
+        .wz-h-left, .wz-h-right { width:80px; display:flex; align-items:center; }
+        .wz-h-right { justify-content:flex-end; }
+        .wz-h-center { display:flex; align-items:center; gap:1rem; }
+        .wz-logo { height:42px; width:auto; object-fit:contain; transition:all 0.4s ease; }
+        .wz-logo.lg-bio { height:40px; }
+        .wz-sep { width:1px; height:24px; background:linear-gradient(to bottom,transparent,rgba(56,189,248,0.2),transparent); }
+        .wz-back {
+          background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+          color:#94a3b8; cursor:pointer; width:38px; height:38px; border-radius:50%;
+          display:flex; align-items:center; justify-content:center; transition:all 0.2s;
+        }
+        .wz-back:hover { background:rgba(56,189,248,0.12); color:#38bdf8; border-color:rgba(56,189,248,0.3); }
+        .wz-step-badge {
+          font-size:0.72rem; font-weight:800; color:var(--bc);
+          background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+          padding:0.35rem 0.85rem; border-radius:50px; letter-spacing:0.5px;
+        }
+        .wz-progress { position:absolute; bottom:0; left:0; right:0; height:2px; background:rgba(255,255,255,0.04); }
+        .wz-progress-fill { height:100%; transition:width 0.4s cubic-bezier(0.16,1,0.3,1); }
+
+        /* ── MAIN AREA ── */
+        .wz-main {
+          flex:1; display:flex; align-items:center; justify-content:center;
+          padding:1.5rem 3rem; overflow:hidden;
+        }
+        .wz-content {
+          width:100%; transition:max-width 0.35s ease;
+        }
+
+        /* ── TYPOGRAPHY ── */
+        .wz-title {
+          font-family:'Outfit',sans-serif; font-size:1.65rem; font-weight:850;
+          letter-spacing:-0.8px; color:#0f172a; margin:0 0 0.35rem;
+        }
+        .wz-sub { font-size:0.9rem; color:#64748b; line-height:1.55; margin:0 0 1.5rem; font-weight:500; }
+        .wz-tag {
+          display:inline-block; font-size:0.65rem; font-weight:800; text-transform:uppercase;
+          letter-spacing:2px; color:var(--bc); background:var(--bg);
+          padding:0.3rem 0.85rem; border-radius:50px; margin-bottom:0.65rem;
+          border:1px solid rgba(14,165,233,0.1);
+        }
+        .wz-tag.gold { color:#b45309; background:rgba(245,158,11,0.08); border-color:rgba(245,158,11,0.15); }
+
+        /* ── LABELS & INPUTS ── */
+        .wz-label {
+          font-size:0.68rem; font-weight:800; color:#94a3b8;
+          text-transform:uppercase; letter-spacing:1.5px;
+        }
+        .wz-field { display:flex; flex-direction:column; gap:0.4rem; }
+        .wz-input {
+          width:100%; padding:0.75rem 1rem; border:1.5px solid #e8ecf1;
+          border-radius:10px; font-size:0.9rem; font-family:inherit;
+          color:#0f172a; outline:none; background:#fff; transition:all 0.2s;
+        }
+        .wz-input::placeholder { color:#b0b8c4; }
+        .wz-input:focus { border-color:var(--bc); box-shadow:0 0 0 3px var(--bg); }
+
+        /* ── BRAND SELECTOR (PASO 1) ── */
+        .wz-brand-list { display:flex; flex-direction:column; gap:0.65rem; }
+        .wz-brand-card {
+          background:#0b1526; border:1.5px solid rgba(255,255,255,0.06); border-radius:12px;
+          padding:0.65rem 1rem; display:flex; align-items:center; gap:1rem;
+          cursor:pointer; transition:all 0.25s;
+        }
+        .wz-brand-card:hover { border-color:rgba(56,189,248,0.2); }
+        .wz-brand-card.on { border-color:var(--bc); box-shadow:0 0 0 1px var(--bc); }
+        .wz-radio {
+          width:16px; height:16px; border:2px solid rgba(255,255,255,0.2);
+          border-radius:50%; flex-shrink:0; transition:all 0.2s; position:relative;
+        }
+        .wz-radio.on {
+          border-color:var(--bc); background:var(--bc);
+          box-shadow:inset 0 0 0 3px #0b1526;
+        }
+
+        /* ── PILARES (PASO 2 - MANIFIESTO TIPOGRÁFICO) ── */
+        .wz-principles-list { display:flex; flex-direction:column; gap:1.25rem; }
+        .wz-principle {
+          display:flex; align-items:flex-start; gap:1.5rem;
+          padding:1.5rem; border:1px solid #e8ecf1; border-radius:16px;
+          background:#fff; transition:all 0.3s ease; position:relative; overflow:hidden;
+        }
+        .wz-principle::before {
+          content:''; position:absolute; left:0; top:0; bottom:0; width:4px;
+          background:var(--bg); transition:background 0.3s;
+        }
+        .wz-principle:hover { border-color:var(--bc); transform:translateX(4px); box-shadow:0 12px 24px -12px rgba(0,0,0,0.06); }
+        .wz-principle:hover::before { background:var(--bc); }
+        .wz-principle-num {
+          font-family:'Outfit',sans-serif; font-size:2.5rem; font-weight:900;
+          color:var(--bg); line-height:0.8; letter-spacing:-2px;
+          transition:color 0.3s;
+        }
+        .wz-principle:hover .wz-principle-num { color:var(--bc); }
+        .wz-principle-text h4 {
+          font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:850;
+          color:#0f172a; margin:0 0 0.35rem; letter-spacing:-0.3px;
+        }
+        .wz-principle-text p {
+          font-size:0.88rem; color:#475569; line-height:1.55; margin:0; font-weight:500;
+        }
+
+        /* ── CHECKBOX ROW ── */
+        .wz-check-row {
+          display:flex; align-items:center; gap:0.85rem; cursor:pointer;
+          padding:0.85rem 1.1rem; border-radius:12px; margin-top:0.25rem;
+          border:1.5px dashed #dde3ea; transition:all 0.2s; user-select:none;
+        }
+        .wz-check-row:hover { border-color:#b0b8c4; background:rgba(255,255,255,0.6); }
+        .wz-check-row.on { border-color:var(--bc); border-style:solid; background:#fff; box-shadow:0 0 0 1px var(--bc); }
+        .wz-check-row span { font-size:0.88rem; font-weight:600; color:#334155; }
+        .wz-check-row.on span { color:#0f172a; font-weight:700; }
+        .wz-checkbox {
+          width:18px; height:18px; border:2px solid #cbd5e1; border-radius:5px;
+          flex-shrink:0; transition:all 0.2s; position:relative; background:#fff;
+        }
+        .wz-checkbox.on { background:var(--bc); border-color:var(--bc); }
+        .wz-checkbox.on::after {
+          content:''; position:absolute; top:2px; left:5px;
+          width:5px; height:9px; border:solid #fff; border-width:0 2px 2px 0;
+          transform:rotate(45deg);
+        }
+        .wz-checkbox.small { width:14px; height:14px; border-radius:4px; }
+        .wz-checkbox.small.on::after { top:1px; left:4px; width:4px; height:7px; border-width:0 1.5px 1.5px 0; }
+
+        /* ── AGENDA (PASO 3) ── */
+        .wz-agenda { display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1.5rem; }
+        .wz-agenda-row {
+          display:flex; align-items:flex-start; gap:1.25rem;
+          padding:1.25rem 1.5rem; border:1px solid #e8ecf1; border-radius:16px;
+          background:#fff; cursor:pointer; transition:all 0.3s ease; position:relative; overflow:hidden;
+        }
+        .wz-agenda-row:hover { border-color:#cbd5e1; background:rgba(248,250,252,0.6); }
+        .wz-agenda-row.on { border-color:var(--tlc); background:rgba(255,255,255,1); box-shadow:0 0 0 1px var(--tlc); }
+        .wz-agenda-row::before {
+          content:''; position:absolute; left:0; top:0; bottom:0; width:4px;
+          background:var(--tlc); opacity:0; transition:opacity 0.3s;
+        }
+        .wz-agenda-row.on::before { opacity:1; }
+        
+        .wz-agenda-check {
+          width:22px; height:22px; border:2px solid #cbd5e1; border-radius:6px;
+          flex-shrink:0; transition:all 0.2s; position:relative; background:#fff; margin-top:2px;
+        }
+        .wz-agenda-row:hover .wz-agenda-check { border-color:#94a3b8; }
+        .wz-agenda-check.on { background:var(--tlc); border-color:var(--tlc); }
+        .wz-agenda-check.on::after {
+          content:''; position:absolute; top:3px; left:6px;
+          width:6px; height:10px; border:solid #fff; border-width:0 2px 2px 0;
+          transform:rotate(45deg);
+        }
+
+        .wz-agenda-time { flex-shrink:0; width:90px; }
+        .wz-a-day { display:block; font-family:'Outfit',sans-serif; font-size:1.05rem; font-weight:850; color:#0f172a; margin-bottom:0.15rem; }
+        .wz-a-hr { display:block; font-size:0.75rem; font-weight:800; letter-spacing:0.5px; }
+
+        .wz-agenda-content { flex-grow:1; padding-left:1rem; border-left:1px solid #e8ecf1; }
+        .wz-agenda-row.on .wz-agenda-content { border-left-color:rgba(14,165,233,0.2); }
+        .wz-a-label { font-family:'Outfit',sans-serif; font-size:1rem; font-weight:800; color:#0f172a; margin:0 0 0.25rem; }
+        .wz-a-desc { font-size:0.82rem; color:#64748b; line-height:1.5; margin:0; font-weight:500; }
+
+        .wz-alerts-group { display:flex; flex-direction:column; gap:0.6rem; margin-bottom:1rem; }
+        .wz-alert { font-size:0.8rem; color:#475569; padding:0.85rem 1.15rem; border-radius:12px; line-height:1.5; }
+        .wz-alert strong { font-weight:800; }
+        .wz-alert.info { background:rgba(14,165,233,0.04); border:1px solid rgba(14,165,233,0.15); color:#0369a1; }
+        .wz-alert.info strong { color:#075985; }
+        .wz-alert.warn { background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); color:#92400e; }
+        .wz-alert.warn strong { color:#78350f; }
+
+        /* ── PROTOCOLO SPLIT (PASO 4) ── */
+        .wz-protocol-split { display:flex; gap:2.5rem; margin-bottom:1.5rem; align-items:stretch; }
+        .wz-protocol-list-container { flex:1; display:flex; flex-direction:column; gap:0.5rem; }
+        
+        .wz-protocol-item {
+          padding:1.5rem; border:1px solid transparent; border-radius:16px;
+          cursor:pointer; transition:all 0.3s ease; position:relative;
+        }
+        .wz-protocol-item::before {
+          content:''; position:absolute; left:0; top:1.5rem; bottom:1.5rem; width:4px;
+          background:transparent; border-radius:0 4px 4px 0; transition:background 0.3s;
+        }
+        .wz-protocol-item:hover { background:rgba(248,250,252,0.8); }
+        .wz-protocol-item.active { background:#fff; border-color:#e2e8f0; box-shadow:0 12px 24px -12px rgba(0,0,0,0.06); }
+        .wz-protocol-item.active::before { background:var(--bc); }
+        
+        .wz-pi-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:0.6rem; }
+        .wz-pi-title { font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:800; color:#0f172a; margin:0; }
+        .wz-pi-desc { font-size:0.9rem; color:#475569; line-height:1.55; margin:0; font-weight:500; }
+        
+        .wz-cl-tag { font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; padding:0.25rem 0.6rem; border-radius:6px; }
+        .wz-cl-tag.req { background:rgba(15,23,42,0.04); color:#334155; }
+        .wz-cl-tag.ban { background:rgba(220,38,38,0.06); color:#991b1b; }
+        
+        .wz-protocol-image-container {
+          width:420px; flex-shrink:0; background:#f8fafc; border-radius:24px;
+          border:1px solid #e2e8f0; overflow:hidden; position:relative;
+          display:flex; align-items:center; justify-content:center;
+        }
+        .wz-pi-placeholder {
+          width:100%; height:100%; min-height:340px; display:flex; align-items:center; justify-content:center;
+          color:#64748b; font-size:0.9rem; font-weight:700; font-family:'Outfit',sans-serif; text-align:center; padding:2rem;
+          background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+          background-size: 20px 20px;
+        }
+        
+        /* ── MÉTRICAS (PASO 5) ── */
+        .wz-metrics-grid {
+          display:grid; grid-template-columns:1fr 1fr 1.6fr; gap:1.5rem; margin-bottom:1.5rem;
+        }
+        .wz-metric-box {
+          background:#fff; border:1px solid #e8ecf1; border-radius:24px;
+          padding:2.5rem 1.5rem; display:flex; flex-direction:column; align-items:center; justify-content:center;
+          text-align:center; transition:all 0.3s ease; position:relative; overflow:hidden;
+        }
+        .wz-metric-box:hover { border-color:#cbd5e1; box-shadow:0 12px 32px -12px rgba(0,0,0,0.06); transform:translateY(-2px); }
+        .wz-metric-value {
+          font-family:'Outfit',sans-serif; font-size:4.8rem; font-weight:900; line-height:1;
+          color:var(--bc); margin-bottom:0.75rem; letter-spacing:-2.5px;
+        }
+        .wz-metric-label { font-size:0.95rem; color:#475569; font-weight:700; line-height:1.4; }
+        
+        .wz-metric-box.danger { background:rgba(239,68,68,0.02); border-color:rgba(239,68,68,0.15); }
+        .wz-metric-box.danger .wz-metric-value { color:#dc2626; font-size:4.2rem; }
+        .wz-metric-box.danger .wz-metric-label { color:#991b1b; }
+        .wz-metric-tag {
+          position:absolute; top:1.25rem; background:rgba(239,68,68,0.1); color:#dc2626;
+          font-size:0.65rem; font-weight:800; text-transform:uppercase; padding:0.35rem 0.7rem;
+          border-radius:6px; letter-spacing:1px;
+        }
+        
+        .fade-in { animation:fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity:0; transform:scale(0.98); } to { opacity:1; transform:scale(1); } }
+
+
+        /* ── DECLARACIÓN (PASO 7) ── */
+        .wz-declaration {
+          border:1px solid #e2e8f0; border-radius:14px; padding:1.25rem 1.5rem;
+          margin-bottom:1rem; position:relative;
+        }
+        .wz-declaration::before {
+          content:'"'; position:absolute; top:4px; left:12px;
+          font-family:'Outfit',serif; font-size:3rem; color:rgba(14,165,233,0.1);
+          line-height:1; pointer-events:none;
+        }
+        .wz-declaration p {
+          font-size:0.88rem; color:#334155; line-height:1.65; margin:0;
+          font-style:italic; padding-left:0.25rem;
+        }
+        .wz-summary {
+          border:1px solid #e8ecf1; border-radius:12px; padding:0.75rem 1.15rem; margin-bottom:0.5rem;
+        }
+        .wz-sum-row {
+          display:flex; justify-content:space-between; align-items:center;
+          padding:0.55rem 0; border-bottom:1px solid #f1f5f9; font-size:0.85rem;
+        }
+        .wz-sum-row span { color:#94a3b8; font-weight:500; }
+        .wz-sum-row strong { color:#0f172a; font-weight:700; }
+
+        .wz-footer {
+          text-align:center; font-size:0.65rem; font-weight:700; color:#b0b8c4;
+          margin-top:1.25rem; letter-spacing:0.5px; text-transform:uppercase;
+        }
+
+        .wz-success-icon {
+          width:56px; height:56px; border-radius:50%; margin:0 auto 1rem;
+          background:rgba(34,197,94,0.08); color:#22c55e;
+          display:flex; align-items:center; justify-content:center;
+          font-size:1.5rem; font-weight:900; border:2px solid rgba(34,197,94,0.2);
+        }
+
+        /* ── BUTTONS ── */
+        .wz-nav { display:flex; justify-content:space-between; align-items:center; margin-top:1.25rem; }
+        .wz-btn-main {
+          padding:0.7rem 1.8rem; font-size:0.88rem; font-weight:750; color:#fff;
+          background:var(--bc); border:none; border-radius:10px; cursor:pointer;
+          transition:all 0.2s; font-family:inherit;
+        }
+        .wz-btn-main:hover:not(:disabled) { filter:brightness(1.08); transform:translateY(-1px); }
+        .wz-btn-main:disabled { background:#e2e8f0 !important; color:#94a3b8 !important; cursor:not-allowed; }
+        .wz-btn-ghost {
+          padding:0.7rem 1.8rem; font-size:0.88rem; font-weight:700; color:#64748b;
+          background:#f1f5f9; border:none; border-radius:10px; cursor:pointer;
+          transition:all 0.2s; font-family:inherit;
+        }
+        .wz-btn-ghost:hover { background:#e2e8f0; color:#1e293b; }
+        .wz-btn-wa {
+          padding:0.7rem 1.8rem; font-size:0.88rem; font-weight:750; color:#fff;
+          background:linear-gradient(135deg,#25d366,#128c7e); border:none; border-radius:10px;
+          cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:0.5rem;
+          font-family:inherit;
+        }
+        .wz-btn-wa:hover { filter:brightness(1.08); transform:translateY(-1px); }
+
+        /* ── MODAL OVERLAY ── */
+        .wz-modal-overlay {
+          position:fixed; inset:0; background:rgba(15,23,42,0.85); backdrop-filter:blur(8px);
+          z-index:3000; display:flex; align-items:center; justify-content:center; padding:1.5rem;
+          animation:wzFade 0.3s ease;
+        }
+        .wz-modal-content {
+          background:#fff; border-radius:24px; padding:3.5rem 3rem; max-width:520px; width:100%;
+          text-align:left; box-shadow:0 24px 48px -12px rgba(0,0,0,0.4); border:1px solid #e2e8f0;
+          transform:scale(0.95); animation:modalPop 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        @keyframes modalPop { to { transform:scale(1); } }
+        
+        .wz-modal-tag {
+          display:inline-block; font-size:0.7rem; font-weight:800; color:#b45309; text-transform:uppercase;
+          letter-spacing:1.5px; background:rgba(245,158,11,0.08); padding:0.4rem 1rem;
+          border-radius:50px; margin-bottom:1.5rem;
+        }
+        .wz-modal-title { font-family:'Outfit',sans-serif; font-size:2.2rem; font-weight:900; color:#0f172a; margin:0 0 1.25rem; letter-spacing:-1px; line-height:1.1; }
+        .wz-modal-desc { font-size:1.05rem; color:#475569; line-height:1.65; margin:0 0 2.5rem; font-weight:500; }
+        .wz-modal-desc strong { font-weight:800; color:#0f172a; }
+        
+        .wz-btn-firm {
+          padding:1.1rem 2rem; font-size:1rem; font-weight:800; color:#fff; width:100%;
+          background:#0f172a; border:none; border-radius:14px; cursor:pointer;
+          box-shadow:0 8px 24px -8px rgba(15,23,42,0.4); transition:all 0.3s cubic-bezier(0.16,1,0.3,1); font-family:inherit;
+        }
+        .wz-btn-firm:hover { transform:translateY(-2px); box-shadow:0 12px 32px -8px rgba(15,23,42,0.5); background:#1e293b; }
+
+        /* ── ANIMATION ── */
+        .wz-fade { animation:wzFade 0.4s ease both; }
+        @keyframes wzFade {
+          from { opacity:0; transform:translateY(12px); }
+          to { opacity:1; transform:translateY(0); }
+        }
+
+        /* ── GRID HELPER ── */
+        .wz-grid-2 { display:grid; gap:2rem; margin-bottom:0.5rem; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width:960px) {
+          .wz { padding: 1rem; }
+        }
+        @media (max-width:860px) {
+          .wz-main { padding:1.5rem 2rem; }
+          .wz-protocol-split { flex-direction:column; gap:1.5rem; }
+          .wz-protocol-image-container { width:100%; height:260px; min-height:260px; }
+          .wz-pi-placeholder { min-height:260px; }
+          .wz-metrics-grid { grid-template-columns:1fr 1fr !important; }
+          .wz-metric-box.danger { grid-column:span 2; }
+          .wz-elite-grid { grid-template-columns:1fr; gap:1.5rem; }
+        }
+        @media (max-width:680px) {
+          .wz { padding: 0.5rem; }
+          .wz-header { padding:0 0.5rem; }
+          .wz-logo { height:28px !important; }
+          .wz-logo.lg-bio { height:26px !important; }
+          .wz-main { padding:1.25rem 1rem; overflow-y:auto; border-radius:20px; }
+          
+          .wz-title { font-size:1.5rem !important; margin-bottom:0.5rem; }
+          .wz-sub { font-size:0.85rem !important; margin-bottom:1.25rem !important; }
+          .wz-grid-2 { grid-template-columns:1fr !important; gap:1rem !important; }
+          
+          .wz-principle { flex-direction:column; gap:0.85rem; padding:1.25rem; }
+          .wz-principle-n { font-size:1.8rem; }
+          .wz-principle h3 { font-size:1.15rem; }
+          
+          .wz-agenda-row { flex-direction:column; gap:0.85rem; padding:1.25rem; }
+          .wz-agenda-content { padding-left:0; border-left:none; padding-top:0.75rem; border-top:1px solid #e8ecf1; width:100%; }
+          .wz-agenda-row.on .wz-agenda-content { border-top-color:rgba(14,165,233,0.2); }
+          
+          .wz-metrics-grid { grid-template-columns:1fr !important; gap:1rem; }
+          .wz-metric-box.danger { grid-column:span 1; }
+          .wz-metric-box { padding:1.5rem 1.25rem; border-radius:20px; }
+          .wz-metric-value { font-size:3.5rem; }
+          .wz-metric-box.danger .wz-metric-value { font-size:3.2rem; }
+
+          .wz-elite-card { padding:1.5rem; border-radius:20px; }
+          .wz-em-value { font-size:3.2rem; }
+          .wz-em-value small { font-size:1.2rem; }
+          .wz-ec-title { font-size:1.15rem; margin-bottom:1.25rem; }
+
+          .wz-nav { flex-direction:column-reverse; gap:0.5rem; margin-top:1.5rem; }
+          .wz-btn-main, .wz-btn-ghost, .wz-btn-wa { width:100%; text-align:center; justify-content:center; padding:1rem; }
+          
+          .wz-modal-box { width:95%; padding:1.5rem; border-radius:24px; }
+          .wz-modal-title { font-size:1.8rem; }
         }
       `}</style>
-      {/* SVG filter to remove black backgrounds from inverted logos */}
-      <svg style={{ position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }} width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg">
+
+      <svg style={{ position:'absolute', width:0, height:0, pointerEvents:'none' }}>
         <defs>
           <filter id="remove-black">
-            <feColorMatrix type="matrix" values="
-              1 0 0 0 0
-              0 1 0 0 0
-              0 0 1 0 0
-              1 1 1 0 0
-            "/>
+            <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 1 1 1 0 0" />
           </filter>
         </defs>
       </svg>
