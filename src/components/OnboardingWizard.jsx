@@ -16,6 +16,43 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const [showPenaltyAlert, setShowPenaltyAlert] = useState(false);
   const [activeProtocol, setActiveProtocol] = useState(0);
   const [generatedCode, setGeneratedCode] = useState('');
+  const [loadingDni, setLoadingDni] = useState(false);
+
+  const consultarDNI = async (dniVal) => {
+    if (!/^\d{8}$/.test(dniVal)) return;
+    setLoadingDni(true);
+    try {
+      const response = await fetch('https://apiperu.dev/api/dni', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer 2d89ff1a7c2e0936030c05b608ee7e55565db844441231b9532714562a41d026'
+        },
+        body: JSON.stringify({ dni: dniVal })
+      });
+      const resData = await response.json();
+      if (resData.success && resData.data) {
+        let nombre = resData.data.nombre_completo;
+        if (nombre && nombre.includes(',')) {
+          const parts = nombre.split(',');
+          nombre = `${parts[1].trim()} ${parts[0].trim()}`;
+        }
+        if (nombre) {
+          nombre = nombre
+            .toLowerCase()
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+        }
+        setFormData(prev => ({ ...prev, nombre: nombre || '' }));
+      }
+    } catch (error) {
+      console.error('Error al consultar DNI:', error);
+    } finally {
+      setLoadingDni(false);
+    }
+  };
   const [formData, setFormData] = useState({
     nombre: '', correo: '', marca: '', documento: '', fechaNacimiento: '',
     aceptaMetodologia: false,
@@ -223,8 +260,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     <div style={{ display:'flex', flexDirection:'column', gap:'1rem', justifyContent:'center' }}>
                       <div className="wz-field">
                         <span className="wz-label">Nombre completo</span>
-                        <input type="text" placeholder="Ej. Juan Pérez" value={formData.nombre}
-                          onChange={e => setFormData({...formData, nombre:e.target.value})} className="wz-input" autoComplete="off" />
+                        <div style={{ position: 'relative' }}>
+                          <input type="text" placeholder={loadingDni ? "Buscando nombre en RENIEC..." : "Ej. Juan Pérez"} value={formData.nombre}
+                            disabled={loadingDni}
+                            onChange={e => setFormData({...formData, nombre:e.target.value})} className="wz-input" autoComplete="off" style={{ paddingRight: loadingDni ? '2.5rem' : '1rem' }} />
+                          {loadingDni && (
+                            <span className="wz-input-spinner" />
+                          )}
+                        </div>
                       </div>
                       <div className="wz-field">
                         <span className="wz-label">Correo Electrónico</span>
@@ -234,7 +277,13 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                       <div className="wz-field">
                         <span className="wz-label">Documento de Identidad</span>
                         <input type="text" placeholder="DNI / Pasaporte / CE" value={formData.documento}
-                          onChange={e => setFormData({...formData, documento:e.target.value})} className="wz-input" autoComplete="off" />
+                          onChange={e => {
+                            const val = e.target.value;
+                            setFormData({...formData, documento: val});
+                            if (/^\d{8}$/.test(val)) {
+                              consultarDNI(val);
+                            }
+                          }} className="wz-input" autoComplete="off" />
                       </div>
                       <div className="wz-field">
                         <span className="wz-label">Fecha de Nacimiento</span>
@@ -745,6 +794,19 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         .wz-input::placeholder { color:#b0b8c4; }
         .wz-input:focus { border-color:var(--bc); box-shadow:0 0 0 3px var(--bg); }
+        .wz-input:disabled { background:#f8fafc; color:#64748b; cursor:not-allowed; }
+        
+        .wz-input-spinner {
+          position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+          width: 18px; height: 18px;
+          border: 2px solid rgba(56, 189, 248, 0.2);
+          border-top-color: var(--bc);
+          border-radius: 50%;
+          animation: inputSpin 0.8s linear infinite;
+        }
+        @keyframes inputSpin {
+          to { transform: translateY(-50%) rotate(360deg); }
+        }
 
         /* ── BRAND SELECTOR (PASO 1) ── */
         .wz-brand-list { display:flex; flex-direction:column; gap:0.65rem; }
