@@ -75,12 +75,13 @@ export default function Navbar() {
         }
 
         .nav-partner-logo.logo-biomedic {
-          height: 45px;
+          height: 50px;
           filter: invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black);
         }
 
         .nav-partner-logo.logo-geomina {
-          height: 30px;
+          height: 35px;
+          margin-top: 5px;
         }
 
         .nav-partner-logo.logo-ciip {
@@ -107,11 +108,11 @@ export default function Navbar() {
         }
 
         .premium-navbar.scrolled .logo-biomedic {
-          height: 38px;
+          height: 43px;
         }
 
         .premium-navbar.scrolled .logo-geomina {
-          height: 24px;
+          height: 29px;
         }
 
         .premium-navbar.scrolled .logo-ciip {
@@ -119,8 +120,8 @@ export default function Navbar() {
         }
 
         @media (max-width: 768px) {
-          .nav-partner-logo.logo-biomedic { height: 33px; }
-          .nav-partner-logo.logo-geomina { height: 22px; }
+          .nav-partner-logo.logo-biomedic { height: 38px; }
+          .nav-partner-logo.logo-geomina { height: 27px; }
           .nav-partner-logo.logo-ciip { height: 42px; }
           .nav-logo-sep { height: 24px; }
         }
