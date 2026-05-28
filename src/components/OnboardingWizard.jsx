@@ -28,6 +28,19 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
   const totalSteps = 10;
 
+  const stepLabels = {
+    1: 'Datos Personales',
+    2: 'Metodología Doing by Learning',
+    3: 'Fechas de Corte Innegociables',
+    4: 'Protocolo de Imagen & Comunicación',
+    5: 'Política de Asistencia',
+    6: 'Programa Docente TOP',
+    7: 'Contacto y Datos de Pago',
+    8: 'Subir Documentación',
+    9: 'Perfil Profesional & Comentarios',
+    10: 'Declaración de Conformidad',
+  };
+
   const marcaConfig = {
     ciip: { nombre: 'CIIP Latam', color: '#0284c7', telefono: '51956006498', coordinador: 'Nicol', bgGlow: 'rgba(2,132,199,0.12)' },
     geomina: { nombre: 'Geomina', color: '#0ea5e9', telefono: '51925084564', coordinador: 'Fiorella', bgGlow: 'rgba(14,165,233,0.12)' },
@@ -125,29 +138,21 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         </div>
       </header>
 
-      {/* ── STEPPER / INDICADOR DE FLUJO ── */}
+      {/* ── STEPPER SEGMENTADO PREMIUM ── */}
       {!isFinished && (
-        <div className="wz-stepper-bar">
-          <div className="wz-stepper-steps">
-            {[
-              { num: 1, label: 'Datos' },
-              { num: 2, label: 'Filosofía' },
-              { num: 3, label: 'Plazos' },
-              { num: 4, label: 'Protocolo' },
-              { num: 5, label: 'Asistencia' },
-              { num: 6, label: 'Calidad' },
-              { num: 7, label: 'Pagos' },
-              { num: 8, label: 'Archivos' },
-              { num: 9, label: 'Perfil' },
-              { num: 10, label: 'Firma' },
-            ].map(s => {
-              const active = step === s.num;
-              const done = step > s.num;
+        <div className="wz-stepper-premium">
+          <div className="wz-stepper-info">
+            <span className="wz-stepper-step-badge">Paso {step} de {totalSteps}</span>
+            <span className="wz-stepper-dot-separator">•</span>
+            <span className="wz-stepper-step-name">{stepLabels[step]}</span>
+          </div>
+          <div className="wz-stepper-segments">
+            {Array.from({ length: totalSteps }).map((_, idx) => {
+              const segmentStep = idx + 1;
+              const active = step === segmentStep;
+              const done = step > segmentStep;
               return (
-                <div key={s.num} className={`wz-step-item ${active ? 'active' : ''} ${done ? 'done' : ''}`}>
-                  <div className="wz-step-dot">{s.num}</div>
-                  <span className="wz-step-label">{s.label}</span>
-                </div>
+                <div key={idx} className={`wz-stepper-segment ${active ? 'active' : ''} ${done ? 'done' : ''}`} />
               );
             })}
           </div>
@@ -669,45 +674,39 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         .wz-back:hover { background:rgba(56,189,248,0.12); color:#38bdf8; border-color:rgba(56,189,248,0.3); }
 
-        /* ── STEPPER DEBAJO DEL HEADER ── */
-        .wz-stepper-bar {
+        /* ── STEPPER SEGMENTADO PREMIUM ── */
+        .wz-stepper-premium {
           background:#fff; border-bottom:1px solid #e8ecf1;
-          padding:0.75rem 2rem; display:flex; justify-content:center; align-items:center;
-          flex-shrink:0; position:relative; z-index:10;
+          padding:0.85rem 2.5rem; display:flex; flex-direction:column; gap:0.6rem;
+          flex-shrink:0; position:relative; z-index:10; align-items:center;
         }
-        .wz-stepper-steps {
-          display:flex; align-items:center; justify-content:space-between;
-          width:100%; max-width:920px; position:relative;
+        .wz-stepper-info {
+          display:flex; align-items:center; gap:0.5rem;
+          font-family:'Plus Jakarta Sans',sans-serif;
         }
-        .wz-stepper-steps::before {
-          content:''; position:absolute; left:0; right:0; top:12px; height:2px;
-          background:#e8ecf1; z-index:1;
+        .wz-stepper-step-badge {
+          font-size:0.65rem; font-weight:800; text-transform:uppercase;
+          letter-spacing:1px; color:var(--bc); background:var(--bg);
+          padding:0.2rem 0.6rem; border-radius:50px; border:1px solid rgba(56,189,248,0.1);
         }
-        .wz-step-item {
-          display:flex; flex-direction:column; align-items:center; gap:0.35rem;
-          position:relative; z-index:2; cursor:default;
+        .wz-stepper-dot-separator {
+          color:#cbd5e1; font-size:0.75rem;
         }
-        .wz-step-dot {
-          width:24px; height:24px; border-radius:50%; background:#fff;
-          border:2px solid #cbd5e1; display:flex; align-items:center; justify-content:center;
-          font-size:0.7rem; font-weight:800; color:#64748b; transition:all 0.3s ease;
+        .wz-stepper-step-name {
+          font-size:0.85rem; font-weight:750; color:#1e293b;
         }
-        .wz-step-label {
-          font-size:0.68rem; font-weight:700; color:#64748b; transition:all 0.3s ease;
-          letter-spacing:-0.2px;
+        .wz-stepper-segments {
+          display:flex; align-items:center; gap:0.35rem; width:100%; max-width:680px;
         }
-        .wz-step-item.active .wz-step-dot {
-          border-color:var(--bc); background:var(--bc); color:#fff;
-          box-shadow:0 0 0 4px var(--bg);
+        .wz-stepper-segment {
+          flex:1; height:4px; border-radius:4px;
+          background:#f1f5f9; transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .wz-step-item.active .wz-step-label {
-          color:#0f172a; font-weight:800;
+        .wz-stepper-segment.active {
+          background:var(--bc); box-shadow:0 0 8px var(--bc);
         }
-        .wz-step-item.done .wz-step-dot {
-          border-color:var(--bc); background:#fff; color:var(--bc);
-        }
-        .wz-step-item.done .wz-step-label {
-          color:#334155;
+        .wz-stepper-segment.done {
+          background:var(--bc); opacity:0.65;
         }
 
         /* ── MAIN AREA ── */
@@ -1136,6 +1135,10 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-header { padding:0 0.5rem; height: 60px; }
           .wz-logo { height:28px !important; }
           .wz-logo.lg-bio { height:26px !important; }
+          .wz-stepper-premium { padding:0.65rem 1.25rem; gap:0.45rem; }
+          .wz-stepper-step-name { font-size:0.78rem; }
+          .wz-stepper-segments { gap:0.25rem; }
+          .wz-stepper-segment { height:3px; }
           .wz-main { padding:1.25rem 1rem; overflow-y:auto; border-radius:20px; }
           
           .wz-title { font-size:1.5rem !important; margin-bottom:0.5rem; }
