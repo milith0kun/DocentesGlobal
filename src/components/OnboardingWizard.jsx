@@ -32,7 +32,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     ciip: { nombre: 'CIIP Latam', color: '#0284c7', telefono: '51956006498', coordinador: 'Nicol', bgGlow: 'rgba(2,132,199,0.12)' },
     geomina: { nombre: 'Geomina', color: '#0ea5e9', telefono: '51925084564', coordinador: 'Fiorella', bgGlow: 'rgba(14,165,233,0.12)' },
     biomedic: { nombre: 'Biomedic', color: '#06b6d4', telefono: '51956006498', coordinador: 'Nicol', bgGlow: 'rgba(6,182,212,0.1)' },
-    ambos: { nombre: 'CIIP Latam & Geomina', color: '#7c3aed', telefono: '51956006498', coordinador: 'Nicol y Fiorella', bgGlow: 'rgba(124,58,237,0.1)' },
+    ambos: { nombre: 'CIIP Latam & Geomina', color: '#38bdf8', telefono: '51956006498', coordinador: 'Nicol y Fiorella', bgGlow: 'rgba(56,189,248,0.12)' },
   };
 
   const handleNext = () => {
@@ -172,10 +172,12 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                           { key:'geomina', logo:geominaWhite, h:'26px' },
                           { key:'biomedic', logo:logobiomedic, h:'28px' },
                         ].map(b => {
-                          const on = formData.marca === b.key;
+                          const directSelected = formData.marca === b.key;
+                          const partOfAmbos = formData.marca === 'ambos' && (b.key === 'ciip' || b.key === 'geomina');
+                          const on = directSelected || partOfAmbos;
                           return (
                             <div key={b.key} onClick={() => setFormData({...formData, marca:b.key})}
-                              className={`wz-brand-card ${on ? 'on' : ''}`}
+                              className={`wz-brand-card ${on ? 'on' : ''} ${partOfAmbos ? 'part-of-ambos' : ''}`}
                               style={{ '--bc': marcaConfig[b.key].color }}>
                               <div className={`wz-radio ${on?'on':''}`} />
                               <img src={b.logo} alt={b.key} style={{
@@ -183,14 +185,22 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                                 filter: b.key==='biomedic' ? 'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' : 'none',
                                 opacity: on ? 1 : 0.8, transition: 'opacity 0.2s'
                               }} />
+                              {partOfAmbos && (
+                                <span className="wz-brand-badge">Incluido</span>
+                              )}
                             </div>
                           );
                         })}
                         <div onClick={() => setFormData({...formData, marca:'ambos'})}
-                          className={`wz-brand-card ambos ${formData.marca === 'ambos' ? 'on' : ''}`}
-                          style={{ '--bc': marcaConfig.ambos.color }}>
+                          className={`wz-brand-card ambos-card ${formData.marca === 'ambos' ? 'on' : ''}`}
+                          style={{ '--bc': '#38bdf8' }}>
                           <div className={`wz-radio ${formData.marca==='ambos'?'on':''}`} />
-                          <span style={{ fontSize:'0.75rem', fontWeight:700, color: formData.marca==='ambos' ? '#7c3aed' : '#64748b' }}>Ambas instituciones</span>
+                          <div className="ambos-logos-wrapper">
+                            <img src={biomedicWhite} alt="CIIP" className="ambos-mini-logo" style={{ height:'16px', objectFit:'contain' }} />
+                            <span className="ambos-plus">+</span>
+                            <img src={geominaWhite} alt="Geomina" className="ambos-mini-logo" style={{ height:'11px', objectFit:'contain' }} />
+                          </div>
+                          <span className="ambos-text">Ambas instituciones (CIIP & Geomina)</span>
                         </div>
                       </div>
                     </div>
@@ -693,24 +703,84 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         /* ── BRAND SELECTOR (PASO 1) ── */
         .wz-brand-list { display:flex; flex-direction:column; gap:0.65rem; }
         .wz-brand-card {
-          background:#f1f5f9; border:1.5px solid #e2e8f0; border-radius:12px;
-          padding:0.65rem 1rem; display:flex; align-items:center; gap:1rem;
-          cursor:pointer; transition:all 0.3s ease;
+          background:#0b1526; border:2px solid transparent; border-radius:12px;
+          padding:0.75rem 1.25rem; display:flex; align-items:center; gap:1rem;
+          cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); opacity:0.45;
+          position:relative; overflow:hidden;
         }
-        .wz-brand-card img { filter:brightness(0) !important; }
-        .wz-brand-card:hover { border-color:#94a3b8; background:#e2e8f0; }
+        .wz-brand-card:hover { opacity:0.8; background:#0f1e34; }
         .wz-brand-card.on {
-          background:#0b1526; border-color:var(--bc); box-shadow:0 0 0 1px var(--bc);
+          opacity:1; border-color:var(--bc);
+          box-shadow:0 0 0 2px var(--bc), 0 8px 24px -6px var(--bc);
+          background:#0f1e34;
         }
-        .wz-brand-card.on img { filter:none !important; }
-        .wz-brand-card.ambos.on img { filter:none !important; }
+        .wz-brand-card.part-of-ambos {
+          opacity:0.9;
+          border-color:rgba(56, 189, 248, 0.4);
+          box-shadow:0 0 0 1px rgba(56, 189, 248, 0.3);
+          background:linear-gradient(90deg, #0b1526 0%, rgba(14, 165, 233, 0.08) 100%);
+        }
+        .wz-brand-card.ambos-card {
+          background:linear-gradient(135deg, #091322 0%, #15263f 100%);
+          border:2px dashed rgba(255, 255, 255, 0.1);
+        }
+        .wz-brand-card.ambos-card.on {
+          border-style:solid;
+          border-color:#38bdf8;
+          box-shadow:0 0 0 2px #38bdf8, 0 8px 30px -6px rgba(56, 189, 248, 0.3);
+          background:linear-gradient(135deg, #0b1e36 0%, #17375e 100%);
+        }
+        
+        .wz-brand-badge {
+          margin-left:auto;
+          font-size:0.6rem;
+          font-weight:800;
+          color:#38bdf8;
+          background:rgba(56, 189, 248, 0.15);
+          border:1px solid rgba(56, 189, 248, 0.3);
+          padding:0.2rem 0.5rem;
+          border-radius:6px;
+          text-transform:uppercase;
+          letter-spacing:0.5px;
+          animation: pulseGlow 2s infinite ease-in-out;
+        }
+        @keyframes pulseGlow {
+          0%, 100% { opacity: 0.8; }
+          50% { opacity: 1; box-shadow: 0 0 6px rgba(56, 189, 248, 0.3); }
+        }
+
         .wz-radio {
-          width:16px; height:16px; border:2px solid #94a3b8;
+          width:16px; height:16px; border:2px solid rgba(255,255,255,0.25);
           border-radius:50%; flex-shrink:0; transition:all 0.2s; position:relative;
         }
-        .wz-radio.on {
+        .wz-brand-card.on .wz-radio {
           border-color:var(--bc); background:var(--bc);
           box-shadow:inset 0 0 0 3px #0b1526;
+        }
+        .wz-brand-card.ambos-card.on .wz-radio {
+          border-color:#38bdf8; background:#38bdf8;
+          box-shadow:inset 0 0 0 3px #0b1526;
+        }
+        .wz-brand-card.part-of-ambos .wz-radio {
+          border-color:rgba(56, 189, 248, 0.7);
+          background:rgba(56, 189, 248, 0.2);
+          box-shadow:inset 0 0 0 3px #0b1526;
+        }
+
+        .ambos-logos-wrapper {
+          display:flex; align-items:center; gap:0.4rem;
+        }
+        .ambos-plus {
+          color:#64748b; font-weight:800; font-size:0.85rem;
+        }
+        .wz-brand-card.ambos-card.on .ambos-plus {
+          color:#38bdf8;
+        }
+        .ambos-text {
+          font-size:0.78rem; font-weight:700; color:#94a3b8; transition:color 0.2s;
+        }
+        .wz-brand-card.ambos-card.on .ambos-text {
+          color:#fff;
         }
 
         /* ── PILARES (PASO 2 - MANIFIESTO TIPOGRÁFICO) ── */
