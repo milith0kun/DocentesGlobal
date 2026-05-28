@@ -80,19 +80,20 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     softwares: '', cursoSonado: '', mejoraAdmin: '', comentarios: '',
   });
 
-  const totalSteps = 10;
+  const totalSteps = 11;
 
   const stepLabels = {
-    1: 'Datos Personales',
-    2: 'Metodología Doing by Learning',
-    3: 'Fechas de Corte Innegociables',
-    4: 'Protocolo de Imagen & Comunicación',
-    5: 'Política de Asistencia',
-    6: 'Programa Docente TOP',
-    7: 'Contacto y Datos de Pago',
-    8: 'Subir Documentación',
-    9: 'Perfil Profesional & Comentarios',
-    10: 'Declaración de Conformidad',
+    1: 'Selección de Institución',
+    2: 'Datos Personales',
+    3: 'Metodología Doing by Learning',
+    4: 'Fechas de Corte Innegociables',
+    5: 'Protocolo de Imagen & Comunicación',
+    6: 'Política de Asistencia',
+    7: 'Programa Docente TOP',
+    8: 'Contacto y Datos de Pago',
+    9: 'Subir Documentación',
+    10: 'Perfil Profesional & Comentarios',
+    11: 'Declaración de Conformidad',
   };
 
   const marcaConfig = {
@@ -103,17 +104,18 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   };
 
   const handleNext = () => {
-    if (step === 1 && (!formData.nombre.trim() || !formData.correo.trim() || !formData.marca || !formData.documento.trim() || formData.fechaNacimiento.length !== 10)) return;
-    if (step === 2 && !formData.aceptaMetodologia) return;
-    if (step === 3 && (!formData.aceptaSabado || !formData.aceptaDomingo || !formData.aceptaLunes)) return;
-    if (step === 3) { setShowPenaltyAlert(true); return; }
-    if (step === 4 && !formData.aceptaProtocolo) return;
-    if (step === 5 && !formData.aceptaAsistencia) return;
-    if (step === 6 && !formData.aceptaTop) return;
-    if (step === 7 && (!formData.telefono.trim() || !formData.metodoPago || !formData.numeroCuenta.trim() || !formData.direccion.trim())) return;
-    if (step === 7 && formData.metodoPago === 'otro' && !formData.metodoPagoOtro.trim()) return;
-    if (step === 8 && (!formData.cvFile || !formData.fotoFile)) return;
-    if (step === 9 && (!formData.softwares.trim() || !formData.cursoSonado.trim() || !formData.mejoraAdmin.trim())) return;
+    if (step === 1 && !formData.marca) return;
+    if (step === 2 && (!formData.nombre.trim() || !formData.correo.trim() || !formData.documento.trim() || formData.fechaNacimiento.length !== 10)) return;
+    if (step === 3 && !formData.aceptaMetodologia) return;
+    if (step === 4 && (!formData.aceptaSabado || !formData.aceptaDomingo || !formData.aceptaLunes)) return;
+    if (step === 4) { setShowPenaltyAlert(true); return; }
+    if (step === 5 && !formData.aceptaProtocolo) return;
+    if (step === 6 && !formData.aceptaAsistencia) return;
+    if (step === 7 && !formData.aceptaTop) return;
+    if (step === 8 && (!formData.telefono.trim() || !formData.metodoPago || !formData.numeroCuenta.trim() || !formData.direccion.trim())) return;
+    if (step === 8 && formData.metodoPago === 'otro' && !formData.metodoPagoOtro.trim()) return;
+    if (step === 9 && (!formData.cvFile || !formData.fotoFile)) return;
+    if (step === 10 && (!formData.softwares.trim() || !formData.cursoSonado.trim() || !formData.mejoraAdmin.trim())) return;
     if (step < totalSteps) setStep(s => s + 1);
   };
 
@@ -157,7 +159,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const brandColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
   const brandGlow = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14,165,233,0.12)';
 
-  const stepWidths = { 1: '820px', 2: '600px', 3: '620px', 4: '760px', 5: '720px', 6: '740px', 7: '680px', 8: '600px', 9: '640px', 10: '580px' };
+  const stepWidths = { 1: '380px', 2: '460px', 3: '600px', 4: '620px', 5: '760px', 6: '720px', 7: '740px', 8: '680px', 9: '600px', 10: '640px', 11: '580px' };
 
   return (
     <div className="wz" style={{ '--bc': brandColor, '--bg': brandGlow }}>
@@ -237,102 +239,113 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
           {!isFinished && (
             <>
-              {/* ═══ PASO 1 ═══ */}
+              {/* ═══ PASO 1: SELECCIÓN DE INSTITUCIÓN ═══ */}
               {step === 1 && (
                 <div className="wz-fade">
-                  <h2 className="wz-title">Datos Personales</h2>
-                  <p className="wz-sub">Ingresa tus datos y selecciona tu institución.</p>
-                  <div className="wz-grid-2" style={{ gridTemplateColumns:'280px 1fr' }}>
-                    <div>
-                      <span className="wz-label" style={{ marginBottom:'0.75rem', display:'block' }}>Institución</span>
-                      <div className="wz-brand-list">
-                        {[
-                          { key:'ciip', logo:biomedicWhite, h:'56px' },
-                          { key:'geomina', logo:geominaWhite, h:'35px' },
-                          { key:'biomedic', logo:logobiomedic, h:'50px' },
-                        ].map(b => {
-                          const directSelected = formData.marca === b.key;
-                          const partOfAmbos = formData.marca === 'ambos' && (b.key === 'ciip' || b.key === 'geomina');
-                          const on = directSelected || partOfAmbos;
-                          return (
-                            <div key={b.key} onClick={() => setFormData({...formData, marca:b.key})}
-                              className={`wz-brand-card ${on ? 'on' : ''} ${partOfAmbos ? 'part-of-ambos' : ''}`}
-                              style={{ '--bc': marcaConfig[b.key].color }}>
-                              <div className={`wz-radio ${on?'on':''}`} />
-                              <img src={b.logo} alt={b.key} style={{
-                                height:b.h, objectFit:'contain',
-                                filter: b.key==='biomedic' ? 'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' : 'none'
-                              }} />
-                            </div>
-                          );
-                        })}
-                        <div onClick={() => setFormData({...formData, marca:'ambos'})}
-                          className={`wz-brand-card ambos-card ${formData.marca === 'ambos' ? 'on' : ''}`}
-                          style={{ '--bc': '#38bdf8' }}>
-                          <div className={`wz-radio ${formData.marca==='ambos'?'on':''}`} />
-                          <span className="ambos-text">Ambas instituciones (CIIP & Geomina)</span>
+                  <h2 className="wz-title" style={{ textAlign:'center' }}>Selecciona tu Institución</h2>
+                  <p className="wz-sub" style={{ textAlign:'center', marginBottom:'1.5rem' }}>Elige la institución a la que perteneces.</p>
+                  
+                  <div className="wz-brand-list" style={{ maxWidth:'100%', margin:'0 auto' }}>
+                    {[
+                      { key:'ciip', logo:biomedicWhite, h:'56px' },
+                      { key:'geomina', logo:geominaWhite, h:'35px' },
+                      { key:'biomedic', logo:logobiomedic, h:'50px' },
+                    ].map(b => {
+                      const directSelected = formData.marca === b.key;
+                      const partOfAmbos = formData.marca === 'ambos' && (b.key === 'ciip' || b.key === 'geomina');
+                      const on = directSelected || partOfAmbos;
+                      return (
+                        <div key={b.key} onClick={() => setFormData({...formData, marca:b.key})}
+                          className={`wz-brand-card ${on ? 'on' : ''} ${partOfAmbos ? 'part-of-ambos' : ''}`}
+                          style={{ '--bc': marcaConfig[b.key].color }}>
+                          <div className={`wz-radio ${on?'on':''}`} />
+                          <img src={b.logo} alt={b.key} style={{
+                            height:b.h, objectFit:'contain',
+                            filter: b.key==='biomedic' ? 'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' : 'none'
+                          }} />
                         </div>
-                      </div>
-                    </div>
-                    <div style={{ display:'flex', flexDirection:'column', gap:'1rem', justifyContent:'center' }}>
-                      <div className="wz-field">
-                        <span className="wz-label">Documento de Identidad</span>
-                        <input type="text" placeholder="DNI / Pasaporte / CE" value={formData.documento}
-                          onChange={e => {
-                            const val = e.target.value;
-                            setFormData({...formData, documento: val});
-                            if (/^\d{8}$/.test(val)) {
-                              consultarDNI(val);
-                            }
-                          }} className="wz-input" autoComplete="off" />
-                      </div>
-                      <div className="wz-field">
-                        <span className="wz-label">Nombre completo</span>
-                        <div style={{ position: 'relative' }}>
-                          <input type="text"
-                            placeholder={loadingDni ? "Buscando nombre en RENIEC..." : (formData.documento.trim() ? "Ej. Juan Pérez" : "Escribe tu Documento primero...")}
-                            value={formData.nombre}
-                            disabled={!formData.documento.trim() || loadingDni}
-                            onChange={e => setFormData({...formData, nombre:e.target.value})}
-                            className="wz-input"
-                            autoComplete="off"
-                            style={{ paddingRight: loadingDni ? '2.5rem' : '1rem' }} />
-                          {loadingDni && (
-                            <span className="wz-input-spinner" />
-                          )}
-                        </div>
-                      </div>
-                      <div className="wz-field">
-                        <span className="wz-label">Correo Electrónico</span>
-                        <input type="email"
-                          placeholder={formData.documento.trim() ? "juan.perez@ejemplo.com" : "Escribe tu Documento primero..."}
-                          value={formData.correo}
-                          disabled={!formData.documento.trim()}
-                          onChange={e => setFormData({...formData, correo:e.target.value})}
-                          className="wz-input"
-                          autoComplete="off" />
-                      </div>
-                      <div className="wz-field">
-                        <span className="wz-label">Fecha de Nacimiento</span>
-                        <input type="text"
-                          placeholder={formData.documento.trim() ? "DD/MM/AAAA" : "Escribe tu Documento primero..."}
-                          value={formData.fechaNacimiento}
-                          disabled={!formData.documento.trim()}
-                          onChange={handleFechaNacimientoChange}
-                          className="wz-input"
-                          maxLength={10} />
-                      </div>
+                      );
+                    })}
+                    <div onClick={() => setFormData({...formData, marca:'ambos'})}
+                      className={`wz-brand-card ambos-card ${formData.marca === 'ambos' ? 'on' : ''}`}
+                      style={{ '--bc': '#38bdf8' }}>
+                      <div className={`wz-radio ${formData.marca==='ambos'?'on':''}`} />
+                      <span className="ambos-text">Ambas instituciones (CIIP & Geomina)</span>
                     </div>
                   </div>
+                  
                   <div className="wz-nav">
                     <button onClick={onClose} className="wz-btn-ghost">Cancelar</button>
-                    <button onClick={handleNext} disabled={!formData.nombre.trim()||!formData.correo.trim()||!formData.marca||!formData.documento.trim()||formData.fechaNacimiento.length !== 10} className="wz-btn-main">Continuar</button>
+                    <button onClick={handleNext} disabled={!formData.marca} className="wz-btn-main">Continuar</button>
                   </div>
                 </div>
               )}
 
-              {/* ═══ PASO 2: FILOSOFÍA ═══ */}
+              {/* ═══ PASO 2: DATOS PERSONALES ═══ */}
               {step === 2 && (
+                <div className="wz-fade">
+                  <h2 className="wz-title">Datos Personales</h2>
+                  <p className="wz-sub">Ingresa tus datos personales.</p>
+                  
+                  <div style={{ display:'flex', flexDirection:'column', gap:'1.25rem' }}>
+                    <div className="wz-field">
+                      <span className="wz-label">Documento de Identidad</span>
+                      <input type="text" placeholder="DNI / Pasaporte / CE" value={formData.documento}
+                        onChange={e => {
+                          const val = e.target.value;
+                          setFormData({...formData, documento: val});
+                          if (/^\d{8}$/.test(val)) {
+                            consultarDNI(val);
+                          }
+                        }} className="wz-input" autoComplete="off" />
+                    </div>
+                    <div className="wz-field">
+                      <span className="wz-label">Nombre completo</span>
+                      <div style={{ position: 'relative' }}>
+                        <input type="text"
+                          placeholder={loadingDni ? "Buscando nombre en RENIEC..." : (formData.documento.trim() ? "Ej. Juan Pérez" : "Escribe tu Documento primero...")}
+                          value={formData.nombre}
+                          disabled={!formData.documento.trim() || loadingDni}
+                          onChange={e => setFormData({...formData, nombre:e.target.value})}
+                          className="wz-input"
+                          autoComplete="off"
+                          style={{ paddingRight: loadingDni ? '2.5rem' : '1rem' }} />
+                        {loadingDni && (
+                          <span className="wz-input-spinner" />
+                        )}
+                      </div>
+                    </div>
+                    <div className="wz-field">
+                      <span className="wz-label">Correo Electrónico</span>
+                      <input type="email"
+                        placeholder={formData.documento.trim() ? "juan.perez@ejemplo.com" : "Escribe tu Documento primero..."}
+                        value={formData.correo}
+                        disabled={!formData.documento.trim()}
+                        onChange={e => setFormData({...formData, correo:e.target.value})}
+                        className="wz-input"
+                        autoComplete="off" />
+                    </div>
+                    <div className="wz-field">
+                      <span className="wz-label">Fecha de Nacimiento</span>
+                      <input type="text"
+                        placeholder={formData.documento.trim() ? "DD/MM/AAAA" : "Escribe tu Documento primero..."}
+                        value={formData.fechaNacimiento}
+                        disabled={!formData.documento.trim()}
+                        onChange={handleFechaNacimientoChange}
+                        className="wz-input"
+                        maxLength={10} />
+                    </div>
+                  </div>
+                  
+                  <div className="wz-nav">
+                    <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
+                    <button onClick={handleNext} disabled={!formData.nombre.trim()||!formData.correo.trim()||!formData.documento.trim()||formData.fechaNacimiento.length !== 10} className="wz-btn-main">Continuar</button>
+                  </div>
+                </div>
+              )}
+
+              {/* ═══ PASO 3: FILOSOFÍA ═══ */}
+              {step === 3 && (
                 <div className="wz-fade">
                   <span className="wz-tag">Doing by Learning</span>
                   <h2 className="wz-title">Nuestra Filosofía</h2>
@@ -365,8 +378,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 3: FECHAS DE CORTE ═══ */}
-              {step === 3 && (
+              {/* ═══ PASO 4: FECHAS DE CORTE ═══ */}
+              {step === 4 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Fechas de Corte Innegociables</h2>
                   <p className="wz-sub">La proactividad es tu mayor activo. No esperes recordatorios para realizar tus entregas.</p>
@@ -407,8 +420,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 4: PROTOCOLO ═══ */}
-              {step === 4 && (
+              {/* ═══ PASO 5: PROTOCOLO ═══ */}
+              {step === 5 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Protocolo de Imagen & Comunicación</h2>
                   <p className="wz-sub">Eres el rostro de nuestra marca para toda Latinoamérica. El profesionalismo digital no es opcional.</p>
@@ -454,8 +467,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 5: ASISTENCIA ═══ */}
-              {step === 5 && (
+              {/* ═══ PASO 6: ASISTENCIA ═══ */}
+              {step === 6 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Política de Asistencia</h2>
                   <p className="wz-sub">Tu compromiso con el horario garantiza la excelencia del programa.</p>
@@ -489,8 +502,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 6: PROGRAMA TOP ═══ */}
-              {step === 6 && (
+              {/* ═══ PASO 7: PROGRAMA TOP ═══ */}
+              {step === 7 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Programa Docente TOP</h2>
                   <p className="wz-sub">Buscamos talentos, no solo expositores. Si demuestras excelencia, te abrimos las puertas a la categoría Élite.</p>
@@ -546,8 +559,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 7: CONTACTO Y PAGO ═══ */}
-              {step === 7 && (
+              {/* ═══ PASO 8: CONTACTO Y PAGO ═══ */}
+              {step === 8 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Contacto y Datos de Pago</h2>
                   <p className="wz-sub">Datos necesarios para la gestión de honorarios y comunicación directa.</p>
@@ -605,8 +618,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 8: DOCUMENTACIÓN ═══ */}
-              {step === 8 && (
+              {/* ═══ PASO 9: DOCUMENTACIÓN ═══ */}
+              {step === 9 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Documentación</h2>
                   <p className="wz-sub">Adjunta tu CV actualizado y una fotografía profesional.</p>
@@ -641,8 +654,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 9: PERFIL PROFESIONAL ═══ */}
-              {step === 9 && (
+              {/* ═══ PASO 10: PERFIL PROFESIONAL ═══ */}
+              {step === 10 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Perfil Profesional</h2>
                   <p className="wz-sub">Queremos conocerte mejor. Tu opinión nos ayuda a crecer juntos.</p>
@@ -675,8 +688,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 10: DECLARACIÓN ═══ */}
-              {step === 10 && (
+              {/* ═══ PASO 11: DECLARACIÓN ═══ */}
+              {step === 11 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Declaración de Conformidad</h2>
                   <p className="wz-sub">Revisa tus datos y envía tu conformidad por WhatsApp a {marcaConfig[formData.marca]?.coordinador}.</p>
@@ -716,7 +729,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             <p className="wz-modal-desc">
               Si la Dirección Académica se ve en la necesidad de <strong>solicitarte el material</strong> por falta de entrega a tiempo en los plazos que acabas de aceptar, se contabilizará automáticamente como una <strong>penalidad de desempeño</strong> en tu perfil. No existen recordatorios previos.
             </p>
-            <button onClick={() => { setShowPenaltyAlert(false); setStep(4); }} className="wz-btn-firm">
+            <button onClick={() => { setShowPenaltyAlert(false); setStep(5); }} className="wz-btn-firm">
               Comprendo y Acepto la Condición
             </button>
           </div>
