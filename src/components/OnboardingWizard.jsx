@@ -119,11 +119,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             const geo = mkLogo('geomina', geominaWhite, '');
             const bio = mkLogo('biomedic', logobiomedic, 'lg-bio', { filter:'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' });
             const sep = (k) => <div key={k} className="wz-sep" />;
-            if (step > 1) { if (formData.marca === 'ambos') return [ciip, sep('s1'), geo]; return formData.marca === 'ciip' ? ciip : formData.marca === 'geomina' ? geo : bio; }
-            if (!formData.marca) return [ciip, sep('s1'), geo, sep('s2'), bio];
-            if (formData.marca === 'ciip') return [geo, sep('s1'), ciip, sep('s2'), bio];
-            if (formData.marca === 'geomina') return [ciip, sep('s1'), geo, sep('s2'), bio];
-            return [ciip, sep('s1'), bio, sep('s2'), geo];
+            if (step > 1) {
+              if (formData.marca === 'ambos') return [ciip, sep('s1'), geo];
+              return formData.marca === 'ciip' ? ciip : formData.marca === 'geomina' ? geo : bio;
+            }
+            return [ciip, sep('s1'), geo, sep('s2'), bio];
           })()}
         </div>
         <div className="wz-h-right">
