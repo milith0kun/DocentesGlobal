@@ -1915,8 +1915,24 @@
 }
 
 @media (min-width: 1024px) {
-  .home-shell {
+  body {
+    overflow-y: hidden;
+  }
+
+  #root {
     height: 100svh;
     overflow: hidden;
+  }
+
+  .home-shell {
+    height: 100svh;
+  }
+
+  .home-main {
+    overflow: hidden;
+  }
+
+  .home-main > header {
+    height: 100%;
   }
 }

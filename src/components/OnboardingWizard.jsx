@@ -103,20 +103,21 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     setShowDatePicker(true);
   };
 
-  const totalSteps = 11;
+  const totalSteps = 12;
 
   const stepLabels = {
     1: 'Selección de Institución',
     2: 'Datos Personales',
     3: 'Metodología Doing by Learning',
     4: 'Fechas de Corte Innegociables',
-    5: 'Protocolo de Imagen & Comunicación',
-    6: 'Política de Asistencia',
-    7: 'Programa Docente TOP',
-    8: 'Contacto y Datos de Pago',
-    9: 'Subir Documentación',
-    10: 'Perfil Profesional & Comentarios',
-    11: 'Declaración de Conformidad',
+    5: 'Acceso a Drive Institucional',
+    6: 'Protocolo de Imagen & Comunicación',
+    7: 'Política de Asistencia',
+    8: 'Programa Docente TOP',
+    9: 'Contacto y Datos de Pago',
+    10: 'Subir Documentación',
+    11: 'Perfil Profesional & Comentarios',
+    12: 'Declaración de Conformidad',
   };
 
   const marcaConfig = {
@@ -132,13 +133,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     if (step === 3 && !formData.aceptaMetodologia) return;
     if (step === 4 && (!formData.aceptaSabado || !formData.aceptaDomingo || !formData.aceptaLunes)) return;
     if (step === 4) { setShowPenaltyAlert(true); return; }
-    if (step === 5 && !formData.aceptaProtocolo) return;
-    if (step === 6 && !formData.aceptaAsistencia) return;
-    if (step === 7 && !formData.aceptaTop) return;
-    if (step === 8 && (!formData.telefono.trim() || !formData.metodoPago || !formData.numeroCuenta.trim() || !formData.direccion.trim())) return;
-    if (step === 8 && formData.metodoPago === 'otro' && !formData.metodoPagoOtro.trim()) return;
-    if (step === 9 && (!formData.cvFile || !formData.fotoFile)) return;
-    if (step === 10 && (!formData.softwares.trim() || !formData.cursoSonado.trim() || !formData.mejoraAdmin.trim())) return;
+    // El paso 5 (Drive Institucional) no tiene condiciones bloqueantes, avanza directo.
+    if (step === 6 && !formData.aceptaProtocolo) return;
+    if (step === 7 && !formData.aceptaAsistencia) return;
+    if (step === 8 && !formData.aceptaTop) return;
+    if (step === 9 && (!formData.telefono.trim() || !formData.metodoPago || !formData.numeroCuenta.trim() || !formData.direccion.trim())) return;
+    if (step === 9 && formData.metodoPago === 'otro' && !formData.metodoPagoOtro.trim()) return;
+    if (step === 10 && (!formData.cvFile || !formData.fotoFile)) return;
+    if (step === 11 && (!formData.softwares.trim() || !formData.cursoSonado.trim() || !formData.mejoraAdmin.trim())) return;
     if (step < totalSteps) setStep(s => s + 1);
   };
 
@@ -182,7 +184,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const brandColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
   const brandGlow = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14,165,233,0.12)';
 
-  const stepWidths = { 1: '380px', 2: '460px', 3: '600px', 4: '620px', 5: '760px', 6: '720px', 7: '740px', 8: '680px', 9: '600px', 10: '640px', 11: '580px' };
+  const stepWidths = { 1: '380px', 2: '460px', 3: '600px', 4: '620px', 5: '520px', 6: '760px', 7: '720px', 8: '740px', 9: '680px', 10: '600px', 11: '640px', 12: '580px' };
 
   if (!isOpen) return null;
 
@@ -643,16 +645,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     })}
                   </div>
 
-                  <div className="wz-notification">
-                    <div className="wz-notification-icon">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                    </div>
-                    <div className="wz-notification-text">
-                      <span className="wz-notification-title">Drive Institucional</span>
-                      <span className="wz-notification-desc">Recibirás una notificación automática por correo cuando las carpetas de subida estén habilitadas.</span>
-                    </div>
-                  </div>
-
                   <div className="wz-nav">
                     <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
                     <button onClick={handleNext} disabled={!formData.aceptaSabado||!formData.aceptaDomingo||!formData.aceptaLunes} className="wz-btn-main">Aceptar Plazos</button>
@@ -660,8 +652,65 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 5: PROTOCOLO ═══ */}
+              {/* ═══ PASO 5: DRIVE INSTITUCIONAL ═══ */}
               {step === 5 && (
+                <div className="wz-fade">
+                  <span className="wz-tag">Google Drive</span>
+                  <h2 className="wz-title">Drive Institucional</h2>
+                  <p className="wz-sub">Tu espacio oficial de almacenamiento para coordinar y resguardar tus entregas académicas.</p>
+                  
+                  <div className="wz-drive-card" style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    padding: '2.25rem 1.75rem',
+                    background: 'rgba(14, 165, 233, 0.02)',
+                    border: '1.5px dashed rgba(14, 165, 233, 0.25)',
+                    borderRadius: '20px',
+                    marginBottom: '1.75rem',
+                    gap: '1.1rem'
+                  }}>
+                    <div className="wz-drive-icon-wrap" style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '64px',
+                      height: '64px',
+                      borderRadius: '50%',
+                      background: 'rgba(14, 165, 233, 0.08)',
+                      color: 'var(--bc)',
+                      animation: 'bounceCloud 3s infinite ease-in-out'
+                    }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><path d="M12 11v6"></path><path d="m9 14 3 3 3-3"></path></svg>
+                    </div>
+                    <div className="wz-drive-text-wrap" style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', maxWidth: '380px' }}>
+                      <h3 style={{ margin: 0, fontFamily: "'Outfit', sans-serif", fontSize: '1.2rem', fontWeight: 850, color: '#0f172a' }}>Habilitación de Carpetas</h3>
+                      <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', lineHeight: 1.5, fontWeight: 500 }}>
+                        No es necesario que crees ninguna carpeta. La Dirección Académica configurará y te otorgará los permisos de acceso para tus carpetas oficiales de subida.
+                      </p>
+                    </div>
+                    
+                    <div className="wz-notification" style={{ marginTop: '0.4rem', width: '100%', maxWidth: '420px', animation: 'none' }}>
+                      <div className="wz-notification-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                      </div>
+                      <div className="wz-notification-text">
+                        <span className="wz-notification-title">Notificación por Correo</span>
+                        <span className="wz-notification-desc">Recibirás una notificación automática en tu bandeja cuando tus carpetas personales de subida estén compartidas y listas.</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="wz-nav">
+                    <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
+                    <button onClick={handleNext} className="wz-btn-main">Entendido, Continuar</button>
+                  </div>
+                </div>
+              )}
+
+              {/* ═══ PASO 6: PROTOCOLO ═══ */}
+              {step === 6 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Protocolo de Imagen & Comunicación</h2>
                   <p className="wz-sub">Eres el rostro de nuestra marca para toda Latinoamérica. El profesionalismo digital no es opcional.</p>
@@ -675,9 +724,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                         { title: 'Canales Externos Prohibidos', desc: 'Queda estrictamente prohibido crear grupos paralelos de WhatsApp o Telegram con los alumnos.', req: false, imgStr: 'ejemplo-prohibido.jpg' },
                       ].map((item, i) => (
                         <div 
-                          key={i} 
-                          className={`wz-protocol-item ${activeProtocol === i ? 'active' : ''}`}
-                          onMouseEnter={() => setActiveProtocol(i)}
+                           key={i} 
+                           className={`wz-protocol-item ${activeProtocol === i ? 'active' : ''}`}
+                           onMouseEnter={() => setActiveProtocol(i)}
                         >
                           <div className="wz-pi-header">
                             <h4 className="wz-pi-title">{item.title}</h4>
@@ -707,8 +756,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 6: ASISTENCIA ═══ */}
-              {step === 6 && (
+              {/* ═══ PASO 7: ASISTENCIA ═══ */}
+              {step === 7 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Política de Asistencia</h2>
                   <p className="wz-sub">Tu compromiso con el horario garantiza la excelencia del programa.</p>
@@ -742,8 +791,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 7: PROGRAMA TOP ═══ */}
-              {step === 7 && (
+              {/* ═══ PASO 8: PROGRAMA TOP ═══ */}
+              {step === 8 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Programa Docente TOP</h2>
                   <p className="wz-sub">Buscamos talentos, no solo expositores. Si demuestras excelencia, te abrimos las puertas a la categoría Élite.</p>
@@ -799,8 +848,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 8: CONTACTO Y PAGO ═══ */}
-              {step === 8 && (
+              {/* ═══ PASO 9: CONTACTO Y PAGO ═══ */}
+              {step === 9 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Contacto y Datos de Pago</h2>
                   <p className="wz-sub">Datos necesarios para la gestión de honorarios y comunicación directa.</p>
@@ -858,8 +907,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 9: DOCUMENTACIÓN ═══ */}
-              {step === 9 && (
+              {/* ═══ PASO 10: DOCUMENTACIÓN ═══ */}
+              {step === 10 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Documentación</h2>
                   <p className="wz-sub">Adjunta tu CV actualizado y una fotografía profesional.</p>
@@ -894,8 +943,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 10: PERFIL PROFESIONAL ═══ */}
-              {step === 10 && (
+              {/* ═══ PASO 11: PERFIL PROFESIONAL ═══ */}
+              {step === 11 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Perfil Profesional</h2>
                   <p className="wz-sub">Queremos conocerte mejor. Tu opinión nos ayuda a crecer juntos.</p>
@@ -928,8 +977,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 11: DECLARACIÓN ═══ */}
-              {step === 11 && (
+              {/* ═══ PASO 12: DECLARACIÓN ═══ */}
+              {step === 12 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Declaración de Conformidad</h2>
                   <p className="wz-sub">Revisa tus datos y envía tu conformidad por WhatsApp a {marcaConfig[formData.marca]?.coordinador}.</p>
@@ -1123,6 +1172,10 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         @keyframes scaleUpCalendar {
           from { opacity: 0; transform: scale(0.97) translateY(5px); }
           to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes bounceCloud {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
         }
         .wz-datepicker-header {
           display: flex;

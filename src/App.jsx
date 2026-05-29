@@ -9,21 +9,21 @@ function App() {
   const [isWizardOpen, setIsWizardOpen] = useState(false);
 
   return (
-    <>
-      {/* Header & Navegación */}
+    <div className="home-shell">
       <Navbar />
-      
-      {/* Sección Hero Principal */}
-      <header style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        <Hero onStartWizard={() => setIsWizardOpen(true)} />
-      </header>
-      
-      {/* Footer Minimalista */}
-      <Footer />
 
-      {/* Onboarding Wizard interactivo superpuesto a pantalla completa */}
+      <main className="home-main">
+        <header style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <Hero onStartWizard={() => setIsWizardOpen(true)} />
+        </header>
+      </main>
+
+      <div className="home-footer-wrap">
+        <Footer />
+      </div>
+
       <OnboardingWizard isOpen={isWizardOpen} onClose={() => setIsWizardOpen(false)} />
-    </>
+    </div>
   );
 }
 

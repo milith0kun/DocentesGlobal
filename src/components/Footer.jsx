@@ -40,7 +40,7 @@ export default function Footer() {
             © {currentYear} CIIP LATAM · Ecosistema Digital de Capacitación. Todos los derechos reservados.
           </p>
 
-          {/* Right Side: Partners inline (sutil y sin botones redundantes) */}
+          {/* Right Side: Partner logos */}
           <div className="footer-partners">
             <img 
               src={biomedicWhite} 
@@ -79,30 +79,37 @@ export default function Footer() {
           transform: scale(1.04);
         }
         .footer-logo-ciip {
-          height: 24px;
+          height: 44px;
         }
         .footer-logo-geomina {
-          height: 16px;
+          height: 29px;
           margin-top: 2px;
         }
         .footer-logo-biomedic {
-          height: 22px;
+          height: 40px;
           filter: invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.15) url(#remove-black-footer);
         }
         .footer-logo-sep {
-          width: 1px;
-          height: 14px;
-          background: rgba(255, 255, 255, 0.08);
+          width: 72%;
+          max-width: 146px;
+          height: 1px;
+          background: rgba(255, 255, 255, 0.15);
         }
 
         @media (min-width: 1024px) {
           .footer-bar-content {
             flex-wrap: nowrap !important;
           }
+          .footer-copy {
+            max-width: 58ch;
+          }
           .footer-partners {
             display: inline-flex;
-            align-items: center;
-            gap: 0.95rem;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 0.55rem;
+            min-width: 210px;
           }
         }
 
@@ -122,6 +129,7 @@ export default function Footer() {
           }
           .footer-partners {
             display: flex !important;
+            flex-direction: row !important;
             align-items: center !important;
             justify-content: center !important;
             gap: 0.9rem !important;
@@ -156,6 +164,8 @@ export default function Footer() {
             filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.15) url(#remove-black-footer) !important;
           }
           .footer-logo-sep {
+            width: 1px !important;
+            max-width: none !important;
             height: 16px !important;
             background: rgba(255, 255, 255, 0.16) !important;
           }
