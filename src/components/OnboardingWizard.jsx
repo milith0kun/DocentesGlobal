@@ -1142,12 +1142,15 @@ export default function OnboardingWizard({ isOpen, onClose }) {
       {showDriveAlert && (
         <div className="wz-modal-overlay fade-in">
           <div className="wz-modal-content condition-modal" style={{ borderTop: '4px solid #0ea5e9' }}>
-            <span className="wz-modal-tag" style={{ background: 'rgba(14, 165, 233, 0.1)', color: '#0ea5e9' }}>Google Drive</span>
-            <h3 className="wz-modal-title" style={{ marginTop: '0.5rem' }}>Habilitación de Carpetas</h3>
+            <span className="wz-modal-tag" style={{ background: 'rgba(14, 165, 233, 0.1)', color: '#0ea5e9', display:'inline-flex', alignItems:'center', gap:'0.4rem' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+              Google Drive
+            </span>
+            <h3 className="wz-modal-title" style={{ marginTop: '0.8rem' }}>Habilitación de Carpetas</h3>
             <p className="wz-modal-desc" style={{ marginBottom: '1.5rem' }}>
               No es necesario que crees ninguna carpeta. La Dirección Académica configurará automáticamente tu espacio institucional y <strong>recibirás un correo</strong> cuando tus carpetas de subida estén listas.
             </p>
-            <button onClick={() => { setShowDriveAlert(false); setStep(11); }} className="wz-btn-main" style={{ width: '100%', padding: '0.9rem' }}>
+            <button onClick={() => { setShowDriveAlert(false); setStep(11); }} className="wz-btn-firm" style={{ width: '100%', background: 'var(--bc)', boxShadow: '0 8px 24px -8px rgba(14,165,233,0.5)' }}>
               Entendido, Continuar
             </button>
           </div>
