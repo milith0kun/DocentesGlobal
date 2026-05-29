@@ -2229,8 +2229,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
           .wz-nav { flex-direction:column-reverse; gap:0.5rem; margin-top:1.5rem; }
           .wz-btn-main, .wz-btn-ghost, .wz-btn-wa { width:100%; text-align:center; justify-content:center; padding:0.75rem; }
-          .wz-modal-box { width:95%; padding:1.5rem; border-radius:24px; }
-          .wz-modal-title { font-size:1.8rem; }
+          .wz-modal-content { width:92%; padding:2rem 1.5rem; border-radius:20px; }
+          .wz-modal-title { font-size:1.6rem; margin-bottom:0.85rem; letter-spacing:-0.5px; }
+          .wz-modal-desc { font-size:0.9rem; margin-bottom:1.5rem; }
+          .wz-modal-tag { font-size:0.65rem; margin-bottom:1rem; padding:0.35rem 0.75rem; }
+          .wz-btn-firm { padding:0.9rem 1.25rem; font-size:0.92rem; }
 
           .wz-payment-grid { grid-template-columns:1fr 1fr !important; }
           .wz-upload-section { grid-template-columns:1fr !important; }
