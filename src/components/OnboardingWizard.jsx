@@ -126,11 +126,29 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     12: 'Declaración de Conformidad',
   };
 
+  const toggleMarca = (key) => {
+    let selected = formData.marca ? formData.marca.split(',') : [];
+    if (selected.includes(key)) {
+      selected = selected.filter(k => k !== key);
+    } else {
+      if (selected.length < 2) {
+        selected.push(key);
+      }
+    }
+    setFormData({...formData, marca: selected.join(',')});
+  };
+
   const marcaConfig = {
     ciip: { nombre: 'CIIP Latam', color: '#0284c7', telefono: '51956006498', coordinador: 'Nicol', bgGlow: 'rgba(2,132,199,0.12)' },
     geomina: { nombre: 'Geomina', color: '#0ea5e9', telefono: '51925084564', coordinador: 'Fiorella', bgGlow: 'rgba(14,165,233,0.12)' },
     biomedic: { nombre: 'Biomedic', color: '#06b6d4', telefono: '51956006498', coordinador: 'Nicol', bgGlow: 'rgba(6,182,212,0.1)' },
     ambos: { nombre: 'CIIP Latam & Geomina', color: '#38bdf8', telefono: '51956006498', coordinador: 'Nicol y Fiorella', bgGlow: 'rgba(56,189,248,0.12)' },
+    'ciip,geomina': { nombre: 'CIIP Latam & Geomina', color: '#38bdf8', telefono: '51956006498', coordinador: 'Nicol y Fiorella', bgGlow: 'rgba(56,189,248,0.12)' },
+    'geomina,ciip': { nombre: 'CIIP Latam & Geomina', color: '#38bdf8', telefono: '51956006498', coordinador: 'Nicol y Fiorella', bgGlow: 'rgba(56,189,248,0.12)' },
+    'ciip,biomedic': { nombre: 'CIIP Latam & Biomedic', color: '#0ea5e9', telefono: '51956006498', coordinador: 'Coordinación Académica', bgGlow: 'rgba(14,165,233,0.12)' },
+    'biomedic,ciip': { nombre: 'CIIP Latam & Biomedic', color: '#0ea5e9', telefono: '51956006498', coordinador: 'Coordinación Académica', bgGlow: 'rgba(14,165,233,0.12)' },
+    'geomina,biomedic': { nombre: 'Geomina & Biomedic', color: '#06b6d4', telefono: '51925084564', coordinador: 'Coordinación Académica', bgGlow: 'rgba(6,182,212,0.1)' },
+    'biomedic,geomina': { nombre: 'Geomina & Biomedic', color: '#06b6d4', telefono: '51925084564', coordinador: 'Coordinación Académica', bgGlow: 'rgba(6,182,212,0.1)' },
   };
 
   const handleNext = () => {
@@ -251,22 +269,30 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         <div className="wz-h-center">
           {(() => {
             const mkLogo = (key, src, cls, extraStyle) => {
-              const isSelected = formData.marca === key || (formData.marca === 'ambos' && (key === 'ciip' || key === 'geomina'));
-              const opacity = step === 1 ? (!formData.marca ? 0.85 : isSelected ? 1 : 0.2) : 1;
-              return (
-                <img key={key} src={src} alt={key} className={`wz-logo ${cls||''}`}
-                  style={{ opacity, ...extraStyle, transition:'all 0.4s ease' }} />
-              );
-            };
-            const ciip = mkLogo('ciip', biomedicWhite, 'lg-ciip');
-            const geo = mkLogo('geomina', geominaWhite, 'lg-geo');
-            const bio = mkLogo('biomedic', logobiomedic, 'lg-bio', { filter:'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' });
-            const sep = (k) => <div key={k} className="wz-sep" />;
-            if (step > 1) {
-              if (formData.marca === 'ambos') return [ciip, sep('s1'), geo];
-              return formData.marca === 'ciip' ? ciip : formData.marca === 'geomina' ? geo : bio;
+            const isSelected = formData.marca ? formData.marca.split(',').includes(key) : false;
+            const isAmbosMode = formData.marca && formData.marca.split(',').length > 1;
+            const opacity = step === 1 ? (!formData.marca ? 0.85 : isSelected ? 1 : 0.2) : 1;
+            return (
+              <img key={key} src={src} alt={key} className={`wz-logo ${cls||''}`}
+                style={{ opacity, ...extraStyle, transition:'all 0.4s ease', display: isAmbosMode ? 'inline-block' : 'inline-block' }} />
+            );
+          };
+          const ciip = mkLogo('ciip', biomedicWhite, 'lg-ciip');
+          const geo = mkLogo('geomina', geominaWhite, 'lg-geo');
+          const bio = mkLogo('biomedic', logobiomedic, 'lg-bio', { filter:'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' });
+          const sep = (k) => <div key={k} className="wz-sep" />;
+          if (step > 1) {
+            const arr = formData.marca ? formData.marca.split(',') : [];
+            if (arr.length > 1) {
+              return arr.map((k, idx) => {
+                const logo = k === 'ciip' ? ciip : k === 'geomina' ? geo : bio;
+                if (idx > 0) return <><div key={`s${idx}`} className="wz-sep" />{logo}</>;
+                return logo;
+              });
             }
-            return [ciip, sep('s1'), geo, sep('s2'), bio];
+            return formData.marca === 'ciip' ? ciip : formData.marca === 'geomina' ? geo : bio;
+          }
+          return [ciip, sep('s1'), geo, sep('s2'), bio];
           })()}
         </div>
         <div className="wz-h-right">
@@ -321,7 +347,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               {step === 1 && (
                 <div className="wz-fade">
                   <h2 className="wz-title" style={{ textAlign:'center' }}>Selecciona tu Institución</h2>
-                  <p className="wz-sub" style={{ textAlign:'center', marginBottom:'1.5rem' }}>Elige la institución a la que perteneces.</p>
+                  <p className="wz-sub" style={{ textAlign:'center', marginBottom:'1.5rem' }}>Elige la institución a la que perteneces (puedes marcar hasta 2 opciones).</p>
                   
                   <style>{`
                     .custom-brand-list { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1.5rem; }
@@ -387,23 +413,17 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                       { key:'geomina', logo:geominaWhite },
                       { key:'biomedic', logo:logobiomedic },
                     ].map(b => {
-                      const directSelected = formData.marca === b.key;
-                      const partOfAmbos = formData.marca === 'ambos' && (b.key === 'ciip' || b.key === 'geomina');
-                      const on = directSelected || partOfAmbos;
+                      const on = formData.marca && formData.marca.split(',').includes(b.key);
                       return (
-                        <div key={b.key} onClick={() => setFormData({...formData, marca:b.key})}
-                          className={`custom-brand-card ${on ? 'on' : ''} ${partOfAmbos ? 'part-of-ambos' : ''}`}
-                          style={{ '--bc': marcaConfig[b.key].color }}>
+                        <div key={b.key} onClick={() => toggleMarca(b.key)}
+                          className={`custom-brand-card ${on ? 'on' : ''}`}
+                          style={{ '--bc': marcaConfig[b.key]?.color }}>
                           <img src={b.logo} alt={b.key} className={`lg-${b.key}-btn`} style={{
                             filter: b.key==='biomedic' ? 'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' : 'none'
                           }} />
                         </div>
                       );
                     })}
-                    <div onClick={() => setFormData({...formData, marca:'ambos'})}
-                      className={`custom-ambos-card ${formData.marca === 'ambos' ? 'on' : ''}`}>
-                      <span>Ambas instituciones (CIIP & Geomina)</span>
-                    </div>
                   </div>
                   
                   <div className="wz-nav">
