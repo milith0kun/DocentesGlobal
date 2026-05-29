@@ -31,3 +31,5 @@ dist-ssr
 .junie/
 .kiro/
 .gemini/
+
+.next/

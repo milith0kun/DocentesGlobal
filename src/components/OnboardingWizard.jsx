@@ -2099,7 +2099,38 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-sep { display:none; }
           .wz-h-center { gap:0.5rem; }
         }
-      `}</style>
+      `}
+        /* ── OVERRIDES FINALES PARA EL MODAL DE FECHA (MÓVIL) ── */
+        @media (max-width: 768px) {
+          .wz-datepicker-years-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            max-height: 240px !important;
+            gap: 0.5rem !important;
+          }
+          .wz-datepicker-year-btn, .wz-datepicker-month-btn {
+            font-size: 0.95rem !important;
+            padding: 0.65rem 0 !important;
+          }
+          .wz-datepicker-overlay {
+            position: fixed !important;
+            top: 0 !important; left: 0 !important; bottom: 0 !important; right: 0 !important;
+            width: 100vw !important; height: 100vh !important;
+            background: rgba(15, 23, 42, 0.75) !important;
+            z-index: 999 !important;
+          }
+          .wz-datepicker-popover {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            bottom: auto !important;
+            right: auto !important;
+            transform: translate(-50%, -50%) !important;
+            width: 90% !important;
+            max-width: 320px !important;
+            z-index: 1000 !important;
+          }
+        }
+      </style>
 
       <svg style={{ position:'absolute', width:0, height:0, pointerEvents:'none' }}>
         <defs>
