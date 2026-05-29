@@ -142,10 +142,16 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('Error en /api/submit:', error);
+    const raw = String(error?.message || '');
+    let friendly = raw || 'Error al procesar el envío';
+    if (/DECODER routines|private key|PEM|unsupported/i.test(raw)) {
+      friendly = 'Error en GOOGLE_PRIVATE_KEY. Verifica formato PEM y saltos de línea (\\n).';
+    }
+
     return NextResponse.json(
       {
         success: false,
-        error: error?.message || 'Error al procesar el envío',
+        error: friendly,
       },
       { status: 500 }
     );

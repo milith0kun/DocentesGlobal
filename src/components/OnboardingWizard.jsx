@@ -325,7 +325,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     .custom-ambos-card {
                       background: linear-gradient(135deg, #080f1a 0%, #122137 100%);
                       border: 2px dashed rgba(255, 255, 255, 0.15);
-                      height: 64px; display: flex; align-items: center; justify-content: center;
+                      min-height: 64px; height: auto; padding: 1rem; 
+                      display: flex; align-items: center; justify-content: center; text-align: center;
                       border-radius: 12px; cursor: pointer; color: rgba(255,255,255,0.7); font-weight: 600;
                       transition: all 0.3s ease; position: relative;
                     }
@@ -337,7 +338,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                       border-style: solid; border-color: #38bdf8; color: #38bdf8;
                       box-shadow: 0 0 0 1px #38bdf8, 0 8px 16px -6px rgba(56, 189, 248, 0.4);
                     }
-                    @media(max-width: 640px) { .custom-brand-card { height: 72px; } .custom-brand-card img { max-height: 32px; } }
+                    @media(max-width: 640px) { 
+                      .custom-brand-card { height: 72px; } 
+                      .custom-brand-card img { max-height: 32px; } 
+                      .custom-ambos-card { font-size: 0.9rem; padding: 0.75rem; }
+                    }
                   `}</style>
                   
                   <div className="custom-brand-list" style={{ maxWidth:'100%', margin:'0 auto' }}>

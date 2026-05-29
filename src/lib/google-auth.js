@@ -13,11 +13,15 @@ export function getGoogleAuth() {
     throw new Error(`Faltan variables de entorno de Google Auth: ${missing.join(', ')}`);
   }
 
+  const normalizedPrivateKey = process.env.GOOGLE_PRIVATE_KEY
+    ?.replace(/\\n/g, '\n')
+    ?.replace(/^"(.*)"$/s, '$1');
+
   if (!authClient) {
     authClient = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        private_key: normalizedPrivateKey,
       },
       scopes: [
         'https://www.googleapis.com/auth/spreadsheets',
