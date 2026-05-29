@@ -5,7 +5,7 @@ import { isValidEmail } from '../utils/emailValidation.js';
 
 const logobiomedic = '/assets/logobiomedic.png';
 const geominaWhite = '/assets/geomina-new.png';
-const biomedicWhite = '/assets/biomedic-white.png';
+const ciipLatam = '/assets/ciip-latam.png';
 const camaraFondoVirtual = '/assets/camara_fondo_virtual.png';
 const identidadVisualPpts = '/assets/identidad_visual_ppts.png';
 const canalesExternosProhibidos = '/assets/canales_externos_prohibidos.png';
@@ -277,7 +277,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 style={{ opacity, ...extraStyle, transition:'all 0.4s ease', display: isAmbosMode ? 'inline-block' : 'inline-block' }} />
             );
           };
-          const ciip = mkLogo('ciip', biomedicWhite, 'lg-ciip');
+          const ciip = mkLogo('ciip', ciipLatam, 'lg-ciip');
           const geo = mkLogo('geomina', geominaWhite, 'lg-geo');
           const bio = mkLogo('biomedic', logobiomedic, 'lg-bio', { filter:'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' });
           const sep = (k) => <div key={k} className="wz-sep" />;
@@ -358,7 +358,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                       position: relative; overflow: hidden; list-style: none; outline: none;
                     }
                     .custom-brand-card img {
-                      opacity: 0.45; max-width: 80%; max-height: 40px; transition: all 0.3s ease;
+                      opacity: 0.45; max-width: 90%; max-height: 100%; transition: all 0.3s ease;
                       object-fit: contain;
                     }
                     .custom-brand-card:hover {
@@ -374,9 +374,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     .custom-brand-card.on img {
                       opacity: 1; transform: scale(1.05);
                     }
-                    .custom-brand-card img.lg-ciip-btn { height: 40px; max-height: 40px; }
-                    .custom-brand-card img.lg-geomina-btn { height: 28px; max-height: 28px; }
-                    .custom-brand-card img.lg-biomedic-btn { height: 35px; max-height: 35px; }
+                    .custom-brand-card img.lg-ciip-btn { height: 55px; max-height: 60px; }
+                    .custom-brand-card img.lg-geomina-btn { height: 40px; max-height: 45px; }
+                    .custom-brand-card img.lg-biomedic-btn { height: 45px; max-height: 50px; }
                     .custom-brand-card.part-of-ambos {
                       background: #0f1e34; border-color: rgba(56, 189, 248, 0.45);
                       box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25);
@@ -384,15 +384,15 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     .custom-brand-card.part-of-ambos img { opacity: 1; }
                     @media(max-width: 640px) { 
                       .custom-brand-card { height: 60px; } 
-                      .custom-brand-card img.lg-ciip-btn { height: 30px; max-height: 30px; }
-                      .custom-brand-card img.lg-geomina-btn { height: 20px; max-height: 20px; }
-                      .custom-brand-card img.lg-biomedic-btn { height: 26px; max-height: 26px; }
+                      .custom-brand-card img.lg-ciip-btn { height: 42px; max-height: 48px; }
+                      .custom-brand-card img.lg-geomina-btn { height: 32px; max-height: 38px; }
+                      .custom-brand-card img.lg-biomedic-btn { height: 38px; max-height: 42px; }
                     }
                   `}</style>
                   
                   <div className="custom-brand-list" style={{ maxWidth:'100%', margin:'0 auto' }}>
                     {[
-                      { key:'ciip', logo:biomedicWhite },
+                      { key:'ciip', logo:ciipLatam },
                       { key:'geomina', logo:geominaWhite },
                       { key:'biomedic', logo:logobiomedic },
                     ].map(b => {
