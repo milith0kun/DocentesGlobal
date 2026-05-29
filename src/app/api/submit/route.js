@@ -250,7 +250,6 @@ export async function POST(request) {
       links.fotoUrl = fotoResult.fileUrl;
     }
 
-    const pdfData = { ...fields, code, fecha, institucion };
     await appendDocenteRow(
       {
         code,
