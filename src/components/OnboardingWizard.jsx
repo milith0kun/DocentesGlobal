@@ -374,36 +374,19 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     .custom-brand-card.on img {
                       opacity: 1; transform: scale(1.05);
                     }
-                    .custom-brand-card img.lg-ciip-btn { height: 32px; max-height: 32px; }
-                    .custom-brand-card img.lg-geomina-btn { height: 22px; max-height: 22px; }
-                    .custom-brand-card img.lg-biomedic-btn { height: 28px; max-height: 28px; }
+                    .custom-brand-card img.lg-ciip-btn { height: 40px; max-height: 40px; }
+                    .custom-brand-card img.lg-geomina-btn { height: 28px; max-height: 28px; }
+                    .custom-brand-card img.lg-biomedic-btn { height: 35px; max-height: 35px; }
                     .custom-brand-card.part-of-ambos {
                       background: #0f1e34; border-color: rgba(56, 189, 248, 0.45);
                       box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25);
                     }
                     .custom-brand-card.part-of-ambos img { opacity: 1; }
-                    .custom-ambos-card {
-                      background: linear-gradient(135deg, #080f1a 0%, #122137 100%);
-                      border: 2px dashed rgba(255, 255, 255, 0.15);
-                      min-height: 64px; height: auto; padding: 1rem; 
-                      display: flex; align-items: center; justify-content: center; text-align: center;
-                      border-radius: 12px; cursor: pointer; color: rgba(255,255,255,0.7); font-weight: 600;
-                      transition: all 0.3s ease; position: relative;
-                    }
-                    .custom-ambos-card:hover {
-                      background: linear-gradient(135deg, #0b1524 0%, #1a2f4c 100%); color: white;
-                      border-color: rgba(255,255,255,0.3);
-                    }
-                    .custom-ambos-card.on {
-                      border-style: solid; border-color: #38bdf8; color: #38bdf8;
-                      box-shadow: 0 0 0 1px #38bdf8, 0 8px 16px -6px rgba(56, 189, 248, 0.4);
-                    }
                     @media(max-width: 640px) { 
-                      .custom-brand-card { height: 54px; } 
-                      .custom-brand-card img.lg-ciip-btn { height: 24px; max-height: 24px; }
-                      .custom-brand-card img.lg-geomina-btn { height: 16px; max-height: 16px; }
-                      .custom-brand-card img.lg-biomedic-btn { height: 21px; max-height: 21px; }
-                      .custom-ambos-card { font-size: 0.85rem; padding: 0.6rem; min-height: 50px; }
+                      .custom-brand-card { height: 60px; } 
+                      .custom-brand-card img.lg-ciip-btn { height: 30px; max-height: 30px; }
+                      .custom-brand-card img.lg-geomina-btn { height: 20px; max-height: 20px; }
+                      .custom-brand-card img.lg-biomedic-btn { height: 26px; max-height: 26px; }
                     }
                   `}</style>
                   
