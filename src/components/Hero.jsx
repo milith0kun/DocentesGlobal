@@ -67,7 +67,7 @@ export default function Hero({ onStartWizard }) {
                   <span className="btn-arrow-pill" aria-hidden="true">
                     <span className="btn-arrow-premium">-&gt;</span>
                   </span>
-                </span>`r`n              </button>
+                </span>              </button>
             </div>
           </div>
 
@@ -469,4 +469,5 @@ export default function Hero({ onStartWizard }) {
     </section>
   );
 }
+
 

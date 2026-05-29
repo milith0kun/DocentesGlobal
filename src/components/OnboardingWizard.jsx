@@ -1060,8 +1060,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         .wz-datepicker-popover {
           position: absolute;
-          top: calc(100% + 8px);
-          left: 0;
+          bottom: calc(100% + 8px);
+          right: 0;
           width: 320px;
           background: rgba(255, 255, 255, 0.98);
           border: 1.5px solid #e2e8f0;
@@ -1073,7 +1073,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           backdrop-filter: blur(8px);
         }
         @keyframes scaleUpCalendar {
-          from { opacity: 0; transform: scale(0.95) translateY(-5px); }
+          from { opacity: 0; transform: scale(0.97) translateY(5px); }
           to { opacity: 1; transform: scale(1) translateY(0); }
         }
         .wz-datepicker-header {
