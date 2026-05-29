@@ -774,18 +774,19 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                         { title: 'Identidad Visual en PPTs', desc: 'Los logos de CIIP, Geomina o Biomedic deben estar presentes de forma obligatoria en cada material entregado.', req: true, imgStr: identidadVisualPpts },
                         { title: 'Canales Externos Prohibidos', desc: 'Queda estrictamente prohibido crear grupos paralelos de WhatsApp o Telegram con los alumnos.', req: false, imgStr: canalesExternosProhibidos },
                       ].map((item, i) => (
-                        <div 
-                           key={i} 
-                           className={`wz-protocol-item ${activeProtocol === i ? 'active' : ''}`}
-                           onMouseEnter={() => setActiveProtocol(i)}
-                           onClick={() => setActiveProtocol(i)}
-                        >
+                        <div key={i} className="wz-protocol-slide">
                           <img src={item.imgStr} alt={item.title} className="wz-mobile-carousel-img" />
-                          <div className="wz-pi-header">
-                            <h4 className="wz-pi-title">{item.title}</h4>
-                            <span className={`wz-cl-tag ${item.req ? 'req' : 'ban'}`}>{item.req ? 'Obligatorio' : 'Prohibido'}</span>
+                          <div 
+                             className={`wz-protocol-item ${activeProtocol === i ? 'active' : ''}`}
+                             onMouseEnter={() => setActiveProtocol(i)}
+                             onClick={() => setActiveProtocol(i)}
+                          >
+                            <div className="wz-pi-header">
+                              <h4 className="wz-pi-title">{item.title}</h4>
+                              <span className={`wz-cl-tag ${item.req ? 'req' : 'ban'}`}>{item.req ? 'Obligatorio' : 'Prohibido'}</span>
+                            </div>
+                            <p className="wz-pi-desc">{item.desc}</p>
                           </div>
-                          <p className="wz-pi-desc">{item.desc}</p>
                         </div>
                       ))}
                     </div>
@@ -2114,8 +2115,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             margin: 0 -1rem; padding: 0 1rem 1.5rem 1rem;
           }
           .wz-protocol-list-container::-webkit-scrollbar { display:none; }
-          .wz-protocol-item { min-width:85%; scroll-snap-align:center; display:flex; flex-direction:column; padding:1.25rem; }
-          .wz-mobile-carousel-img { display:block; width:100%; height:200px; object-fit:contain; border-radius:12px; margin-bottom:1.5rem; }
+          .wz-protocol-slide { min-width:88%; scroll-snap-align:center; display:flex; flex-direction:column; }
+          .wz-protocol-item { padding:1.25rem; margin-top:0; border: 1px solid #e8ecf1; }
+          .wz-mobile-carousel-img { display:block; width:100%; height:210px; object-fit:contain; border-radius:16px; margin-bottom:1rem; background:rgba(241,245,249,0.4); padding: 0.5rem; }
           .wz-metrics-grid { grid-template-columns:1fr 1fr !important; }
           .wz-metric-box.danger { grid-column:span 2; }
           .wz-top-kpis { grid-template-columns:repeat(3, minmax(0, 1fr)); }
