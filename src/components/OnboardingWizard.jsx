@@ -2139,8 +2139,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-stepper-segments { gap:0.25rem; }
           .wz-stepper-segment { height:3px; }
           .wz-main {
-            align-items:flex-start;
-            justify-content:flex-start;
             padding:1rem 0.875rem max(1.25rem, env(safe-area-inset-bottom));
             overflow-y:auto;
             border-radius:0;
@@ -2148,8 +2146,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           }
           .wz-content {
             max-width:100% !important;
-            margin-top:0;
-            margin-bottom:0;
           }
           
           .wz-title { font-size:1.5rem !important; margin-bottom:0.5rem; }
