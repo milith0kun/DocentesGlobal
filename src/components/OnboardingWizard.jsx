@@ -1794,9 +1794,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-metric-box.danger .wz-metric-value { color:#dc2626; font-size:3.2rem; }
         .wz-metric-box.danger .wz-metric-label { color:#991b1b; }
         .wz-metric-tag {
-          position:absolute; top:1.25rem; background:rgba(239,68,68,0.1); color:#dc2626;
-          font-size:0.65rem; font-weight:800; text-transform:uppercase; padding:0.35rem 0.7rem;
-          border-radius:6px; letter-spacing:1px;
+          position:relative; top:auto; background:rgba(239,68,68,0.1); color:#dc2626;
+          font-size:0.7rem; font-weight:800; text-transform:uppercase; padding:0.35rem 0.75rem;
+          border-radius:6px; letter-spacing:1px; margin-bottom:0.75rem;
         }
         
         .fade-in { animation:fadeIn 0.4s ease forwards; }
