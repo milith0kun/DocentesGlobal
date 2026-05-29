@@ -770,9 +770,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     {/* LADO IZQUIERDO: REGLAS */}
                     <div className="wz-protocol-list-container">
                       {[
-                        { title: 'Cámara y Fondo Virtual', desc: 'Cámara encendida toda la sesión con uso exclusivo del fondo institucional proporcionado.', req: true, imgStr: 'ejemplo-camara.jpg' },
-                        { title: 'Identidad Visual en PPTs', desc: 'Los logos de CIIP, Geomina o Biomedic deben estar presentes de forma obligatoria en cada material entregado.', req: true, imgStr: 'ejemplo-ppt.jpg' },
-                        { title: 'Canales Externos Prohibidos', desc: 'Queda estrictamente prohibido crear grupos paralelos de WhatsApp o Telegram con los alumnos.', req: false, imgStr: 'ejemplo-prohibido.jpg' },
+                        { title: 'Cámara y Fondo Virtual', desc: 'Cámara encendida toda la sesión con uso exclusivo del fondo institucional proporcionado.', req: true, imgStr: camaraFondoVirtual },
+                        { title: 'Identidad Visual en PPTs', desc: 'Los logos de CIIP, Geomina o Biomedic deben estar presentes de forma obligatoria en cada material entregado.', req: true, imgStr: identidadVisualPpts },
+                        { title: 'Canales Externos Prohibidos', desc: 'Queda estrictamente prohibido crear grupos paralelos de WhatsApp o Telegram con los alumnos.', req: false, imgStr: canalesExternosProhibidos },
                       ].map((item, i) => (
                         <div 
                            key={i} 
@@ -780,6 +780,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                            onMouseEnter={() => setActiveProtocol(i)}
                            onClick={() => setActiveProtocol(i)}
                         >
+                          <img src={item.imgStr} alt={item.title} className="wz-mobile-carousel-img" />
                           <div className="wz-pi-header">
                             <h4 className="wz-pi-title">{item.title}</h4>
                             <span className={`wz-cl-tag ${item.req ? 'req' : 'ban'}`}>{item.req ? 'Obligatorio' : 'Prohibido'}</span>
@@ -1730,6 +1731,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         /* ── PROTOCOLO SPLIT (PASO 4) ── */
         .wz-protocol-split { display:flex; gap:2.5rem; margin-bottom:1.5rem; align-items:stretch; }
         .wz-protocol-list-container { flex:1; display:flex; flex-direction:column; gap:0.5rem; }
+        .wz-mobile-carousel-img { display:none; }
         
         .wz-protocol-item {
           padding:1.5rem; border:1px solid transparent; border-radius:16px;
@@ -2104,10 +2106,16 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         /* ── RESPONSIVE ── */
         @media (max-width:860px) {
           .wz-main { padding:1.5rem 2rem; }
-          .wz-protocol-split { flex-direction:column-reverse; gap:1.25rem; }
-          .wz-protocol-image-container { width:100%; height:220px; min-height:220px; border-radius:16px; margin-bottom:-0.5rem; }
-          .wz-pi-image { min-height:220px; object-position:center; }
-          .wz-pi-placeholder { min-height:220px; }
+          .wz-protocol-split { display:block; margin-bottom:0; }
+          .wz-protocol-image-container { display:none; }
+          .wz-protocol-list-container { 
+            flex-direction:row; overflow-x:auto; scroll-snap-type:x mandatory; 
+            gap:1rem; padding-bottom:1rem; scrollbar-width:none; 
+            margin: 0 -1rem; padding: 0 1rem 1.5rem 1rem;
+          }
+          .wz-protocol-list-container::-webkit-scrollbar { display:none; }
+          .wz-protocol-item { min-width:85%; scroll-snap-align:center; display:flex; flex-direction:column; padding:1.25rem; }
+          .wz-mobile-carousel-img { display:block; width:100%; height:180px; object-fit:cover; object-position:top; border-radius:12px; margin-bottom:1.25rem; }
           .wz-metrics-grid { grid-template-columns:1fr 1fr !important; }
           .wz-metric-box.danger { grid-column:span 2; }
           .wz-top-kpis { grid-template-columns:repeat(3, minmax(0, 1fr)); }
