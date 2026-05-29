@@ -65,11 +65,9 @@ export default function Hero({ onStartWizard }) {
                 <span className="btn-label-wrap">
                   <span>Comenzar Manual</span>
                   <span className="btn-arrow-pill" aria-hidden="true">
-                    <span className="btn-arrow-premium">→</span>
+                    <span className="btn-arrow-premium">-&gt;</span>
                   </span>
-                </span>
-                <span className="btn-shine"></span>
-              </button>
+                </span>`r`n              </button>
             </div>
           </div>
 
@@ -471,3 +469,4 @@ export default function Hero({ onStartWizard }) {
     </section>
   );
 }
+
