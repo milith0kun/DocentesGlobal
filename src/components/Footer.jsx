@@ -15,13 +15,6 @@ export default function Footer() {
       position: 'relative',
       zIndex: 10
     }}>
-      {/* Subtle line separator */}
-      <div className="footer-separator" style={{
-        height: '1px',
-        background: 'linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.1), transparent)',
-        marginBottom: '0.85rem'
-      }} />
-
       <div className="container">
         <div style={{
           display: 'flex',
