@@ -698,9 +698,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                   
                   <div className="wz-principles-list">
                     {[
-                      { n:'01', t:'100% Práctico', d:'Prohibido el relleno teórico. Cada concepto debe ser demostrado resolviendo casos reales directamente en software.' },
-                      { n:'02', t:'Cero Relleno', d:'Nada de videos largos ni PPTs con exceso de texto. Exigimos acción pura y directa sobre las herramientas.' },
-                      { n:'03', t:'Control de Ritmo', d:'El docente domina el tiempo. Los problemas técnicos individuales no pueden detener el aprendizaje de todo el grupo.' },
+                      { n:'01', t:'Enfoque 100% Práctico y Aplicado', d:'Creemos firmemente en el poder de aprender haciendo. Por ello, transformamos la teoría en experiencia directa: cada nuevo concepto cobra vida al resolver casos reales de la industria en vivo. El software es nuestro gran escenario para que los estudiantes comprueben la aplicación inmediata de su conocimiento.' },
+                      { n:'02', t:'Inmersión Total en las Herramientas', d:'Evolucionamos la educación dejando atrás la exposición tradicional. Les invitamos a sustituir las extensas presentaciones por una inmersión directa en el entorno de trabajo digital. Queremos que sus sesiones sean espacios dinámicos y de acción pura, donde el estudiante alcance el dominio técnico interactuando con la herramienta desde el primer minuto.' },
+                      { n:'03', t:'Liderazgo y Fluidez del Aprendizaje', d:'Usted es el guía que marca el ritmo del éxito grupal. Confiamos en su liderazgo para mantener un avance constante y motivador, gestionando con agilidad las consultas o incidencias técnicas individuales. De esta manera, garantizamos que la energía de la clase fluya sin interrupciones y todo el equipo alcance su meta de aprendizaje.' },
                     ].map((p,i) => (
                       <div key={i} className="wz-principle">
                         <div className="wz-principle-num">{p.n}</div>
