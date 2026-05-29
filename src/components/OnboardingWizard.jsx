@@ -778,6 +778,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                            key={i} 
                            className={`wz-protocol-item ${activeProtocol === i ? 'active' : ''}`}
                            onMouseEnter={() => setActiveProtocol(i)}
+                           onClick={() => setActiveProtocol(i)}
                         >
                           <div className="wz-pi-header">
                             <h4 className="wz-pi-title">{item.title}</h4>
@@ -2103,10 +2104,10 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         /* ── RESPONSIVE ── */
         @media (max-width:860px) {
           .wz-main { padding:1.5rem 2rem; }
-          .wz-protocol-split { flex-direction:column; gap:1.5rem; }
-          .wz-protocol-image-container { width:100%; height:260px; min-height:260px; }
-          .wz-pi-image { min-height:260px; }
-          .wz-pi-placeholder { min-height:260px; }
+          .wz-protocol-split { flex-direction:column-reverse; gap:1.25rem; }
+          .wz-protocol-image-container { width:100%; height:220px; min-height:220px; border-radius:16px; margin-bottom:-0.5rem; }
+          .wz-pi-image { min-height:220px; object-position:center; }
+          .wz-pi-placeholder { min-height:220px; }
           .wz-metrics-grid { grid-template-columns:1fr 1fr !important; }
           .wz-metric-box.danger { grid-column:span 2; }
           .wz-top-kpis { grid-template-columns:repeat(3, minmax(0, 1fr)); }
