@@ -67,7 +67,8 @@ export default function Hero({ onStartWizard }) {
                   <span className="btn-arrow-pill" aria-hidden="true">
                     <span className="btn-arrow-premium">-&gt;</span>
                   </span>
-                </span>              </button>
+                </span>
+              </button>
             </div>
           </div>
 
@@ -124,15 +125,15 @@ export default function Hero({ onStartWizard }) {
        <style>{`
         .home-hero {
           text-align: left;
-          padding: clamp(6.25rem, 9vw, 10rem) 0 clamp(3.5rem, 7vw, 7rem) !important;
+          padding: clamp(5.15rem, 6.8vw, 6.5rem) 0 clamp(0.85rem, 1.8vw, 1.35rem) !important;
         }
 
         .home-hero-grid {
           display: grid;
-          grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
-          gap: clamp(2rem, 5vw, 4rem);
+          grid-template-columns: minmax(0, 1.1fr) minmax(250px, 0.9fr);
+          gap: clamp(1.5rem, 3vw, 2.6rem);
           align-items: center;
-          min-height: min(520px, calc(100svh - 7rem));
+          min-height: calc(100svh - 188px);
         }
 
         .hero-visual {
@@ -140,22 +141,22 @@ export default function Hero({ onStartWizard }) {
           justify-content: center;
           align-items: center;
           position: relative;
-          min-height: clamp(260px, 38vw, 420px);
+          min-height: clamp(220px, 26vw, 320px);
           overflow: visible;
         }
 
         .hero-visual-ring {
-          width: clamp(220px, 32vw, 380px);
-          height: clamp(220px, 32vw, 380px);
+          width: clamp(190px, 24vw, 285px);
+          height: clamp(190px, 24vw, 285px);
         }
 
         .hero-visual-glow {
-          width: clamp(180px, 24vw, 280px);
-          height: clamp(180px, 24vw, 280px);
+          width: clamp(145px, 18vw, 220px);
+          height: clamp(145px, 18vw, 220px);
         }
 
         .home-hero-mascot {
-          width: clamp(220px, 29vw, 340px);
+          width: clamp(190px, 23vw, 260px);
         }
 
         .animated-gradient-text {
@@ -175,25 +176,25 @@ export default function Hero({ onStartWizard }) {
         }
 
         .btn-primary-hero-premium {
-          min-width: clamp(220px, 28vw, 292px);
-          min-height: 56px;
-          padding: 0.8rem 1.1rem 0.8rem 1.55rem;
-          font-size: 1rem;
-          border-radius: 18px;
-          border: 1px solid rgba(255, 255, 255, 0.24);
+          min-width: clamp(212px, 24vw, 258px);
+          min-height: 52px;
+          padding: 0.65rem 0.9rem 0.65rem 1.22rem;
+          font-size: 0.95rem;
+          border-radius: 14px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
           cursor: pointer;
           position: relative;
           overflow: hidden;
           isolation: isolate;
           color: #fff;
-          font-weight: 850;
-          letter-spacing: 0.2px;
-          background: linear-gradient(135deg, #056d9d 0%, #0b8cc7 54%, #11a6da 100%);
+          font-weight: 800;
+          letter-spacing: 0;
+          background: linear-gradient(135deg, #046993 0%, #0a83bb 55%, #109bcf 100%);
           box-shadow:
-            0 12px 26px -10px rgba(2, 132, 199, 0.5),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2),
-            inset 0 -2px 0 rgba(3, 105, 161, 0.35);
-          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            0 8px 20px -8px rgba(2, 132, 199, 0.45),
+            inset 0 1px 0 rgba(255, 255, 255, 0.16),
+            inset 0 -1px 0 rgba(3, 105, 161, 0.3);
+          transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
         }
 
         .btn-label-wrap {
@@ -202,7 +203,7 @@ export default function Hero({ onStartWizard }) {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 0.8rem;
+          gap: 0.66rem;
           white-space: nowrap;
         }
 
@@ -210,11 +211,11 @@ export default function Hero({ onStartWizard }) {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          width: 1.7rem;
-          height: 1.7rem;
+          width: 1.45rem;
+          height: 1.45rem;
           border-radius: 999px;
-          background: rgba(255, 255, 255, 0.2);
-          border: 1px solid rgba(255, 255, 255, 0.28);
+          background: rgba(255, 255, 255, 0.18);
+          border: 1px solid rgba(255, 255, 255, 0.26);
           flex-shrink: 0;
         }
 
@@ -229,63 +230,36 @@ export default function Hero({ onStartWizard }) {
 
         .btn-primary-hero-premium:hover {
           transform: translateY(-1px);
-          box-shadow: 
-            0 16px 32px -10px rgba(14, 165, 233, 0.46),
-            0 0 0 1px rgba(14, 165, 233, 0.22);
-          background: linear-gradient(135deg, #0677ab 0%, #0d95d2 54%, #15b0e3 100%);
+          box-shadow:
+            0 12px 22px -9px rgba(14, 165, 233, 0.44),
+            0 0 0 1px rgba(14, 165, 233, 0.2);
+          background: linear-gradient(135deg, #0674a2 0%, #0d90ca 55%, #14a6d9 100%);
         }
 
         .btn-primary-hero-premium:focus-visible {
           outline: none;
           box-shadow:
-            0 0 0 2px rgba(255, 255, 255, 0.88),
-            0 0 0 5px rgba(14, 165, 233, 0.38),
-            0 14px 28px -10px rgba(2, 132, 199, 0.48);
+            0 0 0 2px rgba(255, 255, 255, 0.92),
+            0 0 0 4px rgba(14, 165, 233, 0.38),
+            0 10px 22px -10px rgba(2, 132, 199, 0.48);
         }
 
         .btn-primary-hero-premium:active {
-          transform: translateY(0) scale(0.995);
+          transform: translateY(0);
           box-shadow:
-            0 8px 18px -9px rgba(2, 132, 199, 0.6),
-            inset 0 2px 9px rgba(7, 89, 133, 0.24);
+            0 6px 14px -8px rgba(2, 132, 199, 0.45),
+            inset 0 2px 7px rgba(7, 89, 133, 0.2);
         }
 
         .btn-primary-hero-premium:hover .btn-arrow-premium {
-          transform: translateX(3px);
+          transform: translateX(2px);
         }
 
         .btn-arrow-premium {
           display: inline-block;
-          font-size: 1rem;
+          font-size: 0.9rem;
           line-height: 1;
           transition: transform 0.2s ease;
-        }
-
-        .btn-shine {
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 255, 255, 0.18),
-            transparent
-          );
-          transition: 0.6s;
-        }
-
-        .btn-primary-hero-premium:hover .btn-shine {
-          left: 100%;
-        }
-
-        .btn-secondary-hero-premium:hover {
-          background: #ffffff !important;
-          border-color: rgba(14, 165, 233, 0.4) !important;
-          color: #0284c7 !important;
-          transform: translateY(-3px);
-          box-shadow: 0 12px 28px -6px rgba(14,165,233,0.12) !important;
         }
 
         .mascot-shadow {
@@ -320,14 +294,31 @@ export default function Hero({ onStartWizard }) {
           to { transform: rotate(360deg); }
         }
 
+        @media (min-width: 1024px) {
+          .home-hero .hero-badge {
+            margin-bottom: 1.1rem !important;
+          }
+          .home-hero .hero-title {
+            font-size: clamp(2.7rem, 3.3vw, 3.45rem) !important;
+            line-height: 1.04 !important;
+            margin-bottom: 1.05rem !important;
+          }
+          .home-hero .hero-subtitle {
+            font-size: 1.02rem !important;
+            line-height: 1.58 !important;
+            max-width: 540px !important;
+            margin-bottom: 1.2rem !important;
+          }
+        }
+
         @media (max-width: 992px) {
           .hero-section {
-            padding: 7rem 0 3.5rem !important;
+            padding: 6.45rem 0 2.3rem !important;
           }
           .hero-section .hero-container > div {
             grid-template-columns: 1fr !important;
             text-align: center;
-            gap: 2.75rem !important;
+            gap: 2.1rem !important;
             min-height: auto;
           }
           .hero-section .hero-content {
@@ -340,11 +331,11 @@ export default function Hero({ onStartWizard }) {
             justify-content: center !important;
           }
           .hero-section .hero-title {
-            font-size: 3rem !important;
+            font-size: 2.75rem !important;
             letter-spacing: 0 !important;
           }
           .hero-section .hero-subtitle {
-            margin: 0 auto 3rem !important;
+            margin: 0 auto 2rem !important;
             text-align: center;
           }
           .mascot-shadow {
@@ -354,13 +345,13 @@ export default function Hero({ onStartWizard }) {
 
         @media (max-width: 768px) {
           .home-hero {
-            padding-top: 7rem !important;
-            padding-bottom: 2.25rem !important;
+            padding-top: 6.6rem !important;
+            padding-bottom: 1.6rem !important;
           }
           .hero-section .hero-title {
             font-size: clamp(2.15rem, 12vw, 2.8rem) !important;
             letter-spacing: 0 !important;
-            margin-bottom: 1.25rem !important;
+            margin-bottom: 0.95rem !important;
           }
           .hero-section .hero-badge {
             display: none !important;
@@ -376,7 +367,7 @@ export default function Hero({ onStartWizard }) {
             flex-direction: column;
             width: 100%;
           }
-          .btn-primary-hero-premium, .btn-secondary-hero-premium {
+          .btn-primary-hero-premium {
             width: 100%;
             justify-content: center;
             text-align: center;

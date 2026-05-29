@@ -79,6 +79,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [viewYear, setViewYear] = useState(new Date().getFullYear() - 25);
   const [viewMonth, setViewMonth] = useState(new Date().getMonth());
+  const [calendarView, setCalendarView] = useState('year'); // 'year' | 'month' | 'day'
 
   const openCalendar = () => {
     if (formData.fechaNacimiento) {
@@ -90,12 +91,15 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         if (!isNaN(d) && !isNaN(m) && !isNaN(y) && y >= 1930 && y <= new Date().getFullYear()) {
           setViewYear(y);
           setViewMonth(m);
+          setCalendarView('day');
+          setShowDatePicker(true);
+          return;
         }
       }
-    } else {
-      setViewYear(new Date().getFullYear() - 25);
-      setViewMonth(new Date().getMonth());
     }
+    setViewYear(new Date().getFullYear() - 25);
+    setViewMonth(new Date().getMonth());
+    setCalendarView('year');
     setShowDatePicker(true);
   };
 
@@ -353,175 +357,215 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                       <span className="wz-label">Fecha de Nacimiento</span>
                       <div className="wz-datepicker-container" style={{ position: 'relative', width: '100%' }}>
                         <input type="text"
-                          placeholder={formData.documento.trim() ? "DD/MM/AAAA" : "Escribe tu Documento primero..."}
+                          placeholder="DD/MM/AAAA"
                           value={formData.fechaNacimiento}
-                          disabled={!formData.documento.trim()}
                           onChange={handleFechaNacimientoChange}
-                          onClick={() => { if (formData.documento.trim()) openCalendar(); }}
-                          onFocus={() => { if (formData.documento.trim()) openCalendar(); }}
+                          onClick={openCalendar}
+                          onFocus={openCalendar}
                           className="wz-input"
                           maxLength={10}
                           autoComplete="off"
-                          style={{ paddingRight: '2.5rem', cursor: formData.documento.trim() ? 'pointer' : 'not-allowed' }} />
+                          style={{ paddingRight: '2.5rem', cursor: 'pointer' }} />
                         
-                        {formData.documento.trim() && (
-                          <button
-                            type="button"
-                            onClick={openCalendar}
-                            className="wz-datepicker-input-icon"
-                            style={{
-                              position: 'absolute',
-                              right: '12px',
-                              top: '50%',
-                              transform: 'translateY(-50%)',
-                              background: 'none',
-                              border: 'none',
-                              color: '#94a3b8',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              padding: 0
-                            }}
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                          </button>
-                        )}
+                        <button
+                          type="button"
+                          onClick={openCalendar}
+                          className="wz-datepicker-input-icon"
+                          style={{
+                            position: 'absolute',
+                            right: '12px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            background: 'none',
+                            border: 'none',
+                            color: '#94a3b8',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            padding: 0
+                          }}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        </button>
 
                         {showDatePicker && (
                           <>
                             <div className="wz-datepicker-overlay" onClick={() => setShowDatePicker(false)} />
                             <div className="wz-datepicker-popover">
-                              <div className="wz-datepicker-header">
-                                <button
-                                  type="button"
-                                  className="wz-datepicker-nav-btn"
-                                  onClick={() => {
-                                    if (viewMonth === 0) {
-                                      setViewMonth(11);
-                                      setViewYear(prev => prev - 1);
-                                    } else {
-                                      setViewMonth(prev => prev - 1);
-                                    }
-                                  }}
-                                >
-                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                                </button>
-
-                                <div className="wz-datepicker-selects">
-                                  <select
-                                    value={viewMonth}
-                                    onChange={(e) => setViewMonth(Number(e.target.value))}
-                                    className="wz-datepicker-select"
-                                  >
-                                    {['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'].map((m, idx) => (
-                                      <option key={m} value={idx}>{m}</option>
-                                    ))}
-                                  </select>
-
-                                  <select
-                                    value={viewYear}
-                                    onChange={(e) => setViewYear(Number(e.target.value))}
-                                    className="wz-datepicker-select"
-                                  >
+                              
+                              {/* VISTA 1: SELECCIONAR AÑO */}
+                              {calendarView === 'year' && (
+                                <div className="wz-datepicker-view-year">
+                                  <div className="wz-datepicker-view-title">Selecciona tu Año de Nacimiento</div>
+                                  <div className="wz-datepicker-years-grid">
                                     {Array.from({ length: new Date().getFullYear() - 1939 }, (_, i) => 1940 + i).reverse().map(y => (
-                                      <option key={y} value={y}>{y}</option>
-                                    ))}
-                                  </select>
-                                </div>
-
-                                <button
-                                  type="button"
-                                  className="wz-datepicker-nav-btn"
-                                  onClick={() => {
-                                    if (viewMonth === 11) {
-                                      setViewMonth(0);
-                                      setViewYear(prev => prev + 1);
-                                    } else {
-                                      setViewMonth(prev => prev + 1);
-                                    }
-                                  }}
-                                >
-                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                </button>
-                              </div>
-
-                              <div className="wz-datepicker-grid">
-                                {['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'].map(d => (
-                                  <span key={d} className="wz-datepicker-weekday">{d}</span>
-                                ))}
-                                {(() => {
-                                  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
-                                  const firstDayIndex = new Date(viewYear, viewMonth, 1).getDay();
-                                  const startDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
-                                  const cells = [];
-                                  
-                                  // Rellenar días del mes anterior
-                                  const prevMonthDays = new Date(viewYear, viewMonth, 0).getDate();
-                                  for (let i = startDay - 1; i >= 0; i--) {
-                                    cells.push({ day: prevMonthDays - i, isCurrent: false, offset: -1 });
-                                  }
-                                  
-                                  // Días del mes actual
-                                  for (let i = 1; i <= daysInMonth; i++) {
-                                    cells.push({ day: i, isCurrent: true, offset: 0 });
-                                  }
-                                  
-                                  // Rellenar días del mes siguiente
-                                  const totalCells = Math.ceil(cells.length / 7) * 7;
-                                  const nextDays = totalCells - cells.length;
-                                  for (let i = 1; i <= nextDays; i++) {
-                                    cells.push({ day: i, isCurrent: false, offset: 1 });
-                                  }
-
-                                  return cells.map((cell, idx) => {
-                                    let isSelected = false;
-                                    if (formData.fechaNacimiento) {
-                                      const partes = formData.fechaNacimiento.split('/');
-                                      if (partes.length === 3) {
-                                        const selD = Number(partes[0]);
-                                        const selM = Number(partes[1]) - 1;
-                                        const selY = Number(partes[2]);
-                                        
-                                        let targetMonth = viewMonth + cell.offset;
-                                        let targetYear = viewYear;
-                                        if (targetMonth < 0) {
-                                          targetMonth = 11;
-                                          targetYear -= 1;
-                                        } else if (targetMonth > 11) {
-                                          targetMonth = 0;
-                                          targetYear += 1;
-                                        }
-                                        isSelected = selD === cell.day && selM === targetMonth && selY === targetYear;
-                                      }
-                                    }
-
-                                    return (
                                       <button
-                                        key={idx}
+                                        key={y}
                                         type="button"
+                                        className={`wz-datepicker-year-btn ${y === viewYear ? 'selected' : ''}`}
                                         onClick={() => {
-                                          let targetMonth = viewMonth + cell.offset;
-                                          let targetYear = viewYear;
-                                          if (targetMonth < 0) {
-                                            targetMonth = 11;
-                                            targetYear -= 1;
-                                          } else if (targetMonth > 11) {
-                                            targetMonth = 0;
-                                            targetYear += 1;
-                                          }
-                                          const dd = String(cell.day).padStart(2, '0');
-                                          const mm = String(targetMonth + 1).padStart(2, '0');
-                                          setFormData(prev => ({ ...prev, fechaNacimiento: `${dd}/${mm}/${targetYear}` }));
-                                          setShowDatePicker(false);
+                                          setViewYear(y);
+                                          setCalendarView('month');
                                         }}
-                                        className={`wz-datepicker-day ${cell.isCurrent ? 'current' : 'adjacent'} ${isSelected ? 'selected' : ''}`}
                                       >
-                                        {cell.day}
+                                        {y}
                                       </button>
-                                    );
-                                  });
-                                })()}
-                              </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* VISTA 2: SELECCIONAR MES */}
+                              {calendarView === 'month' && (
+                                <div className="wz-datepicker-view-month">
+                                  <div className="wz-datepicker-view-header">
+                                    <button type="button" className="wz-datepicker-back-btn" onClick={() => setCalendarView('year')}>
+                                      ← Año {viewYear}
+                                    </button>
+                                    <div className="wz-datepicker-view-title">Selecciona el Mes</div>
+                                  </div>
+                                  <div className="wz-datepicker-months-grid">
+                                    {['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'].map((m, idx) => (
+                                      <button
+                                        key={m}
+                                        type="button"
+                                        className={`wz-datepicker-month-btn ${idx === viewMonth ? 'selected' : ''}`}
+                                        onClick={() => {
+                                          setViewMonth(idx);
+                                          setCalendarView('day');
+                                        }}
+                                      >
+                                        {m.substring(0, 3)}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* VISTA 3: SELECCIONAR DÍA */}
+                              {calendarView === 'day' && (
+                                <div className="wz-datepicker-view-day">
+                                  <div className="wz-datepicker-header">
+                                    <button
+                                      type="button"
+                                      className="wz-datepicker-nav-btn"
+                                      onClick={() => {
+                                        if (viewMonth === 0) {
+                                          setViewMonth(11);
+                                          setViewYear(prev => prev - 1);
+                                        } else {
+                                          setViewMonth(prev => prev - 1);
+                                        }
+                                      }}
+                                    >
+                                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                                    </button>
+
+                                    <div className="wz-datepicker-header-label">
+                                      <button type="button" className="wz-datepicker-label-btn" onClick={() => setCalendarView('month')}>
+                                        {['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'][viewMonth]}
+                                      </button>
+                                      <button type="button" className="wz-datepicker-label-btn" onClick={() => setCalendarView('year')}>
+                                        {viewYear}
+                                      </button>
+                                    </div>
+
+                                    <button
+                                      type="button"
+                                      className="wz-datepicker-nav-btn"
+                                      onClick={() => {
+                                        if (viewMonth === 11) {
+                                          setViewMonth(0);
+                                          setViewYear(prev => prev + 1);
+                                        } else {
+                                          setViewMonth(prev => prev + 1);
+                                        }
+                                      }}
+                                    >
+                                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                    </button>
+                                  </div>
+
+                                  <div className="wz-datepicker-grid">
+                                    {['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'].map(d => (
+                                      <span key={d} className="wz-datepicker-weekday">{d}</span>
+                                    ))}
+                                    {(() => {
+                                      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+                                      const firstDayIndex = new Date(viewYear, viewMonth, 1).getDay();
+                                      const startDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+                                      const cells = [];
+                                      
+                                      // Rellenar días del mes anterior
+                                      const prevMonthDays = new Date(viewYear, viewMonth, 0).getDate();
+                                      for (let i = startDay - 1; i >= 0; i--) {
+                                        cells.push({ day: prevMonthDays - i, isCurrent: false, offset: -1 });
+                                      }
+                                      
+                                      // Días del mes actual
+                                      for (let i = 1; i <= daysInMonth; i++) {
+                                        cells.push({ day: i, isCurrent: true, offset: 0 });
+                                      }
+                                      
+                                      // Rellenar días del mes siguiente
+                                      const totalCells = Math.ceil(cells.length / 7) * 7;
+                                      const nextDays = totalCells - cells.length;
+                                      for (let i = 1; i <= nextDays; i++) {
+                                        cells.push({ day: i, isCurrent: false, offset: 1 });
+                                      }
+
+                                      return cells.map((cell, idx) => {
+                                        let isSelected = false;
+                                        if (formData.fechaNacimiento) {
+                                          const partes = formData.fechaNacimiento.split('/');
+                                          if (partes.length === 3) {
+                                            const selD = Number(partes[0]);
+                                            const selM = Number(partes[1]) - 1;
+                                            const selY = Number(partes[2]);
+                                            
+                                            let targetMonth = viewMonth + cell.offset;
+                                            let targetYear = viewYear;
+                                            if (targetMonth < 0) {
+                                              targetMonth = 11;
+                                              targetYear -= 1;
+                                            } else if (targetMonth > 11) {
+                                              targetMonth = 0;
+                                              targetYear += 1;
+                                            }
+                                            isSelected = selD === cell.day && selM === targetMonth && selY === targetYear;
+                                          }
+                                        }
+
+                                        return (
+                                          <button
+                                            key={idx}
+                                            type="button"
+                                            onClick={() => {
+                                              let targetMonth = viewMonth + cell.offset;
+                                              let targetYear = viewYear;
+                                              if (targetMonth < 0) {
+                                                targetMonth = 11;
+                                                targetYear -= 1;
+                                              } else if (targetMonth > 11) {
+                                                targetMonth = 0;
+                                                targetYear += 1;
+                                              }
+                                              const dd = String(cell.day).padStart(2, '0');
+                                              const mm = String(targetMonth + 1).padStart(2, '0');
+                                              setFormData(prev => ({ ...prev, fechaNacimiento: `${dd}/${mm}/${targetYear}` }));
+                                              setShowDatePicker(false);
+                                            }}
+                                            className={`wz-datepicker-day ${cell.isCurrent ? 'current' : 'adjacent'} ${isSelected ? 'selected' : ''}`}
+                                          >
+                                            {cell.day}
+                                          </button>
+                                        );
+                                      });
+                                    })()}
+                                  </div>
+                                </div>
+                              )}
+
                             </div>
                           </>
                         )}
@@ -1083,31 +1127,98 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           margin-bottom: 0.95rem;
           gap: 0.4rem;
         }
-        .wz-datepicker-selects {
+        .wz-datepicker-header-label {
           display: flex;
           align-items: center;
-          gap: 0.35rem;
-          flex-grow: 1;
+          gap: 0.25rem;
         }
-        .wz-datepicker-select {
-          padding: 0.4rem 1.6rem 0.4rem 0.65rem;
-          border: 1.5px solid #e8ecf1;
+        .wz-datepicker-label-btn {
+          border: none;
+          background: none;
+          font-size: 0.85rem;
+          font-weight: 850;
+          color: #1e293b;
+          cursor: pointer;
+          padding: 0.25rem 0.5rem;
+          border-radius: 6px;
+          transition: all 0.2s;
+        }
+        .wz-datepicker-label-btn:hover {
+          background: var(--bg);
+          color: var(--bc);
+        }
+        .wz-datepicker-view-title {
+          font-size: 0.72rem;
+          font-weight: 800;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.8px;
+          margin-bottom: 0.8rem;
+          text-align: center;
+        }
+        .wz-datepicker-view-header {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-bottom: 0.8rem;
+        }
+        .wz-datepicker-back-btn {
+          border: none;
+          background: var(--bg);
+          color: var(--bc);
+          font-size: 0.72rem;
+          font-weight: 800;
+          padding: 0.3rem 0.65rem;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .wz-datepicker-back-btn:hover {
+          filter: brightness(0.95);
+        }
+        .wz-datepicker-years-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 0.35rem;
+          max-height: 180px;
+          overflow-y: auto;
+          padding-right: 4px;
+        }
+        .wz-datepicker-years-grid::-webkit-scrollbar {
+          width: 4px;
+        }
+        .wz-datepicker-years-grid::-webkit-scrollbar-track {
+          background: rgba(0,0,0,0.02);
+        }
+        .wz-datepicker-years-grid::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 4px;
+        }
+        .wz-datepicker-year-btn, .wz-datepicker-month-btn {
+          border: 1.5px solid #e2e8f0;
+          background: #fff;
+          padding: 0.45rem 0;
           border-radius: 8px;
           font-size: 0.8rem;
           font-weight: 700;
-          color: #1e293b;
-          background-color: #fff;
-          outline: none;
+          color: #334155;
           cursor: pointer;
-          transition: border-color 0.2s;
-          appearance: none;
-          background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-          background-repeat: no-repeat;
-          background-position: right 0.45rem center;
-          background-size: 0.75rem;
+          transition: all 0.15s;
         }
-        .wz-datepicker-select:focus {
+        .wz-datepicker-year-btn:hover, .wz-datepicker-month-btn:hover {
           border-color: var(--bc);
+          background: var(--bg);
+          color: var(--bc);
+        }
+        .wz-datepicker-year-btn.selected, .wz-datepicker-month-btn.selected {
+          background: var(--bc) !important;
+          color: #fff !important;
+          border-color: var(--bc) !important;
+        }
+        .wz-datepicker-months-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 0.4rem;
         }
         .wz-datepicker-nav-btn {
           display: flex;

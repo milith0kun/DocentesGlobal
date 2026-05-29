@@ -9,7 +9,7 @@ export default function Footer() {
     <footer className="site-footer" style={{
       background: 'linear-gradient(180deg, rgba(6, 14, 26, 0) 0%, #060e1a 100%)',
       color: '#94a3b8',
-      padding: '3rem 0 2rem',
+      padding: '1.05rem 0 0.95rem',
       position: 'relative',
       zIndex: 10
     }}>
@@ -17,7 +17,7 @@ export default function Footer() {
       <div className="footer-separator" style={{
         height: '1px',
         background: 'linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.1), transparent)',
-        marginBottom: '2rem'
+        marginBottom: '0.85rem'
       }} />
 
       <div className="container">
@@ -26,12 +26,12 @@ export default function Footer() {
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '1.5rem'
+          gap: '0.95rem'
         }} className="footer-bar-content">
           
           {/* Left Side: Copyright */}
           <p className="footer-copy" style={{ 
-            fontSize: '0.82rem', 
+            fontSize: '0.74rem', 
             fontWeight: 500, 
             margin: 0, 
             color: '#cbd5e1',
@@ -65,8 +65,12 @@ export default function Footer() {
       </div>
 
       <style>{`
+        .footer-bar-content {
+          min-height: 36px;
+        }
+
         .footer-logo {
-          opacity: 0.65;
+          opacity: 0.7;
           object-fit: contain;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -75,20 +79,31 @@ export default function Footer() {
           transform: scale(1.04);
         }
         .footer-logo-ciip {
-          height: 28px;
+          height: 24px;
         }
         .footer-logo-geomina {
-          height: 18px;
+          height: 16px;
           margin-top: 2px;
         }
         .footer-logo-biomedic {
-          height: 25px;
+          height: 22px;
           filter: invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.15) url(#remove-black-footer);
         }
         .footer-logo-sep {
           width: 1px;
-          height: 16px;
+          height: 14px;
           background: rgba(255, 255, 255, 0.08);
+        }
+
+        @media (min-width: 1024px) {
+          .footer-bar-content {
+            flex-wrap: nowrap !important;
+          }
+          .footer-partners {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.95rem;
+          }
         }
 
         @media (max-width: 640px) {
