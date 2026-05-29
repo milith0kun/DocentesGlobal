@@ -940,7 +940,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     </div>
                   )}
 
-                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem', marginTop:'1.25rem' }}>
+                  <div className="wz-grid-2" style={{ marginTop:'1.25rem' }}>
                     <div className="wz-field">
                       <span className="wz-label">Número de cuenta o celular de abono</span>
                       <input type="text" placeholder="Ej. 191-XXX-XXXXXXX" value={formData.numeroCuenta}
@@ -1935,7 +1935,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-textarea::placeholder { color:#94a3b8; font-weight:400; }
 
         /* ── GRID HELPER ── */
-        .wz-grid-2 { display:grid; gap:2rem; margin-bottom:0.5rem; }
+        .wz-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:0.5rem; }
 
         /* ── PROGRAMA TOP (PASO 8) ── */
         .wz-top-overview {
@@ -2180,7 +2180,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-modal-tag { font-size:0.65rem; margin-bottom:1rem; padding:0.35rem 0.75rem; }
           .wz-btn-firm { padding:0.9rem 1.25rem; font-size:0.92rem; }
 
-          .wz-payment-grid { grid-template-columns:1fr 1fr !important; }
+          .wz-payment-grid { grid-template-columns:1fr 1fr !important; gap:0.6rem; }
+          .wz-pay-card { padding:0.75rem 0.65rem; font-size:0.78rem; gap:0.5rem; }
           .wz-upload-section { grid-template-columns:1fr !important; }
           .wz-upload-zone { padding:1.5rem 1rem; }
         }
