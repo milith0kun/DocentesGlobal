@@ -1780,18 +1780,18 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         .wz-metric-box {
           background:#fff; border:1px solid #e8ecf1; border-radius:24px;
-          padding:2.5rem 1.5rem; display:flex; flex-direction:column; align-items:center; justify-content:center;
+          padding:2rem 1.5rem; display:flex; flex-direction:column; align-items:center; justify-content:center;
           text-align:center; transition:all 0.3s ease; position:relative; overflow:hidden;
         }
         .wz-metric-box:hover { border-color:#cbd5e1; box-shadow:0 12px 32px -12px rgba(0,0,0,0.06); transform:translateY(-2px); }
         .wz-metric-value {
-          font-family:'Outfit',sans-serif; font-size:4.8rem; font-weight:900; line-height:1;
-          color:var(--bc); margin-bottom:0.75rem; letter-spacing:-2.5px;
+          font-family:'Outfit',sans-serif; font-size:3.8rem; font-weight:900; line-height:1;
+          color:var(--bc); margin-bottom:0.5rem; letter-spacing:-2px;
         }
         .wz-metric-label { font-size:0.95rem; color:#475569; font-weight:700; line-height:1.4; }
         
         .wz-metric-box.danger { background:rgba(239,68,68,0.02); border-color:rgba(239,68,68,0.15); }
-        .wz-metric-box.danger .wz-metric-value { color:#dc2626; font-size:4.2rem; }
+        .wz-metric-box.danger .wz-metric-value { color:#dc2626; font-size:3.2rem; }
         .wz-metric-box.danger .wz-metric-label { color:#991b1b; }
         .wz-metric-tag {
           position:absolute; top:1.25rem; background:rgba(239,68,68,0.1); color:#dc2626;
@@ -2226,11 +2226,12 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-agenda-content { padding-left:0; border-left:none; padding-top:0.75rem; border-top:1px solid #e8ecf1; width:100%; margin-top:0.15rem; }
           .wz-agenda-row.on .wz-agenda-content { border-top-color:rgba(14,165,233,0.2); }
           
-          .wz-metrics-grid { grid-template-columns:1fr !important; gap:1rem; }
-          .wz-metric-box.danger { grid-column:span 1; }
-          .wz-metric-box { padding:1.5rem 1.25rem; border-radius:20px; }
-          .wz-metric-value { font-size:3.5rem; }
-          .wz-metric-box.danger .wz-metric-value { font-size:3.2rem; }
+          .wz-metrics-grid { grid-template-columns:1fr 1fr !important; gap:0.85rem; }
+          .wz-metric-box.danger { grid-column:span 2; }
+          .wz-metric-box { padding:1.25rem 1rem; border-radius:16px; }
+          .wz-metric-value { font-size:2.6rem; margin-bottom:0.25rem; }
+          .wz-metric-box.danger .wz-metric-value { font-size:2.5rem; }
+          .wz-metric-label { font-size:0.8rem; }
 
           .wz-top-overview { padding:1rem; }
           .wz-top-kpis { grid-template-columns:1fr; }
