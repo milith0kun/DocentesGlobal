@@ -1890,3 +1890,33 @@
     padding: 3rem 0 2rem;
   }
 }
+
+/* ==========================================================================
+   Home Viewport Layout
+   ========================================================================== */
+.home-shell {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-main {
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 0;
+}
+
+.home-main > header {
+  width: 100%;
+}
+
+.home-footer-wrap {
+  flex: 0 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .home-shell {
+    height: 100svh;
+    overflow: hidden;
+  }
+}
