@@ -5,7 +5,7 @@ import { isValidEmail } from '../utils/emailValidation.js';
 
 const logobiomedic = '/assets/logobiomedic.png';
 const geominaWhite = '/assets/geomina-new.png';
-const ciipLatam = '/assets/ciip-latam.png';
+const biomedicWhite = '/assets/biomedic-white.png';
 const camaraFondoVirtual = '/assets/camara_fondo_virtual.png';
 const identidadVisualPpts = '/assets/identidad_visual_ppts.png';
 const canalesExternosProhibidos = '/assets/canales_externos_prohibidos.png';
@@ -277,7 +277,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 style={{ opacity, ...extraStyle, transition:'all 0.4s ease', display: isAmbosMode ? 'inline-block' : 'inline-block' }} />
             );
           };
-          const ciip = mkLogo('ciip', ciipLatam, 'lg-ciip');
+          const ciip = mkLogo('ciip', biomedicWhite, 'lg-ciip');
           const geo = mkLogo('geomina', geominaWhite, 'lg-geo');
           const bio = mkLogo('biomedic', logobiomedic, 'lg-bio', { filter:'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' });
           const sep = (k) => <div key={k} className="wz-sep" />;
@@ -392,7 +392,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                   
                   <div className="custom-brand-list" style={{ maxWidth:'100%', margin:'0 auto' }}>
                     {[
-                      { key:'ciip', logo:ciipLatam },
+                      { key:'ciip', logo:biomedicWhite },
                       { key:'geomina', logo:geominaWhite },
                       { key:'biomedic', logo:logobiomedic },
                     ].map(b => {
