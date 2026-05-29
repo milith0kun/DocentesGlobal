@@ -49,16 +49,20 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   };
 
   const handleFechaNacimientoChange = (e) => {
-    const val = e.target.value; // YYYY-MM-DD
-    if (!val) {
-      setFormData(prev => ({ ...prev, fechaNacimiento: '' }));
-      return;
+    let val = e.target.value.replace(/\D/g, '');
+    if (val.length > 8) val = val.substring(0, 8);
+    
+    let formatted = '';
+    if (val.length > 0) {
+      formatted = val.substring(0, 2);
+      if (val.length > 2) {
+        formatted += '/' + val.substring(2, 4);
+        if (val.length > 4) {
+          formatted += '/' + val.substring(4, 8);
+        }
+      }
     }
-    const partes = val.split('-');
-    if (partes.length === 3) {
-      const formatted = `${partes[2]}/${partes[1]}/${partes[0]}`;
-      setFormData(prev => ({ ...prev, fechaNacimiento: formatted }));
-    }
+    setFormData(prev => ({ ...prev, fechaNacimiento: formatted }));
   };
   const [formData, setFormData] = useState({
     nombre: '', correo: '', marca: '', documento: '', fechaNacimiento: '',
@@ -72,13 +76,28 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const correoValido = isValidEmail(formData.correo);
   const mostrarErrorCorreo = formData.correo.trim().length > 0 && !correoValido;
 
-  let fechaYYYYMMDD = '';
-  if (formData.fechaNacimiento) {
-    const partes = formData.fechaNacimiento.split('/');
-    if (partes.length === 3) {
-      fechaYYYYMMDD = `${partes[2]}-${partes[1]}-${partes[0]}`;
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [viewYear, setViewYear] = useState(new Date().getFullYear() - 25);
+  const [viewMonth, setViewMonth] = useState(new Date().getMonth());
+
+  const openCalendar = () => {
+    if (formData.fechaNacimiento) {
+      const partes = formData.fechaNacimiento.split('/');
+      if (partes.length === 3) {
+        const d = Number(partes[0]);
+        const m = Number(partes[1]) - 1;
+        const y = Number(partes[2]);
+        if (!isNaN(d) && !isNaN(m) && !isNaN(y) && y >= 1930 && y <= new Date().getFullYear()) {
+          setViewYear(y);
+          setViewMonth(m);
+        }
+      }
+    } else {
+      setViewYear(new Date().getFullYear() - 25);
+      setViewMonth(new Date().getMonth());
     }
-  }
+    setShowDatePicker(true);
+  };
 
   const totalSteps = 11;
 
@@ -332,11 +351,178 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     </div>
                     <div className="wz-field">
                       <span className="wz-label">Fecha de Nacimiento</span>
-                      <input type="date"
-                        value={fechaYYYYMMDD}
-                        disabled={!formData.documento.trim()}
-                        onChange={handleFechaNacimientoChange}
-                        className="wz-input" />
+                      <div className="wz-datepicker-container" style={{ position: 'relative', width: '100%' }}>
+                        <input type="text"
+                          placeholder={formData.documento.trim() ? "DD/MM/AAAA" : "Escribe tu Documento primero..."}
+                          value={formData.fechaNacimiento}
+                          disabled={!formData.documento.trim()}
+                          onChange={handleFechaNacimientoChange}
+                          className="wz-input"
+                          maxLength={10}
+                          style={{ paddingRight: '2.5rem' }} />
+                        
+                        {formData.documento.trim() && (
+                          <button
+                            type="button"
+                            onClick={openCalendar}
+                            className="wz-datepicker-input-icon"
+                            style={{
+                              position: 'absolute',
+                              right: '12px',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              background: 'none',
+                              border: 'none',
+                              color: '#94a3b8',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              padding: 0
+                            }}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                          </button>
+                        )}
+
+                        {showDatePicker && (
+                          <>
+                            <div className="wz-datepicker-overlay" onClick={() => setShowDatePicker(false)} />
+                            <div className="wz-datepicker-popover">
+                              <div className="wz-datepicker-header">
+                                <button
+                                  type="button"
+                                  className="wz-datepicker-nav-btn"
+                                  onClick={() => {
+                                    if (viewMonth === 0) {
+                                      setViewMonth(11);
+                                      setViewYear(prev => prev - 1);
+                                    } else {
+                                      setViewMonth(prev => prev - 1);
+                                    }
+                                  }}
+                                >
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                                </button>
+
+                                <div className="wz-datepicker-selects">
+                                  <select
+                                    value={viewMonth}
+                                    onChange={(e) => setViewMonth(Number(e.target.value))}
+                                    className="wz-datepicker-select"
+                                  >
+                                    {['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'].map((m, idx) => (
+                                      <option key={m} value={idx}>{m}</option>
+                                    ))}
+                                  </select>
+
+                                  <select
+                                    value={viewYear}
+                                    onChange={(e) => setViewYear(Number(e.target.value))}
+                                    className="wz-datepicker-select"
+                                  >
+                                    {Array.from({ length: new Date().getFullYear() - 1939 }, (_, i) => 1940 + i).reverse().map(y => (
+                                      <option key={y} value={y}>{y}</option>
+                                    ))}
+                                  </select>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  className="wz-datepicker-nav-btn"
+                                  onClick={() => {
+                                    if (viewMonth === 11) {
+                                      setViewMonth(0);
+                                      setViewYear(prev => prev + 1);
+                                    } else {
+                                      setViewMonth(prev => prev + 1);
+                                    }
+                                  }}
+                                >
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                </button>
+                              </div>
+
+                              <div className="wz-datepicker-grid">
+                                {['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'].map(d => (
+                                  <span key={d} className="wz-datepicker-weekday">{d}</span>
+                                ))}
+                                {(() => {
+                                  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+                                  const firstDayIndex = new Date(viewYear, viewMonth, 1).getDay();
+                                  const startDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+                                  const cells = [];
+                                  
+                                  // Rellenar días del mes anterior
+                                  const prevMonthDays = new Date(viewYear, viewMonth, 0).getDate();
+                                  for (let i = startDay - 1; i >= 0; i--) {
+                                    cells.push({ day: prevMonthDays - i, isCurrent: false, offset: -1 });
+                                  }
+                                  
+                                  // Días del mes actual
+                                  for (let i = 1; i <= daysInMonth; i++) {
+                                    cells.push({ day: i, isCurrent: true, offset: 0 });
+                                  }
+                                  
+                                  // Rellenar días del mes siguiente
+                                  const totalCells = Math.ceil(cells.length / 7) * 7;
+                                  const nextDays = totalCells - cells.length;
+                                  for (let i = 1; i <= nextDays; i++) {
+                                    cells.push({ day: i, isCurrent: false, offset: 1 });
+                                  }
+
+                                  return cells.map((cell, idx) => {
+                                    let isSelected = false;
+                                    if (formData.fechaNacimiento) {
+                                      const partes = formData.fechaNacimiento.split('/');
+                                      if (partes.length === 3) {
+                                        const selD = Number(partes[0]);
+                                        const selM = Number(partes[1]) - 1;
+                                        const selY = Number(partes[2]);
+                                        
+                                        let targetMonth = viewMonth + cell.offset;
+                                        let targetYear = viewYear;
+                                        if (targetMonth < 0) {
+                                          targetMonth = 11;
+                                          targetYear -= 1;
+                                        } else if (targetMonth > 11) {
+                                          targetMonth = 0;
+                                          targetYear += 1;
+                                        }
+                                        isSelected = selD === cell.day && selM === targetMonth && selY === targetYear;
+                                      }
+                                    }
+
+                                    return (
+                                      <button
+                                        key={idx}
+                                        type="button"
+                                        onClick={() => {
+                                          let targetMonth = viewMonth + cell.offset;
+                                          let targetYear = viewYear;
+                                          if (targetMonth < 0) {
+                                            targetMonth = 11;
+                                            targetYear -= 1;
+                                          } else if (targetMonth > 11) {
+                                            targetMonth = 0;
+                                            targetYear += 1;
+                                          }
+                                          const dd = String(cell.day).padStart(2, '0');
+                                          const mm = String(targetMonth + 1).padStart(2, '0');
+                                          setFormData(prev => ({ ...prev, fechaNacimiento: `${dd}/${mm}/${targetYear}` }));
+                                          setShowDatePicker(false);
+                                        }}
+                                        className={`wz-datepicker-day ${cell.isCurrent ? 'current' : 'adjacent'} ${isSelected ? 'selected' : ''}`}
+                                      >
+                                        {cell.day}
+                                      </button>
+                                    );
+                                  });
+                                })()}
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                   
@@ -856,6 +1042,158 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         @keyframes inputSpin {
           to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        /* ── CUSTOM DATEPICKER PREMIUM ── */
+        .wz-datepicker-container {
+          position: relative;
+          width: 100%;
+        }
+        .wz-datepicker-overlay {
+          position: fixed;
+          top: 0; left: 0; right: 0; bottom: 0;
+          z-index: 998;
+          background: transparent;
+        }
+        .wz-datepicker-popover {
+          position: absolute;
+          top: calc(100% + 8px);
+          left: 0;
+          width: 320px;
+          background: rgba(255, 255, 255, 0.98);
+          border: 1.5px solid #e2e8f0;
+          border-radius: 16px;
+          box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12), 0 4px 12px rgba(15, 23, 42, 0.04);
+          padding: 1.15rem;
+          z-index: 999;
+          animation: scaleUpCalendar 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          backdrop-filter: blur(8px);
+        }
+        @keyframes scaleUpCalendar {
+          from { opacity: 0; transform: scale(0.95) translateY(-5px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .wz-datepicker-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 0.95rem;
+          gap: 0.4rem;
+        }
+        .wz-datepicker-selects {
+          display: flex;
+          align-items: center;
+          gap: 0.35rem;
+          flex-grow: 1;
+        }
+        .wz-datepicker-select {
+          padding: 0.4rem 1.6rem 0.4rem 0.65rem;
+          border: 1.5px solid #e8ecf1;
+          border-radius: 8px;
+          font-size: 0.8rem;
+          font-weight: 700;
+          color: #1e293b;
+          background-color: #fff;
+          outline: none;
+          cursor: pointer;
+          transition: border-color 0.2s;
+          appearance: none;
+          background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 0.45rem center;
+          background-size: 0.75rem;
+        }
+        .wz-datepicker-select:focus {
+          border-color: var(--bc);
+        }
+        .wz-datepicker-nav-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 28px;
+          height: 28px;
+          border: 1.5px solid #e8ecf1;
+          border-radius: 8px;
+          background: #fff;
+          color: #64748b;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .wz-datepicker-nav-btn:hover {
+          border-color: var(--bc);
+          color: var(--bc);
+          background: var(--bg);
+        }
+        .wz-datepicker-nav-btn svg {
+          width: 14px;
+          height: 14px;
+          stroke-width: 2.5px;
+        }
+        .wz-datepicker-grid {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: 0.2rem;
+          text-align: center;
+        }
+        .wz-datepicker-weekday {
+          font-size: 0.65rem;
+          font-weight: 800;
+          color: #94a3b8;
+          text-transform: uppercase;
+          letter-spacing: 0.8px;
+          padding: 0.35rem 0;
+        }
+        .wz-datepicker-day {
+          border: none;
+          background: none;
+          font-size: 0.8rem;
+          font-weight: 600;
+          height: 32px;
+          border-radius: 8px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.15s ease;
+        }
+        .wz-datepicker-day.current {
+          color: #334155;
+        }
+        .wz-datepicker-day.adjacent {
+          color: #cbd5e1;
+        }
+        .wz-datepicker-day:hover {
+          background: #f1f5f9;
+        }
+        .wz-datepicker-day.selected {
+          background: var(--bc) !important;
+          color: #fff !important;
+          font-weight: 700;
+          box-shadow: 0 4px 10px var(--bg);
+        }
+
+        @media (max-width: 480px) {
+          .wz-datepicker-popover {
+            position: fixed;
+            top: auto;
+            bottom: 0;
+            left: 0; right: 0;
+            width: 100%;
+            border-radius: 20px 20px 0 0;
+            border-left: none; border-right: none; border-bottom: none;
+            padding: 1.5rem 1.25rem 2rem;
+            animation: slideUpCalendar 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1000;
+          }
+          .wz-datepicker-overlay {
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(3px);
+            z-index: 999;
+          }
+        }
+        @keyframes slideUpCalendar {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
         }
 
         /* ── BRAND SELECTOR (PASO 1) ── */
