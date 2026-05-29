@@ -2088,11 +2088,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         @media (max-width:680px) {
           .wz {
-            position: relative;
-            inset: auto;
+            position: absolute;
+            inset: 0;
+            bottom: auto;
             min-height: 100dvh;
-            display: block; /* Remove flex to allow native document flow */
+            display: flex;
+            flex-direction: column;
             padding: 0;
+            overflow: visible !important; /* Fixes the clipping issue */
           }
           .wz-header {
             position: sticky;
@@ -2153,15 +2156,18 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-stepper-segments { gap:0.25rem; }
           .wz-stepper-segment { height:3px; }
           .wz-main {
-            display: block; /* override flex */
+            display: flex;
+            flex-direction: column;
+            flex: 1 0 auto;
+            align-items: flex-start;
+            justify-content: flex-start;
             padding:1rem 0.875rem max(1.25rem, env(safe-area-inset-bottom));
-            overflow-y:visible; /* NO internal scroll */
+            overflow: visible !important; /* NO internal scroll, let it grow */
             border-radius:0;
-            min-height: calc(100dvh - 64px - 45px); /* approx header+stepper height */
+            min-height: auto;
           }
           .wz-content {
             max-width:100% !important;
-            margin: 0 auto !important; /* center block */
           }
           
           .wz-title { font-size:1.5rem !important; margin-bottom:0.5rem; }
