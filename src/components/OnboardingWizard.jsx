@@ -643,9 +643,13 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     })}
                   </div>
 
-                  <div className="wz-alerts-group">
-                    <div className="wz-alert info">
-                      <strong>Drive institucional</strong>: Recibirás una notificación automática por correo cuando las carpetas de subida estén habilitadas.
+                  <div className="wz-notification">
+                    <div className="wz-notification-icon">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    </div>
+                    <div className="wz-notification-text">
+                      <span className="wz-notification-title">Drive Institucional</span>
+                      <span className="wz-notification-desc">Recibirás una notificación automática por correo cuando las carpetas de subida estén habilitadas.</span>
                     </div>
                   </div>
 
@@ -1482,6 +1486,59 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-alert.info strong { color:#075985; }
         .wz-alert.warn { background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); color:#92400e; }
         .wz-alert.warn strong { color:#78350f; }
+
+        /* ── CUSTOM NOTIFICATION PREMIUM ── */
+        .wz-notification {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.9rem;
+          background: rgba(14, 165, 233, 0.05);
+          border: 1px solid rgba(14, 165, 233, 0.16);
+          border-radius: 14px;
+          padding: 1rem 1.15rem;
+          margin-top: 1rem;
+          margin-bottom: 1.25rem;
+          animation: notifyPulse 3.3s infinite ease-in-out;
+        }
+        @keyframes notifyPulse {
+          0%, 100% { border-color: rgba(14, 165, 233, 0.16); box-shadow: 0 0 0 rgba(14, 165, 233, 0); }
+          50% { border-color: rgba(14, 165, 233, 0.32); box-shadow: 0 0 12px rgba(14, 165, 233, 0.06); }
+        }
+        .wz-notification-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: rgba(14, 165, 233, 0.12);
+          color: #0284c7;
+          flex-shrink: 0;
+        }
+        .wz-notification-icon svg {
+          width: 16px;
+          height: 16px;
+          stroke-width: 2.5px;
+        }
+        .wz-notification-text {
+          display: flex;
+          flex-direction: column;
+          gap: 0.15rem;
+          text-align: left;
+        }
+        .wz-notification-title {
+          font-size: 0.72rem;
+          font-weight: 850;
+          color: #0369a1;
+          text-transform: uppercase;
+          letter-spacing: 0.8px;
+        }
+        .wz-notification-desc {
+          font-size: 0.8rem;
+          font-weight: 500;
+          color: #475569;
+          line-height: 1.45;
+        }
 
         /* ── PROTOCOLO SPLIT (PASO 4) ── */
         .wz-protocol-split { display:flex; gap:2.5rem; margin-bottom:1.5rem; align-items:stretch; }
