@@ -284,10 +284,10 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           if (step > 1) {
             const arr = formData.marca ? formData.marca.split(',') : [];
             if (arr.length > 1) {
-              return arr.map((k, idx) => {
+              return arr.flatMap((k, idx) => {
                 const logo = k === 'ciip' ? ciip : k === 'geomina' ? geo : bio;
-                if (idx > 0) return <><div key={`s${idx}`} className="wz-sep" />{logo}</>;
-                return logo;
+                if (idx > 0) return [<div key={`s${idx}`} className="wz-sep" />, logo];
+                return [logo];
               });
             }
             return formData.marca === 'ciip' ? ciip : formData.marca === 'geomina' ? geo : bio;
