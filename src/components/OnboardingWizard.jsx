@@ -1766,7 +1766,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         
         .fade-in { animation:fadeIn 0.4s ease forwards; }
-        @keyframes fadeIn { from { opacity:0; transform:scale(0.98); } to { opacity:1; transform:scale(1); } }
+        @keyframes fadeIn { from { opacity:0; transform:scale(0.98); } to { opacity:1; transform:none; } }
 
 
         /* ── DECLARACIÓN (PASO 7) ── */
@@ -1839,7 +1839,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           text-align:left; box-shadow:0 24px 48px -12px rgba(0,0,0,0.4); border:1px solid #e2e8f0;
           transform:scale(0.95); animation:modalPop 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
         }
-        @keyframes modalPop { to { transform:scale(1); } }
+        @keyframes modalPop { to { transform:none; } }
         
         .wz-modal-tag {
           display:inline-block; font-size:0.7rem; font-weight:800; color:#b45309; text-transform:uppercase;
@@ -1861,7 +1861,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-fade { animation:wzFade 0.4s ease both; }
         @keyframes wzFade {
           from { opacity:0; transform:translateY(12px); }
-          to { opacity:1; transform:translateY(0); }
+          to { opacity:1; transform:none; }
         }
 
         /* ── PAYMENT GRID (PASO 7) ── */
