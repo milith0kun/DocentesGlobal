@@ -183,7 +183,39 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         setGeneratedCode(resData.code);
         const cfg = marcaConfig[formData.marca];
         const metodo = formData.metodoPago === 'otro' ? formData.metodoPagoOtro : formData.metodoPago?.toUpperCase();
-        const msg = `*📋 FORMULARIO DOCENTE – CONFORMIDAD*\n\n*Código:* ${resData.code}\n*Docente:* ${formData.nombre}\n*Documento:* ${formData.documento}\n*Correo:* ${formData.correo}\n*Institución:* ${cfg.nombre}\n*Teléfono:* ${formData.telefono}\n\n💳 *Datos de Pago:*\n• Método: ${metodo}\n• Cuenta: ${formData.numeroCuenta}\n• Dirección: ${formData.direccion}\n\n💻 *Softwares:* ${formData.softwares}\n🚀 *Curso deseado:* ${formData.cursoSonado}\n🤝 *Mejora sugerida:* ${formData.mejoraAdmin}\n${formData.comentarios ? `💬 *Comentarios:* ${formData.comentarios}` : ''}\n\n✅ *Compromisos Aceptados:*\n• Metodología Doing by Learning\n• Fechas de corte innegociables\n• Protocolo de imagen\n• Política de asistencia\n• Programa Docente TOP\n\n*Fecha:* ${resData.fecha}\n*Carpeta Drive:* ${resData.driveFolder || 'Pendiente'}\n*PDF Conformidad:* ${resData.pdfUrl || 'Pendiente'}`;
+        const comentarios = formData.comentarios
+          ? `\nComentarios: ${formData.comentarios}`
+          : '';
+        const msg = [
+          '*FORMULARIO DOCENTE - CONFORMIDAD*',
+          '',
+          `*Codigo:* ${resData.code}`,
+          `*Docente:* ${formData.nombre}`,
+          `*Documento:* ${formData.documento}`,
+          `*Correo:* ${formData.correo}`,
+          `*Institucion:* ${cfg.nombre}`,
+          `*Telefono:* ${formData.telefono}`,
+          '',
+          '*Datos de Pago:*',
+          `- Metodo: ${metodo}`,
+          `- Cuenta: ${formData.numeroCuenta}`,
+          `- Direccion: ${formData.direccion}`,
+          '',
+          `*Softwares:* ${formData.softwares}`,
+          `*Curso deseado:* ${formData.cursoSonado}`,
+          `*Mejora sugerida:* ${formData.mejoraAdmin}${comentarios}`,
+          '',
+          '*Compromisos Aceptados:*',
+          '- Metodologia Doing by Learning',
+          '- Fechas de corte innegociables',
+          '- Protocolo de imagen',
+          '- Politica de asistencia',
+          '- Programa Docente TOP',
+          '',
+          `*Fecha:* ${resData.fecha}`,
+          `*Carpeta Drive:* ${resData.driveFolder || 'Pendiente'}`,
+          `*PDF Conformidad:* ${resData.pdfUrl || 'Pendiente'}`,
+        ].join('\n');
         
         window.open(`https://wa.me/${cfg.telefono}?text=${encodeURIComponent(msg)}`, '_blank');
         setIsFinished(true);
@@ -1450,6 +1482,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-datepicker-year-btn, .wz-datepicker-month-btn {
             font-size: 0.95rem !important;
             padding: 0.65rem 0 !important;
+          }
+          .wz-datepicker-overlay {
+            background: transparent !important;
           }
           .wz-datepicker-popover {
             left: 50% !important;
