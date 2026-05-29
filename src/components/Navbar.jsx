@@ -125,24 +125,33 @@ export default function Navbar() {
         }
 
         @media (max-width: 768px) {
-          .premium-navbar { padding: 0.95rem 0; }
-          .nav-partner-logo.logo-biomedic { height: 38px; }
-          .nav-partner-logo.logo-geomina { height: 27px; }
-          .nav-partner-logo.logo-ciip { height: 42px; }
-          .nav-logo-sep { height: 24px; }
+          .premium-navbar { padding: 0.95rem 0; max-width: 100vw; overflow: hidden; }
+          .nav-container { width: 100vw; max-width: 100vw; padding: 0 0.75rem; overflow: hidden; }
+          .nav-logos-group {
+            display: block;
+            position: relative;
+            height: 34px;
+            width: 100%;
+            min-width: 0;
+          }
+          .nav-logo-sep { display: none; }
+          .nav-partner-logo { position: absolute; top: 50%; max-width: 100%; }
+          .nav-partner-logo.logo-ciip { left: 0; width: 84px; height: auto; transform: translateY(-50%); }
+          .nav-partner-logo.logo-geomina { left: 50%; width: 84px; height: auto; transform: translate(-50%, -50%); }
+          .nav-partner-logo.logo-biomedic { right: 0; width: 78px; height: auto; transform: translateY(-50%); }
         }
 
         @media (max-width: 480px) {
           .premium-navbar { padding: 0.75rem 0; }
           .premium-navbar.scrolled { padding: 0.55rem 0; }
-          .nav-logos-group { gap: 0.5rem; min-width: 0; }
-          .nav-logo-sep { height: 20px; }
+          .nav-container { padding: 0 0.6rem; overflow: hidden; }
+          .nav-logos-group { height: 30px; }
           .nav-partner-logo.logo-biomedic,
-          .premium-navbar.scrolled .logo-biomedic { height: 30px; }
+          .premium-navbar.scrolled .logo-biomedic { width: 74px; height: auto; }
           .nav-partner-logo.logo-geomina,
-          .premium-navbar.scrolled .logo-geomina { height: 21px; }
+          .premium-navbar.scrolled .logo-geomina { width: 78px; height: auto; }
           .nav-partner-logo.logo-ciip,
-          .premium-navbar.scrolled .logo-ciip { height: 34px; }
+          .premium-navbar.scrolled .logo-ciip { width: 78px; height: auto; }
         }
 
         @media (max-width: 360px) {

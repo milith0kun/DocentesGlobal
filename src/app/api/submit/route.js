@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createDocenteFolder, uploadFileToDrive } from '@/lib/google-drive.js';
 import { appendDocenteRow, ensureSheetHeaders } from '@/lib/google-sheets.js';
+import { validateGoogleAuthConfig } from '@/lib/google-auth.js';
 import { generateConformidadPDF } from '@/lib/pdf-generator.jsx';
 
 const marcaConfig = {
@@ -10,15 +11,26 @@ const marcaConfig = {
   ambos: { nombre: 'CIIP Latam & Geomina' },
 };
 
-const REQUIRED_GOOGLE_ENV = [
-  'GOOGLE_SERVICE_ACCOUNT_EMAIL',
-  'GOOGLE_PRIVATE_KEY',
+const REQUIRED_STORAGE_ENV = [
   'GOOGLE_SPREADSHEET_ID',
   'GOOGLE_DRIVE_ROOT_FOLDER_ID',
 ];
 
-function missingGoogleEnv() {
-  return REQUIRED_GOOGLE_ENV.filter((key) => !process.env[key]);
+const PLACEHOLDER_ENV_MARKERS = {
+  GOOGLE_SPREADSHEET_ID: ['TU_SPREADSHEET_ID'],
+  GOOGLE_DRIVE_ROOT_FOLDER_ID: ['TU_FOLDER_ID'],
+};
+
+function missingStorageEnv() {
+  return REQUIRED_STORAGE_ENV.filter((key) => !process.env[key]);
+}
+
+function placeholderStorageEnv() {
+  return REQUIRED_STORAGE_ENV.filter((key) => {
+    const value = String(process.env[key] || '');
+    const markers = PLACEHOLDER_ENV_MARKERS[key] || [];
+    return markers.some((marker) => value.includes(marker));
+  });
 }
 
 function generateUniqueCode(marca) {
@@ -27,20 +39,53 @@ function generateUniqueCode(marca) {
 }
 
 function sanitizeNameForFile(value, fallback = 'archivo') {
-  return (value || fallback)
+  const normalized = String(value || fallback)
+    .normalize('NFKD')
+    .replace(/[^\w\s-]/g, '')
     .trim()
-    .replace(/[^a-zA-ZÀ-ÿ0-9_\-\s]/g, '')
     .replace(/\s+/g, '_');
+  return normalized || fallback;
+}
+
+function fileExtension(fileName, fallback) {
+  const ext = String(fileName || '')
+    .split('.')
+    .pop()
+    ?.toLowerCase()
+    ?.trim();
+  return ext || fallback;
 }
 
 export async function POST(request) {
   try {
-    const missing = missingGoogleEnv();
+    const missing = missingStorageEnv();
     if (missing.length > 0) {
       return NextResponse.json(
         {
           success: false,
           error: `Falta configurar variables para Drive/Sheets: ${missing.join(', ')}`,
+        },
+        { status: 500 }
+      );
+    }
+
+    const placeholder = placeholderStorageEnv();
+    if (placeholder.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Debes reemplazar valores de ejemplo en .env.local: ${placeholder.join(', ')}`,
+        },
+        { status: 500 }
+      );
+    }
+
+    const authStatus = validateGoogleAuthConfig();
+    if (!authStatus.ok) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: authStatus.error,
         },
         { status: 500 }
       );
@@ -80,17 +125,19 @@ export async function POST(request) {
 
     if (cvFile && cvFile.size > 0) {
       const cvBuffer = Buffer.from(await cvFile.arrayBuffer());
-      const cvExt = cvFile.name?.split('.').pop() || 'pdf';
+      const cvExt = fileExtension(cvFile.name, 'pdf');
       const cvName = `CV_${baseName}.${cvExt}`;
-      const cvResult = await uploadFileToDrive(cvBuffer, cvName, cvFile.type, folderId);
+      const cvMime = cvFile.type || 'application/octet-stream';
+      const cvResult = await uploadFileToDrive(cvBuffer, cvName, cvMime, folderId);
       links.cvUrl = cvResult.fileUrl;
     }
 
     if (fotoFile && fotoFile.size > 0) {
       const fotoBuffer = Buffer.from(await fotoFile.arrayBuffer());
-      const fotoExt = fotoFile.name?.split('.').pop() || 'jpg';
+      const fotoExt = fileExtension(fotoFile.name, 'jpg');
       const fotoName = `Foto_${baseName}.${fotoExt}`;
-      const fotoResult = await uploadFileToDrive(fotoBuffer, fotoName, fotoFile.type, folderId);
+      const fotoMime = fotoFile.type || 'application/octet-stream';
+      const fotoResult = await uploadFileToDrive(fotoBuffer, fotoName, fotoMime, folderId);
       links.fotoUrl = fotoResult.fileUrl;
     }
 
@@ -143,9 +190,12 @@ export async function POST(request) {
   } catch (error) {
     console.error('Error en /api/submit:', error);
     const raw = String(error?.message || '');
-    let friendly = raw || 'Error al procesar el envío';
-    if (/DECODER routines|private key|PEM|unsupported/i.test(raw)) {
-      friendly = 'Error en GOOGLE_PRIVATE_KEY. Verifica formato PEM y saltos de línea (\\n).';
+    let friendly = raw || 'Error al procesar el envio';
+
+    if (/GOOGLE_APPLICATION_CREDENTIALS/i.test(raw)) {
+      friendly = 'Error en GOOGLE_APPLICATION_CREDENTIALS. Verifica que la ruta del JSON exista.';
+    } else if (/DECODER routines|private key|PEM|unsupported|Google Auth/i.test(raw)) {
+      friendly = 'Error en GOOGLE_PRIVATE_KEY. Verifica formato PEM y saltos de linea (\\n).';
     }
 
     return NextResponse.json(

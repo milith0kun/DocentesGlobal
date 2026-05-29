@@ -13,9 +13,6 @@ function assertDriveConfig() {
   }
 }
 
-/**
- * Busca una carpeta por nombre dentro de un padre. Si no existe, la crea.
- */
 export async function getOrCreateFolder(name, parentId) {
   assertDriveConfig();
   const drive = getDriveClient();
@@ -44,10 +41,15 @@ export async function getOrCreateFolder(name, parentId) {
   return folder.data.id;
 }
 
-/**
- * Crea la estructura completa de carpetas para un docente:
- * Docentes_{AÑO} / {Marca} / {Nombre_Documento}
- */
+function normalizeFolderName(value, fallback) {
+  const normalized = String(value || fallback)
+    .normalize('NFKD')
+    .replace(/[^\w\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '_');
+  return normalized || fallback;
+}
+
 export async function createDocenteFolder(nombre, documento, marca) {
   assertDriveConfig();
   const year = new Date().getFullYear();
@@ -60,14 +62,12 @@ export async function createDocenteFolder(nombre, documento, marca) {
     biomedic: 'Biomedic',
     ambos: 'CIIP_Geomina',
   };
+
   const marcaFolderName = marcaNames[marca] || marca || 'General';
   const marcaFolderId = await getOrCreateFolder(marcaFolderName, yearFolderId);
 
-  const safeName = (nombre || 'Docente')
-    .replace(/[^a-zA-ZÀ-ÿ\s]/g, '')
-    .trim()
-    .replace(/\s+/g, '_');
-  const safeDoc = (documento || 'SIN_DOC').trim();
+  const safeName = normalizeFolderName(nombre, 'Docente');
+  const safeDoc = normalizeFolderName(documento, 'SIN_DOC');
   const docenteFolderName = `${safeName}_${safeDoc}`;
   const docenteFolderId = await getOrCreateFolder(docenteFolderName, marcaFolderId);
 
@@ -77,10 +77,6 @@ export async function createDocenteFolder(nombre, documento, marca) {
   };
 }
 
-/**
- * Sube un archivo (Buffer) a Google Drive en una carpeta específica.
- * @returns {{ fileId: string, fileUrl: string }}
- */
 export async function uploadFileToDrive(buffer, fileName, mimeType, folderId) {
   assertDriveConfig();
   const drive = getDriveClient();
@@ -106,8 +102,8 @@ export async function uploadFileToDrive(buffer, fileName, mimeType, folderId) {
       },
     });
   } catch {
-    // Puede fallar en unidades compartidas o dominios restringidos.
-    // Conservamos el flujo y retornamos igual el enlace del archivo.
+    // Shared drives or restricted domains can reject "anyone" permission.
+    // Keep flow alive and return the file link anyway.
   }
 
   return {

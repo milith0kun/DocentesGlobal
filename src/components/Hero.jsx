@@ -278,21 +278,39 @@ export default function Hero({ onStartWizard }) {
         @media (max-width: 640px) {
           .clean-hero {
             padding: 6.15rem 0 1.55rem !important;
+            max-width: 100vw;
+            overflow-x: clip;
+          }
+
+          .clean-hero .hero-container,
+          .clean-hero .home-hero-grid,
+          .clean-hero .hero-copy {
+            max-width: 100%;
+            min-width: 0;
+          }
+
+          .clean-hero .hero-copy {
+            padding: 0 0.1rem;
           }
 
           .clean-hero .hero-title {
-            margin-bottom: 0.78rem;
-            font-size: clamp(2.05rem, 10.7vw, 2.56rem);
+            width: 100%;
+            max-width: 20rem;
+            margin: 0 auto 0.78rem;
+            font-size: clamp(1.85rem, 9.4vw, 2.3rem);
+            overflow-wrap: break-word;
           }
 
           .clean-hero .hero-subtitle {
-            margin-bottom: 1.02rem;
+            max-width: 21rem;
+            margin: 0 auto 1.02rem;
             font-size: 0.98rem;
             line-height: 1.55;
+            overflow-wrap: break-word;
           }
 
           .clean-hero .hero-cta {
-            width: 100%;
+            width: min(100%, 19rem);
             max-width: 316px;
             min-width: 0;
             margin: 0 auto;

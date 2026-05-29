@@ -1183,7 +1183,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         /* ── MAIN AREA ── */
         .wz-main {
           flex:1; display:flex; align-items:center; justify-content:center;
-          padding:1.5rem 3rem; overflow:hidden;
+          min-height:0; padding:1.5rem 3rem; overflow:auto;
+          overscroll-behavior:contain;
         }
         .wz-content {
           width:100%; transition:max-width 0.35s ease;
@@ -2006,7 +2007,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-top-grid { grid-template-columns:1fr; }
         }
         @media (max-width:680px) {
-          .wz { padding: 0.5rem; }
+          .wz { padding: 0; min-height: 100dvh; }
           .wz-header {
             padding:0 3.15rem 0 0.75rem;
             height: 64px;
@@ -2057,7 +2058,15 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-stepper-step-name { font-size:0.78rem; }
           .wz-stepper-segments { gap:0.25rem; }
           .wz-stepper-segment { height:3px; }
-          .wz-main { padding:1.25rem 1rem; overflow-y:auto; border-radius:20px; }
+          .wz-main {
+            align-items:flex-start;
+            justify-content:flex-start;
+            padding:1rem 0.875rem max(1.25rem, env(safe-area-inset-bottom));
+            overflow-y:auto;
+            border-radius:0;
+            -webkit-overflow-scrolling:touch;
+          }
+          .wz-content { max-width:100% !important; }
           
           .wz-title { font-size:1.5rem !important; margin-bottom:0.5rem; }
           .wz-sub { font-size:0.85rem !important; margin-bottom:1.25rem !important; }
@@ -2106,6 +2115,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-brand-card img {
             max-height: 34px;
             max-width: 68%;
+          }
+        }
+
         .wz-top-overview-title {
           font-family:'Outfit',sans-serif;
           font-size:1.02rem;
@@ -2201,7 +2213,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-top-grid { grid-template-columns:1fr; }
         }
         @media (max-width:680px) {
-          .wz { padding: 0.5rem; }
+          .wz { padding: 0; min-height: 100dvh; }
           .wz-header {
             padding:0 3.15rem 0 0.75rem;
             height: 64px;
@@ -2252,7 +2264,15 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-stepper-step-name { font-size:0.78rem; }
           .wz-stepper-segments { gap:0.25rem; }
           .wz-stepper-segment { height:3px; }
-          .wz-main { padding:1.25rem 1rem; overflow-y:auto; border-radius:20px; }
+          .wz-main {
+            align-items:flex-start;
+            justify-content:flex-start;
+            padding:1rem 0.875rem max(1.25rem, env(safe-area-inset-bottom));
+            overflow-y:auto;
+            border-radius:0;
+            -webkit-overflow-scrolling:touch;
+          }
+          .wz-content { max-width:100% !important; }
           
           .wz-title { font-size:1.5rem !important; margin-bottom:0.5rem; }
           .wz-sub { font-size:0.85rem !important; margin-bottom:1.25rem !important; }
