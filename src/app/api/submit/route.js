@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { randomUUID } from 'node:crypto';
 import { createDocenteFolder, uploadFileToDrive } from '@/lib/google-drive.js';
-import { appendDocenteRow, ensureSheetHeaders } from '@/lib/google-sheets.js';
+import { appendDocenteRow } from '@/lib/google-sheets.js';
 import { validateGoogleAuthConfig } from '@/lib/google-auth.js';
 
 const marcaConfig = {
@@ -251,8 +251,6 @@ export async function POST(request) {
     }
 
     const pdfData = { ...fields, code, fecha, institucion };
-
-    await ensureSheetHeaders();
     await appendDocenteRow(
       {
         code,

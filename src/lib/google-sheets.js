@@ -2,35 +2,6 @@ import { getSheetsClient } from './google-auth.js';
 
 const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID;
 const SHEET_NAME = 'Docentes';
-const SHEET_HEADERS = [
-  'Código',
-  'Nombre',
-  'Correo',
-  'Documento',
-  'Nacimiento',
-  'Institución',
-  'Marca',
-  'Teléfono',
-  'Método Pago',
-  'Cuenta',
-  'Dirección',
-  'Softwares',
-  'Curso Deseado',
-  'Mejora Admin',
-  'Comentarios',
-  'Acepta Metodología',
-  'Acepta Sábado',
-  'Acepta Domingo',
-  'Acepta Lunes',
-  'Acepta Protocolo',
-  'Acepta Asistencia',
-  'Acepta TOP',
-  'Link CV',
-  'Link Foto',
-  'Link PDF',
-  'Link Carpeta',
-  'Fecha Registro',
-];
 
 function assertSheetsConfig() {
   if (!SPREADSHEET_ID) {
@@ -38,117 +9,85 @@ function assertSheetsConfig() {
   }
 }
 
-function columnLabel(index1Based) {
-  let n = index1Based;
-  let label = '';
-  while (n > 0) {
-    const rem = (n - 1) % 26;
-    label = String.fromCharCode(65 + rem) + label;
-    n = Math.floor((n - 1) / 26);
-  }
-  return label;
-}
-
 function sheetRange(startCell) {
   return `${SHEET_NAME}!${startCell}`;
 }
 
-async function ensureSheetExists() {
-  assertSheetsConfig();
-  const sheets = getSheetsClient();
-
-  const metadata = await sheets.spreadsheets.get({
-    spreadsheetId: SPREADSHEET_ID,
-    fields: 'sheets(properties(sheetId,title))',
-  });
-
-  const sheetExists = (metadata.data.sheets || []).some(
-    (s) => s.properties?.title === SHEET_NAME
-  );
-
-  if (!sheetExists) {
-    await sheets.spreadsheets.batchUpdate({
-      spreadsheetId: SPREADSHEET_ID,
-      requestBody: {
-        requests: [{ addSheet: { properties: { title: SHEET_NAME } } }],
-      },
-    });
-  }
-}
-
-/**
- * Inicializa o corrige los headers del sheet.
- */
-export async function ensureSheetHeaders() {
-  assertSheetsConfig();
-  const sheets = getSheetsClient();
-  await ensureSheetExists();
-
-  const endCol = columnLabel(SHEET_HEADERS.length);
-  const headerRange = sheetRange(`A1:${endCol}1`);
-
-  const existing = await sheets.spreadsheets.values.get({
-    spreadsheetId: SPREADSHEET_ID,
-    range: headerRange,
-  });
-
-  const current = existing.data.values?.[0] || [];
-  const needsUpdate =
-    current.length !== SHEET_HEADERS.length ||
-    SHEET_HEADERS.some((h, i) => current[i] !== h);
-
-  if (needsUpdate) {
-    await sheets.spreadsheets.values.update({
-      spreadsheetId: SPREADSHEET_ID,
-      range: headerRange,
-      valueInputOption: 'RAW',
-      requestBody: {
-        values: [SHEET_HEADERS],
-      },
-    });
-  }
-}
-
-/**
- * Agrega una fila con los datos del docente al Google Sheet.
- * @param {object} data - Datos del docente
- * @param {object} links - Enlaces de Drive { cvUrl, fotoUrl, pdfUrl, folderUrl }
- */
 export async function appendDocenteRow(data, links = {}) {
   assertSheetsConfig();
   const sheets = getSheetsClient();
 
   const metodo = data.metodoPago === 'otro' ? data.metodoPagoOtro : data.metodoPago;
 
-  const row = [
-    data.code || '',
-    data.nombre || '',
-    data.correo || '',
-    data.documento || '',
-    data.fechaNacimiento || '',
-    data.institucion || '',
-    data.marca || '',
-    data.telefono || '',
-    metodo || '',
-    data.numeroCuenta || '',
-    data.direccion || '',
-    data.softwares || '',
-    data.cursoSonado || '',
-    data.mejoraAdmin || '',
-    data.comentarios || '',
-    data.aceptaMetodologia || '',
-    data.aceptaSabado || '',
-    data.aceptaDomingo || '',
-    data.aceptaLunes || '',
-    data.aceptaProtocolo || '',
-    data.aceptaAsistencia || '',
-    data.aceptaTop || '',
-    links.cvUrl || '',
-    links.fotoUrl || '',
-    links.pdfUrl || '',
-    links.folderUrl || '',
-    new Date().toLocaleString('es-PE', { timeZone: 'America/Lima' }),
-  ];
+  // The array length should be enough to cover the existing 22 columns plus our new fields
+  const row = [];
+  
+  // 0: Observaciones
+  row[0] = ''; 
+  // 1: Marca temporal
+  row[1] = new Date().toLocaleString('es-PE', { timeZone: 'America/Lima' });
+  // 2: Dirección de correo electrónico
+  row[2] = data.correo || '';
+  // 3: 1. Nombre completo:
+  row[3] = data.nombre || '';
+  // 4: 3. Institución a la que pertenece:
+  row[4] = data.institucion || '';
+  // 5: 4. Fecha de nacimiento:
+  row[5] = data.fechaNacimiento || '';
+  // 6: 5. Número de contacto preferente/ WhatsApp:
+  row[6] = data.telefono || '';
+  // 7: 6. Cuenta de abono preferente:
+  row[7] = metodo || '';
+  // 8: 8. Número de cuenta o celular asociado al abono:
+  row[8] = data.numeroCuenta || '';
+  // 9: PROFESIÓN
+  row[9] = ''; 
+  // 10: Adjuntar Curriculum Vitae (CV) actualizado:
+  row[10] = links.cvUrl || '';
+  // 11: Adjuntar Fotografía profesional:
+  row[11] = links.fotoUrl || '';
+  // 12: ¿Tiene alguna observación...
+  row[12] = data.comentarios || '';
+  // 13: Reto Profesional y Personal: ...
+  row[13] = data.cursoSonado || '';
+  // 14: Desde su perspectiva como docente...
+  row[14] = data.mejoraAdmin || '';
+  // 15: Indique los softwares especializados...
+  row[15] = data.softwares || '';
+  // 16: 2. Documento identidad
+  row[16] = data.documento || '';
+  // 17: 7. Dirección de vivienda
+  row[17] = data.direccion || '';
+  // 18: Domicilio
+  row[18] = ''; 
+  // 19: Resumen DOCENTE
+  row[19] = ''; 
+  // 20: HONORARIOS
+  row[20] = ''; 
+  // 21: Columna 1
+  row[21] = ''; 
+
+  // --- NUEVAS COLUMNAS (A partir de la 22) ---
+  // 22: Código Sistema
+  row[22] = data.code || '';
+  // 23: Acepta Metodología
+  row[23] = data.aceptaMetodologia ? 'Sí' : 'No';
+  // 24: Acepta Protocolo
+  row[24] = data.aceptaProtocolo ? 'Sí' : 'No';
+  // 25: Acepta Asistencia
+  row[25] = data.aceptaAsistencia ? 'Sí' : 'No';
+  // 26: Acepta TOP
+  row[26] = data.aceptaTop ? 'Sí' : 'No';
+  // 27: Disponibilidad Sábado
+  row[27] = data.aceptaSabado ? 'Sí' : 'No';
+  // 28: Disponibilidad Domingo
+  row[28] = data.aceptaDomingo ? 'Sí' : 'No';
+  // 29: Disponibilidad Lunes
+  row[29] = data.aceptaLunes ? 'Sí' : 'No';
+  // 30: Link Carpeta Docente
+  row[30] = links.folderUrl || '';
+  // 31: Marca (e.g. ciip, geomina)
+  row[31] = data.marca || '';
 
   const response = await sheets.spreadsheets.values.append({
     spreadsheetId: SPREADSHEET_ID,
