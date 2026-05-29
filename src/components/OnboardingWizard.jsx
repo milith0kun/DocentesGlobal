@@ -1939,9 +1939,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
         /* ── PROGRAMA TOP (PASO 8) ── */
         .wz-top-overview {
-          border:1px solid #e2e8f0;
+          border:1px solid rgba(14,165,233,0.2);
           border-radius:16px;
-          background:#fff;
+          background: linear-gradient(135deg, rgba(14,165,233,0.06) 0%, rgba(14,165,233,0.01) 100%);
           padding:1.1rem 1.2rem;
           margin-bottom:1rem;
         }
@@ -1966,10 +1966,10 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           gap:0.55rem;
         }
         .wz-top-kpi {
-          border:1px solid #e8ecf1;
+          border:1px solid rgba(14,165,233,0.15);
           border-radius:10px;
           padding:0.65rem 0.7rem;
-          background:#f8fafc;
+          background:#fff;
         }
         .wz-top-kpi-label {
           display:block;
@@ -2014,90 +2014,21 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         .wz-top-list li {
           margin:0;
+          position:relative;
+          padding-left:1.25rem;
           font-size:0.83rem;
           line-height:1.5;
           font-weight:540;
           color:#334155;
         }
-        .wz-top-list li strong {
-          color:#0f172a;
-          font-weight:760;
-        }
-
-
-        .wz-top-overview-title {
-          font-family:'Outfit',sans-serif;
-          font-size:1.02rem;
-          font-weight:820;
-          color:#0f172a;
-          margin:0 0 0.45rem;
-        }
-        .wz-top-overview-text {
-          margin:0;
-          color:#475569;
-          font-size:0.85rem;
-          line-height:1.55;
-          font-weight:550;
-        }
-        .wz-top-kpis {
-          margin-top:0.85rem;
-          display:grid;
-          grid-template-columns:repeat(3, minmax(0, 1fr));
-          gap:0.55rem;
-        }
-        .wz-top-kpi {
-          border:1px solid #e8ecf1;
-          border-radius:10px;
-          padding:0.65rem 0.7rem;
-          background:#f8fafc;
-        }
-        .wz-top-kpi-label {
-          display:block;
-          font-size:0.68rem;
-          font-weight:760;
-          letter-spacing:0.2px;
-          color:#64748b;
-          margin-bottom:0.2rem;
-        }
-        .wz-top-kpi strong {
-          font-family:'Outfit',sans-serif;
-          font-size:1.08rem;
-          font-weight:840;
-          color:#0f172a;
-        }
-        .wz-top-grid {
-          display:grid;
-          grid-template-columns:1fr 1fr;
-          gap:0.85rem;
-          margin-bottom:0.9rem;
-        }
-        .wz-top-card {
-          border:1px solid #e2e8f0;
-          border-radius:16px;
-          background:#fff;
-          padding:1rem 1.05rem;
-        }
-        .wz-top-card-title {
-          margin:0 0 0.7rem;
-          font-family:'Outfit',sans-serif;
-          font-size:0.98rem;
-          font-weight:810;
-          color:#0f172a;
-        }
-        .wz-top-list {
-          margin:0;
-          padding:0;
-          list-style:none;
-          display:flex;
-          flex-direction:column;
-          gap:0.55rem;
-        }
-        .wz-top-list li {
-          margin:0;
-          font-size:0.83rem;
-          line-height:1.5;
-          font-weight:540;
-          color:#334155;
+        .wz-top-list li::before {
+          content:'✓';
+          position:absolute;
+          left:0;
+          top:0;
+          color:var(--bc);
+          font-weight:800;
+          font-size:0.9rem;
         }
         .wz-top-list li strong {
           color:#0f172a;
@@ -2234,9 +2165,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-metric-label { font-size:0.8rem; }
 
           .wz-top-overview { padding:1rem; }
-          .wz-top-kpis { grid-template-columns:1fr; }
-          .wz-top-kpi strong { font-size:1rem; }
-          .wz-top-card { padding:0.95rem; }
+          .wz-top-kpis { grid-template-columns:repeat(3, 1fr); gap:0.4rem; }
+          .wz-top-kpi { padding:0.5rem 0.4rem; }
+          .wz-top-kpi-label { font-size:0.58rem; letter-spacing:0; }
+          .wz-top-kpi strong { font-size:0.9rem; }
+          .wz-top-card { padding:1rem; }
           .wz-top-card-title { font-size:0.92rem; }
 
           .wz-nav { flex-direction:column-reverse; gap:0.5rem; margin-top:1.5rem; }
