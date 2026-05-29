@@ -2208,8 +2208,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-principle-text h4 { font-size:1.05rem; margin-bottom:0.25rem; }
           .wz-principle-text p { font-size:0.82rem; }
           
-          .wz-agenda-row { flex-direction:column; gap:0.85rem; padding:1.25rem; }
-          .wz-agenda-content { padding-left:0; border-left:none; padding-top:0.75rem; border-top:1px solid #e8ecf1; width:100%; }
+          .wz-agenda-row { flex-direction:row; flex-wrap:wrap; align-items:center; gap:0.85rem; padding:1.15rem; }
+          .wz-agenda-time { flex:1; width:auto; display:flex; align-items:baseline; gap:0.5rem; }
+          .wz-a-day { font-size:1.05rem; margin-bottom:0; }
+          .wz-a-hr { font-size:0.85rem; }
+          .wz-agenda-content { padding-left:0; border-left:none; padding-top:0.75rem; border-top:1px solid #e8ecf1; width:100%; margin-top:0.15rem; }
           .wz-agenda-row.on .wz-agenda-content { border-top-color:rgba(14,165,233,0.2); }
           
           .wz-metrics-grid { grid-template-columns:1fr !important; gap:1rem; }
