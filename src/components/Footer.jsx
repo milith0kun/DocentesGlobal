@@ -9,19 +9,11 @@ export default function Footer() {
 
   return (
     <footer className="site-footer" style={{
-      background: 'linear-gradient(180deg, rgba(6, 14, 26, 0) 0%, #060e1a 100%)',
-      color: '#94a3b8',
+      background: 'transparent',
       padding: '1.05rem 0 0.95rem',
       position: 'relative',
       zIndex: 10
     }}>
-      {/* Subtle line separator */}
-      <div className="footer-separator" style={{
-        height: '1px',
-        background: 'linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.1), transparent)',
-        marginBottom: '0.85rem'
-      }} />
-
       <div className="container">
         <div style={{
           display: 'flex',
@@ -36,7 +28,7 @@ export default function Footer() {
             fontSize: '0.74rem', 
             fontWeight: 500, 
             margin: 0, 
-            color: '#cbd5e1',
+            color: '#475569',
             fontFamily: 'var(--font-body)'
           }}>
             © {currentYear} CIIP LATAM · Ecosistema Digital de Capacitación. Todos los derechos reservados.
@@ -70,7 +62,7 @@ export default function Footer() {
         }
 
         .footer-logo {
-          opacity: 0.7;
+          opacity: 0.65;
           object-fit: contain;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -80,14 +72,15 @@ export default function Footer() {
         }
         .footer-logo-ciip {
           height: 44px;
+          filter: invert(1) brightness(0.2);
         }
         .footer-logo-geomina {
           height: 29px;
           margin-top: 2px;
+          filter: invert(1) brightness(0.2);
         }
         .footer-logo-biomedic {
           height: 40px;
-          filter: invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.15) url(#remove-black-footer);
         }
         .footer-logo-sep {
           width: 72%;
@@ -116,10 +109,7 @@ export default function Footer() {
         @media (max-width: 640px) {
           .site-footer {
             padding: 2rem 0 1.35rem !important;
-            background: linear-gradient(180deg, rgba(6, 14, 26, 0) 0%, #09192a 28%, #050b14 100%) !important;
-          }
-          .footer-separator {
-            margin-bottom: 1.1rem !important;
+            background: transparent !important;
           }
           .footer-bar-content {
             flex-direction: column !important;
@@ -142,7 +132,7 @@ export default function Footer() {
             max-width: 17.5rem;
             font-size: 0.76rem !important;
             line-height: 1.45 !important;
-            color: #e2e8f0 !important;
+            color: #475569 !important;
           }
           .footer-logo {
             opacity: 0.92 !important;
@@ -161,7 +151,6 @@ export default function Footer() {
           .footer-logo-biomedic {
             height: 28px !important;
             max-width: 82px;
-            filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.15) url(#remove-black-footer) !important;
           }
           .footer-logo-sep {
             width: 1px !important;
@@ -188,7 +177,6 @@ export default function Footer() {
           .footer-logo-biomedic {
             height: 25px !important;
             max-width: 70px;
-            filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.15) url(#remove-black-footer) !important;
           }
         }
       `}</style>
