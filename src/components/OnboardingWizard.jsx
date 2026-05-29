@@ -2167,8 +2167,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             min-height: auto;
           }
           .wz-content {
-            width: 100% !important;
-            max-width: 420px !important; /* Don't stretch full width */
+            width: 88% !important;
+            max-width: 350px !important; /* Much narrower on mobile */
             margin: auto !important; /* Vertically and horizontally center */
           }
           
