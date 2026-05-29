@@ -309,6 +309,201 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     }
                     .custom-brand-card:hover img {
                       opacity: 0.8; transform: scale(1.02);
+    3: 'Metodología Doing by Learning',
+    4: 'Fechas de Corte Innegociables',
+    5: 'Acceso a Drive Institucional',
+    6: 'Protocolo de Imagen & Comunicación',
+    7: 'Política de Asistencia',
+    8: 'Programa Docente TOP',
+    9: 'Contacto y Datos de Pago',
+    10: 'Subir Documentación',
+    11: 'Perfil Profesional & Comentarios',
+    12: 'Declaración de Conformidad',
+  };
+
+  const marcaConfig = {
+    ciip: { nombre: 'CIIP Latam', color: '#0284c7', telefono: '51956006498', coordinador: 'Nicol', bgGlow: 'rgba(2,132,199,0.12)' },
+    geomina: { nombre: 'Geomina', color: '#0ea5e9', telefono: '51925084564', coordinador: 'Fiorella', bgGlow: 'rgba(14,165,233,0.12)' },
+    biomedic: { nombre: 'Biomedic', color: '#06b6d4', telefono: '51956006498', coordinador: 'Nicol', bgGlow: 'rgba(6,182,212,0.1)' },
+    ambos: { nombre: 'CIIP Latam & Geomina', color: '#38bdf8', telefono: '51956006498', coordinador: 'Nicol y Fiorella', bgGlow: 'rgba(56,189,248,0.12)' },
+  };
+
+  const handleNext = () => {
+    if (step === 1 && !formData.marca) return;
+    if (step === 2 && (!formData.nombre.trim() || !correoValido || !formData.documento.trim() || formData.fechaNacimiento.length !== 10)) return;
+    if (step === 3 && !formData.aceptaMetodologia) return;
+    if (step === 4 && (!formData.aceptaSabado || !formData.aceptaDomingo || !formData.aceptaLunes)) return;
+    if (step === 4) { setShowPenaltyAlert(true); return; } // Muestra Modal de Penalidad
+    if (step === 6 && !formData.aceptaProtocolo) return;
+    if (step === 7 && !formData.aceptaAsistencia) return;
+    if (step === 8 && !formData.aceptaTop) return;
+    if (step === 9 && (!formData.telefono.trim() || !formData.metodoPago || !formData.numeroCuenta.trim() || !formData.direccion.trim())) return;
+    if (step === 9 && formData.metodoPago === 'otro' && !formData.metodoPagoOtro.trim()) return;
+    if (step === 10 && (!formData.cvFile || !formData.fotoFile)) return;
+    if (step === 10) { setShowDriveAlert(true); return; } // Muestra Modal de Drive
+    if (step === 11 && (!formData.softwares.trim() || !formData.cursoSonado.trim() || !formData.mejoraAdmin.trim())) return;
+    if (step < totalSteps) setStep(s => s + 1);
+  };
+
+  const handleBack = () => {
+    if (step === 6) { setStep(4); return; } // Regresa de Protocolo a Fechas
+    if (step === 11) { setStep(10); return; } // Regresa de Perfil a Documentación
+    if (step > 1) setStep(s => s - 1);
+  };
+
+  const handleFinish = async () => {
+    setIsSubmitting(true);
+    try {
+      const formDataToSend = new FormData();
+      Object.keys(formData).forEach(key => {
+        if (key !== 'cvFile' && key !== 'fotoFile') {
+          formDataToSend.append(key, formData[key] || '');
+        }
+      });
+      if (formData.cvFile) formDataToSend.append('cv', formData.cvFile);
+      if (formData.fotoFile) formDataToSend.append('foto', formData.fotoFile);
+
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        body: formDataToSend,
+      });
+
+      const resData = await parseJsonResponse(response);
+      if (!response.ok || !resData) {
+        alert('Error del servidor al enviar el formulario. Intenta nuevamente.');
+        return;
+      }
+      
+      if (resData.success) {
+        setGeneratedCode(resData.code);
+        const cfg = marcaConfig[formData.marca];
+        const metodo = formData.metodoPago === 'otro' ? formData.metodoPagoOtro : formData.metodoPago?.toUpperCase();
+        const msg = `*📋 FORMULARIO DOCENTE – CONFORMIDAD*\n\n*Código:* ${resData.code}\n*Docente:* ${formData.nombre}\n*Documento:* ${formData.documento}\n*Correo:* ${formData.correo}\n*Institución:* ${cfg.nombre}\n*Teléfono:* ${formData.telefono}\n\n💳 *Datos de Pago:*\n• Método: ${metodo}\n• Cuenta: ${formData.numeroCuenta}\n• Dirección: ${formData.direccion}\n\n💻 *Softwares:* ${formData.softwares}\n🚀 *Curso deseado:* ${formData.cursoSonado}\n🤝 *Mejora sugerida:* ${formData.mejoraAdmin}\n${formData.comentarios ? `💬 *Comentarios:* ${formData.comentarios}` : ''}\n\n✅ *Compromisos Aceptados:*\n• Metodología Doing by Learning\n• Fechas de corte innegociables\n• Protocolo de imagen\n• Política de asistencia\n• Programa Docente TOP\n\n*Fecha:* ${resData.fecha}\n*Carpeta Drive:* ${resData.driveFolder || 'Pendiente'}\n*PDF Conformidad:* ${resData.pdfUrl || 'Pendiente'}`;
+        
+        window.open(`https://wa.me/${cfg.telefono}?text=${encodeURIComponent(msg)}`, '_blank');
+        setIsFinished(true);
+      } else {
+        alert('Error al enviar los datos: ' + resData.error);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Hubo un error de conexión al enviar el formulario.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleReset = () => {
+    setFormData({ nombre:'',correo:'',marca:'',documento:'',fechaNacimiento:'',aceptaMetodologia:false,aceptaSabado:false,aceptaDomingo:false,aceptaLunes:false,aceptaProtocolo:false,aceptaAsistencia:false,aceptaTop:false,telefono:'',metodoPago:'',metodoPagoOtro:'',numeroCuenta:'',direccion:'',cvFile:null,fotoFile:null,softwares:'',cursoSonado:'',mejoraAdmin:'',comentarios:'' });
+    setStep(1); setIsFinished(false); setGeneratedCode(''); onClose();
+  };
+
+  const brandColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
+  const brandGlow = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14,165,233,0.12)';
+
+  const stepWidths = { 1: '380px', 2: '460px', 3: '600px', 4: '620px', 5: '520px', 6: '760px', 7: '720px', 8: '740px', 9: '680px', 10: '600px', 11: '640px', 12: '580px' };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="wz" style={{ '--bc': brandColor, '--bg': brandGlow }}>
+      {/* ── HEADER ── */}
+      <header className="wz-header">
+        <div className="wz-h-left">
+          {/* El botón de ir atrás se movió a la parte inferior del flujo */}
+        </div>
+        <div className="wz-h-center">
+          {(() => {
+            const mkLogo = (key, src, cls, extraStyle) => {
+              const isSelected = formData.marca === key || (formData.marca === 'ambos' && (key === 'ciip' || key === 'geomina'));
+              const opacity = step === 1 ? (!formData.marca ? 0.85 : isSelected ? 1 : 0.2) : 1;
+              return (
+                <img key={key} src={src} alt={key} className={`wz-logo ${cls||''}`}
+                  style={{ opacity, ...extraStyle, transition:'all 0.4s ease' }} />
+              );
+            };
+            const ciip = mkLogo('ciip', biomedicWhite, 'lg-ciip');
+            const geo = mkLogo('geomina', geominaWhite, 'lg-geo');
+            const bio = mkLogo('biomedic', logobiomedic, 'lg-bio', { filter:'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' });
+            const sep = (k) => <div key={k} className="wz-sep" />;
+            if (step > 1) {
+              if (formData.marca === 'ambos') return [ciip, sep('s1'), geo];
+              return formData.marca === 'ciip' ? ciip : formData.marca === 'geomina' ? geo : bio;
+            }
+            return [ciip, sep('s1'), geo, sep('s2'), bio];
+          })()}
+        </div>
+        <div className="wz-h-right">
+          <button onClick={handleReset} className="wz-back" aria-label="Cerrar" style={{ fontSize:'0.9rem', fontWeight:800 }}>✕</button>
+        </div>
+      </header>
+
+      {/* ── STEPPER SEGMENTADO PREMIUM ── */}
+      {!isFinished && (
+        <div className="wz-stepper-premium">
+          <div className="wz-stepper-info">
+            <span className="wz-stepper-step-badge" title={stepLabels[step]}>Paso {step} de {totalSteps}</span>
+          </div>
+          <div className="wz-stepper-segments">
+            {Array.from({ length: totalSteps }).map((_, idx) => {
+              const segmentStep = idx + 1;
+              const active = step === segmentStep;
+              const done = step > segmentStep;
+              return (
+                <div key={idx} className={`wz-stepper-segment ${active ? 'active' : ''} ${done ? 'done' : ''}`} />
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── MAIN ── */}
+      <main className="wz-main">
+        <div className="wz-content" style={{ maxWidth: isFinished ? '480px' : stepWidths[step] }}>
+
+          {/* ═══ ÉXITO ═══ */}
+          {isFinished && (
+            <div className="wz-fade">
+              <div style={{ textAlign:'center' }}>
+                <div className="wz-success-icon">✓</div>
+                <h1 className="wz-title" style={{ textAlign:'center', fontSize:'1.8rem', marginBottom:'0.35rem' }}>¡Conformidad Registrada!</h1>
+                <p className="wz-sub" style={{ textAlign:'center', marginBottom:'1.5rem' }}>Tu declaración ha sido enviada por WhatsApp y registrada exitosamente.</p>
+                <div className="wz-summary">
+                  <div className="wz-sum-row"><span>Código</span><strong style={{ color:'#22c55e' }}>{generatedCode}</strong></div>
+                  <div className="wz-sum-row"><span>Docente</span><strong>{formData.nombre}</strong></div>
+                  <div className="wz-sum-row"><span>Ecosistema</span><strong style={{ color: brandColor }}>{marcaConfig[formData.marca]?.nombre}</strong></div>
+                  <div className="wz-sum-row" style={{ borderBottom:'none' }}><span>Estado</span><strong style={{ color:'#22c55e' }}>Compromisos aceptados</strong></div>
+                </div>
+                <button onClick={handleReset} className="wz-btn-main" style={{ width:'100%', marginTop:'1.25rem' }}>Volver al Inicio</button>
+              </div>
+            </div>
+          )}
+
+          {!isFinished && (
+            <>
+              {/* ═══ PASO 1: SELECCIÓN DE INSTITUCIÓN ═══ */}
+              {step === 1 && (
+                <div className="wz-fade">
+                  <h2 className="wz-title" style={{ textAlign:'center' }}>Selecciona tu Institución</h2>
+                  <p className="wz-sub" style={{ textAlign:'center', marginBottom:'1.5rem' }}>Elige la institución a la que perteneces.</p>
+                  
+                  <style>{`
+                    .custom-brand-list { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1.5rem; }
+                    .custom-brand-card {
+                      background: #09111e; border: 2px solid transparent; border-radius: 12px;
+                      height: 84px; display: flex; align-items: center; justify-content: center; gap: 1rem;
+                      cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                      position: relative; overflow: hidden; list-style: none; outline: none;
+                    }
+                    .custom-brand-card img {
+                      opacity: 0.45; max-width: 80%; max-height: 40px; transition: all 0.3s ease;
+                      object-fit: contain;
+                    }
+                    .custom-brand-card:hover {
+                      background: #0f1e34; border-color: rgba(255, 255, 255, 0.08);
+                    }
+                    .custom-brand-card:hover img {
+                      opacity: 0.8; transform: scale(1.02);
                     }
                     .custom-brand-card.on {
                       background: #0f1e34; border-color: var(--bc);
@@ -317,6 +512,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     .custom-brand-card.on img {
                       opacity: 1; transform: scale(1.05);
                     }
+                    .custom-brand-card img.lg-ciip-btn { height: 32px; max-height: 32px; }
+                    .custom-brand-card img.lg-geomina-btn { height: 22px; max-height: 22px; }
+                    .custom-brand-card img.lg-biomedic-btn { height: 28px; max-height: 28px; }
                     .custom-brand-card.part-of-ambos {
                       background: #0f1e34; border-color: rgba(56, 189, 248, 0.45);
                       box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25);
@@ -339,9 +537,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                       box-shadow: 0 0 0 1px #38bdf8, 0 8px 16px -6px rgba(56, 189, 248, 0.4);
                     }
                     @media(max-width: 640px) { 
-                      .custom-brand-card { height: 72px; } 
-                      .custom-brand-card img { max-height: 32px; } 
-                      .custom-ambos-card { font-size: 0.9rem; padding: 0.75rem; }
+                      .custom-brand-card { height: 54px; } 
+                      .custom-brand-card img.lg-ciip-btn { height: 24px; max-height: 24px; }
+                      .custom-brand-card img.lg-geomina-btn { height: 16px; max-height: 16px; }
+                      .custom-brand-card img.lg-biomedic-btn { height: 21px; max-height: 21px; }
+                      .custom-ambos-card { font-size: 0.85rem; padding: 0.6rem; min-height: 50px; }
                     }
                   `}</style>
                   
@@ -358,7 +558,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                         <div key={b.key} onClick={() => setFormData({...formData, marca:b.key})}
                           className={`custom-brand-card ${on ? 'on' : ''} ${partOfAmbos ? 'part-of-ambos' : ''}`}
                           style={{ '--bc': marcaConfig[b.key].color }}>
-                          <img src={b.logo} alt={b.key} style={{
+                          <img src={b.logo} alt={b.key} className={`lg-${b.key}-btn`} style={{
                             filter: b.key==='biomedic' ? 'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' : 'none'
                           }} />
                         </div>
@@ -2197,8 +2397,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-top-card-title { font-size:0.92rem; }
 
           .wz-nav { flex-direction:column-reverse; gap:0.5rem; margin-top:1.5rem; }
-          .wz-btn-main, .wz-btn-ghost, .wz-btn-wa { width:100%; text-align:center; justify-content:center; padding:1rem; }
-          
+          .wz-btn-main, .wz-btn-ghost, .wz-btn-wa { width:100%; text-align:center; justify-content:center; padding:0.75rem; }
           .wz-modal-box { width:95%; padding:1.5rem; border-radius:24px; }
           .wz-modal-title { font-size:1.8rem; }
 
