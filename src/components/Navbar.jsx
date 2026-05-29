@@ -1,7 +1,10 @@
+'use client';
+
 import { useState, useEffect } from 'react';
-import logobiomedic from '../assets/logobiomedic.png';
-import geominaWhite from '../assets/geomina-new.png';
-import biomedicWhite from '../assets/biomedic-white.png';
+
+const logobiomedic = '/assets/logobiomedic.png';
+const geominaWhite = '/assets/geomina-new.png';
+const biomedicWhite = '/assets/biomedic-white.png';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -17,14 +20,13 @@ export default function Navbar() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
-
         .premium-navbar {
           position: fixed;
           top: 0;
           left: 0;
           width: 100%;
           z-index: 1000;
+          font-family: var(--font-body);
           transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
           background: linear-gradient(135deg, #060e1a 0%, #0a1e35 40%, #0c2844 100%);
           border-bottom: 1px solid rgba(56, 189, 248, 0.08);

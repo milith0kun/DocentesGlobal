@@ -1,6 +1,8 @@
-import logociip from '../assets/logociip.png';
-import logogeomina from '../assets/logogeomina.png';
-import logobiomedic from '../assets/logobiomedic.png';
+'use client';
+
+const logociip = '/assets/logociip.png';
+const logogeomina = '/assets/logogeomina.png';
+const logobiomedic = '/assets/logobiomedic.png';
 
 const logos = [
   {

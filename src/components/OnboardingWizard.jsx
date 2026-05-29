@@ -1,51 +1,57 @@
+'use client';
+
 import { useState } from 'react';
-import logobiomedic from '../assets/logobiomedic.png';
-import geominaWhite from '../assets/geomina-new.png';
-import biomedicWhite from '../assets/biomedic-white.png';
 import { isValidEmail } from '../utils/emailValidation.js';
+
+const logobiomedic = '/assets/logobiomedic.png';
+const geominaWhite = '/assets/geomina-new.png';
+const biomedicWhite = '/assets/biomedic-white.png';
+const camaraFondoVirtual = '/assets/camara_fondo_virtual.png';
+const identidadVisualPpts = '/assets/identidad_visual_ppts.png';
+const canalesExternosProhibidos = '/assets/canales_externos_prohibidos.png';
+const parseJsonResponse = async (response) => {
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) return null;
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+};
 
 export default function OnboardingWizard({ isOpen, onClose }) {
   const [step, setStep] = useState(1);
   const [isFinished, setIsFinished] = useState(false);
   const [showPenaltyAlert, setShowPenaltyAlert] = useState(false);
+  const [showDriveAlert, setShowDriveAlert] = useState(false);
   const [activeProtocol, setActiveProtocol] = useState(0);
   const [generatedCode, setGeneratedCode] = useState('');
   const [loadingDni, setLoadingDni] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const consultarDNI = async (dniVal) => {
     if (!/^\d{8}$/.test(dniVal)) return;
     setLoadingDni(true);
     try {
-      const response = await fetch('https://apiperu.dev/api/dni', {
+      const response = await fetch('/api/reniec', {
         method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer 2d89ff1a7c2e0936030c05b608ee7e55565db844441231b9532714562a41d026'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ dni: dniVal })
       });
-      const resData = await response.json();
-      if (resData.success && resData.data) {
-        let nombre = resData.data.nombre_completo;
-        if (nombre && nombre.includes(',')) {
-          const parts = nombre.split(',');
-          nombre = `${parts[1].trim()} ${parts[0].trim()}`;
-        }
-        if (nombre) {
-          nombre = nombre
-            .toLowerCase()
-            .split(' ')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ');
-        }
-        setFormData(prev => ({ ...prev, nombre: nombre || '' }));
+
+      const resData = await parseJsonResponse(response);
+      if (!response.ok || !resData) {
+        console.error('Error al consultar DNI', { status: response.status });
+        return;
       }
-    } catch (error) {
-      console.error('Error al consultar DNI:', error);
-    } finally {
-      setLoadingDni(false);
+
+      if (resData.success && resData.nombre) {
+        setFormData(prev => ({ ...prev, nombre: resData.nombre }));
+      }
+    } catch (err) {
+      console.error(err);
     }
+    setLoadingDni(false);
   };
 
   const handleFechaNacimientoChange = (e) => {
@@ -132,48 +138,64 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     if (step === 2 && (!formData.nombre.trim() || !correoValido || !formData.documento.trim() || formData.fechaNacimiento.length !== 10)) return;
     if (step === 3 && !formData.aceptaMetodologia) return;
     if (step === 4 && (!formData.aceptaSabado || !formData.aceptaDomingo || !formData.aceptaLunes)) return;
-    if (step === 4) { setShowPenaltyAlert(true); return; }
-    // El paso 5 (Drive Institucional) no tiene condiciones bloqueantes, avanza directo.
+    if (step === 4) { setShowPenaltyAlert(true); return; } // Muestra Modal de Penalidad
     if (step === 6 && !formData.aceptaProtocolo) return;
     if (step === 7 && !formData.aceptaAsistencia) return;
     if (step === 8 && !formData.aceptaTop) return;
     if (step === 9 && (!formData.telefono.trim() || !formData.metodoPago || !formData.numeroCuenta.trim() || !formData.direccion.trim())) return;
     if (step === 9 && formData.metodoPago === 'otro' && !formData.metodoPagoOtro.trim()) return;
     if (step === 10 && (!formData.cvFile || !formData.fotoFile)) return;
+    if (step === 10) { setShowDriveAlert(true); return; } // Muestra Modal de Drive
     if (step === 11 && (!formData.softwares.trim() || !formData.cursoSonado.trim() || !formData.mejoraAdmin.trim())) return;
     if (step < totalSteps) setStep(s => s + 1);
   };
 
-  const handleBack = () => { if (step > 1) setStep(s => s - 1); };
-
-  const generateUniqueCode = () => {
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    return `MOD-${(formData.marca || 'DOC').toUpperCase()}-${code}`;
+  const handleBack = () => {
+    if (step === 6) { setStep(4); return; } // Regresa de Protocolo a Fechas
+    if (step === 11) { setStep(10); return; } // Regresa de Perfil a Documentación
+    if (step > 1) setStep(s => s - 1);
   };
 
-  const downloadCSV = (uniqueCode) => {
-    const brandName = formData.marca ? marcaConfig[formData.marca].nombre : 'N/A';
-    const metodo = formData.metodoPago === 'otro' ? formData.metodoPagoOtro : formData.metodoPago;
-    const headers = ['Codigo','Docente','Correo','Documento','Nacimiento','Institucion','Telefono','MetodoPago','NumeroCuenta','Direccion','Softwares','CursoDeseado','MejoraAdmin','Comentarios','Fecha'];
-    const values = [uniqueCode,formData.nombre,formData.correo,formData.documento,formData.fechaNacimiento,brandName,formData.telefono,metodo,formData.numeroCuenta,formData.direccion,formData.softwares,formData.cursoSonado,formData.mejoraAdmin,formData.comentarios,new Date().toLocaleString()];
-    const csv = "\uFEFF" + [headers.join(';'), values.map(v=>`"${v}"`).join(';')].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Conformidad_${formData.nombre.replace(/\s+/g,'_')}_${brandName}.csv`;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  };
+  const handleFinish = async () => {
+    setIsSubmitting(true);
+    try {
+      const formDataToSend = new FormData();
+      Object.keys(formData).forEach(key => {
+        if (key !== 'cvFile' && key !== 'fotoFile') {
+          formDataToSend.append(key, formData[key] || '');
+        }
+      });
+      if (formData.cvFile) formDataToSend.append('cv', formData.cvFile);
+      if (formData.fotoFile) formDataToSend.append('foto', formData.fotoFile);
 
-  const handleFinish = () => {
-    const code = generateUniqueCode();
-    const cfg = marcaConfig[formData.marca];
-    setGeneratedCode(code);
-    downloadCSV(code);
-    const metodo = formData.metodoPago === 'otro' ? formData.metodoPagoOtro : formData.metodoPago?.toUpperCase();
-    const msg = `*📋 FORMULARIO DOCENTE – CONFORMIDAD*\n\n*Código:* ${code}\n*Docente:* ${formData.nombre}\n*Documento:* ${formData.documento}\n*Correo:* ${formData.correo}\n*Institución:* ${cfg.nombre}\n*Teléfono:* ${formData.telefono}\n\n💳 *Datos de Pago:*\n• Método: ${metodo}\n• Cuenta: ${formData.numeroCuenta}\n• Dirección: ${formData.direccion}\n\n💻 *Softwares:* ${formData.softwares}\n🚀 *Curso deseado:* ${formData.cursoSonado}\n🤝 *Mejora sugerida:* ${formData.mejoraAdmin}\n${formData.comentarios ? `💬 *Comentarios:* ${formData.comentarios}` : ''}\n\n✅ *Compromisos Aceptados:*\n• Metodología Doing by Learning\n• Fechas de corte innegociables\n• Protocolo de imagen\n• Política de asistencia\n• Programa Docente TOP\n\n*Fecha:* ${new Date().toLocaleDateString()}`;
-    window.open(`https://wa.me/${cfg.telefono}?text=${encodeURIComponent(msg)}`, '_blank');
-    setIsFinished(true);
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        body: formDataToSend,
+      });
+
+      const resData = await parseJsonResponse(response);
+      if (!response.ok || !resData) {
+        alert('Error del servidor al enviar el formulario. Intenta nuevamente.');
+        return;
+      }
+      
+      if (resData.success) {
+        setGeneratedCode(resData.code);
+        const cfg = marcaConfig[formData.marca];
+        const metodo = formData.metodoPago === 'otro' ? formData.metodoPagoOtro : formData.metodoPago?.toUpperCase();
+        const msg = `*📋 FORMULARIO DOCENTE – CONFORMIDAD*\n\n*Código:* ${resData.code}\n*Docente:* ${formData.nombre}\n*Documento:* ${formData.documento}\n*Correo:* ${formData.correo}\n*Institución:* ${cfg.nombre}\n*Teléfono:* ${formData.telefono}\n\n💳 *Datos de Pago:*\n• Método: ${metodo}\n• Cuenta: ${formData.numeroCuenta}\n• Dirección: ${formData.direccion}\n\n💻 *Softwares:* ${formData.softwares}\n🚀 *Curso deseado:* ${formData.cursoSonado}\n🤝 *Mejora sugerida:* ${formData.mejoraAdmin}\n${formData.comentarios ? `💬 *Comentarios:* ${formData.comentarios}` : ''}\n\n✅ *Compromisos Aceptados:*\n• Metodología Doing by Learning\n• Fechas de corte innegociables\n• Protocolo de imagen\n• Política de asistencia\n• Programa Docente TOP\n\n*Fecha:* ${resData.fecha}\n*Carpeta Drive:* ${resData.driveFolder || 'Pendiente'}\n*PDF Conformidad:* ${resData.pdfUrl || 'Pendiente'}`;
+        
+        window.open(`https://wa.me/${cfg.telefono}?text=${encodeURIComponent(msg)}`, '_blank');
+        setIsFinished(true);
+      } else {
+        alert('Error al enviar los datos: ' + resData.error);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Hubo un error de conexión al enviar el formulario.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -250,7 +272,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               <div style={{ textAlign:'center' }}>
                 <div className="wz-success-icon">✓</div>
                 <h1 className="wz-title" style={{ textAlign:'center', fontSize:'1.8rem', marginBottom:'0.35rem' }}>¡Conformidad Registrada!</h1>
-                <p className="wz-sub" style={{ textAlign:'center', marginBottom:'1.5rem' }}>Tu declaración ha sido enviada por WhatsApp y descargada como CSV.</p>
+                <p className="wz-sub" style={{ textAlign:'center', marginBottom:'1.5rem' }}>Tu declaración ha sido enviada por WhatsApp y registrada exitosamente.</p>
                 <div className="wz-summary">
                   <div className="wz-sum-row"><span>Código</span><strong style={{ color:'#22c55e' }}>{generatedCode}</strong></div>
                   <div className="wz-sum-row"><span>Docente</span><strong>{formData.nombre}</strong></div>
@@ -270,32 +292,76 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                   <h2 className="wz-title" style={{ textAlign:'center' }}>Selecciona tu Institución</h2>
                   <p className="wz-sub" style={{ textAlign:'center', marginBottom:'1.5rem' }}>Elige la institución a la que perteneces.</p>
                   
-                  <div className="wz-brand-list" style={{ maxWidth:'100%', margin:'0 auto' }}>
+                  <style>{`
+                    .custom-brand-list { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1.5rem; }
+                    .custom-brand-card {
+                      background: #09111e; border: 2px solid transparent; border-radius: 12px;
+                      height: 84px; display: flex; align-items: center; justify-content: center; gap: 1rem;
+                      cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                      position: relative; overflow: hidden; list-style: none; outline: none;
+                    }
+                    .custom-brand-card img {
+                      opacity: 0.45; max-width: 80%; max-height: 40px; transition: all 0.3s ease;
+                      object-fit: contain;
+                    }
+                    .custom-brand-card:hover {
+                      background: #0f1e34; border-color: rgba(255, 255, 255, 0.08);
+                    }
+                    .custom-brand-card:hover img {
+                      opacity: 0.8; transform: scale(1.02);
+                    }
+                    .custom-brand-card.on {
+                      background: #0f1e34; border-color: var(--bc);
+                      box-shadow: 0 0 0 1px var(--bc), 0 8px 24px -6px var(--bc);
+                    }
+                    .custom-brand-card.on img {
+                      opacity: 1; transform: scale(1.05);
+                    }
+                    .custom-brand-card.part-of-ambos {
+                      background: #0f1e34; border-color: rgba(56, 189, 248, 0.45);
+                      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25);
+                    }
+                    .custom-brand-card.part-of-ambos img { opacity: 1; }
+                    .custom-ambos-card {
+                      background: linear-gradient(135deg, #080f1a 0%, #122137 100%);
+                      border: 2px dashed rgba(255, 255, 255, 0.15);
+                      height: 64px; display: flex; align-items: center; justify-content: center;
+                      border-radius: 12px; cursor: pointer; color: rgba(255,255,255,0.7); font-weight: 600;
+                      transition: all 0.3s ease; position: relative;
+                    }
+                    .custom-ambos-card:hover {
+                      background: linear-gradient(135deg, #0b1524 0%, #1a2f4c 100%); color: white;
+                      border-color: rgba(255,255,255,0.3);
+                    }
+                    .custom-ambos-card.on {
+                      border-style: solid; border-color: #38bdf8; color: #38bdf8;
+                      box-shadow: 0 0 0 1px #38bdf8, 0 8px 16px -6px rgba(56, 189, 248, 0.4);
+                    }
+                    @media(max-width: 640px) { .custom-brand-card { height: 72px; } .custom-brand-card img { max-height: 32px; } }
+                  `}</style>
+                  
+                  <div className="custom-brand-list" style={{ maxWidth:'100%', margin:'0 auto' }}>
                     {[
-                      { key:'ciip', logo:biomedicWhite, h:'56px' },
-                      { key:'geomina', logo:geominaWhite, h:'35px' },
-                      { key:'biomedic', logo:logobiomedic, h:'50px' },
+                      { key:'ciip', logo:biomedicWhite },
+                      { key:'geomina', logo:geominaWhite },
+                      { key:'biomedic', logo:logobiomedic },
                     ].map(b => {
                       const directSelected = formData.marca === b.key;
                       const partOfAmbos = formData.marca === 'ambos' && (b.key === 'ciip' || b.key === 'geomina');
                       const on = directSelected || partOfAmbos;
                       return (
                         <div key={b.key} onClick={() => setFormData({...formData, marca:b.key})}
-                          className={`wz-brand-card ${on ? 'on' : ''} ${partOfAmbos ? 'part-of-ambos' : ''}`}
+                          className={`custom-brand-card ${on ? 'on' : ''} ${partOfAmbos ? 'part-of-ambos' : ''}`}
                           style={{ '--bc': marcaConfig[b.key].color }}>
-                          <div className={`wz-radio ${on?'on':''}`} />
                           <img src={b.logo} alt={b.key} style={{
-                            height:b.h, objectFit:'contain',
                             filter: b.key==='biomedic' ? 'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' : 'none'
                           }} />
                         </div>
                       );
                     })}
                     <div onClick={() => setFormData({...formData, marca:'ambos'})}
-                      className={`wz-brand-card ambos-card ${formData.marca === 'ambos' ? 'on' : ''}`}
-                      style={{ '--bc': '#38bdf8' }}>
-                      <div className={`wz-radio ${formData.marca==='ambos'?'on':''}`} />
-                      <span className="ambos-text">Ambas instituciones (CIIP & Geomina)</span>
+                      className={`custom-ambos-card ${formData.marca === 'ambos' ? 'on' : ''}`}>
+                      <span>Ambas instituciones (CIIP & Geomina)</span>
                     </div>
                   </div>
                   
@@ -652,63 +718,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 </div>
               )}
 
-              {/* ═══ PASO 5: DRIVE INSTITUCIONAL ═══ */}
-              {step === 5 && (
-                <div className="wz-fade">
-                  <span className="wz-tag">Google Drive</span>
-                  <h2 className="wz-title">Drive Institucional</h2>
-                  <p className="wz-sub">Tu espacio oficial de almacenamiento para coordinar y resguardar tus entregas académicas.</p>
-                  
-                  <div className="wz-drive-card" style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    textAlign: 'center',
-                    padding: '2.25rem 1.75rem',
-                    background: 'rgba(14, 165, 233, 0.02)',
-                    border: '1.5px dashed rgba(14, 165, 233, 0.25)',
-                    borderRadius: '20px',
-                    marginBottom: '1.75rem',
-                    gap: '1.1rem'
-                  }}>
-                    <div className="wz-drive-icon-wrap" style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '64px',
-                      height: '64px',
-                      borderRadius: '50%',
-                      background: 'rgba(14, 165, 233, 0.08)',
-                      color: 'var(--bc)',
-                      animation: 'bounceCloud 3s infinite ease-in-out'
-                    }}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><path d="M12 11v6"></path><path d="m9 14 3 3 3-3"></path></svg>
-                    </div>
-                    <div className="wz-drive-text-wrap" style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', maxWidth: '380px' }}>
-                      <h3 style={{ margin: 0, fontFamily: "'Outfit', sans-serif", fontSize: '1.2rem', fontWeight: 850, color: '#0f172a' }}>Habilitación de Carpetas</h3>
-                      <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', lineHeight: 1.5, fontWeight: 500 }}>
-                        No es necesario que crees ninguna carpeta. La Dirección Académica configurará y te otorgará los permisos de acceso para tus carpetas oficiales de subida.
-                      </p>
-                    </div>
-                    
-                    <div className="wz-notification" style={{ marginTop: '0.4rem', width: '100%', maxWidth: '420px', animation: 'none' }}>
-                      <div className="wz-notification-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                      </div>
-                      <div className="wz-notification-text">
-                        <span className="wz-notification-title">Notificación por Correo</span>
-                        <span className="wz-notification-desc">Recibirás una notificación automática en tu bandeja cuando tus carpetas personales de subida estén compartidas y listas.</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="wz-nav">
-                    <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
-                    <button onClick={handleNext} className="wz-btn-main">Entendido, Continuar</button>
-                  </div>
-                </div>
-              )}
-
               {/* ═══ PASO 6: PROTOCOLO ═══ */}
               {step === 6 && (
                 <div className="wz-fade">
@@ -739,9 +748,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
                     {/* LADO DERECHO: IMAGEN DINÁMICA SEPARADA */}
                     <div className="wz-protocol-image-container">
-                       {activeProtocol === 0 && <div className="wz-pi-placeholder fade-in"><span>[Imagen: ejemplo-camara.jpg]</span></div>}
-                       {activeProtocol === 1 && <div className="wz-pi-placeholder fade-in"><span>[Imagen: ejemplo-ppt.jpg]</span></div>}
-                       {activeProtocol === 2 && <div className="wz-pi-placeholder fade-in"><span>[Imagen: ejemplo-prohibido.jpg]</span></div>}
+                       {activeProtocol === 0 && <img src={camaraFondoVirtual} alt="Cámara y Fondo Virtual" className="wz-pi-image fade-in" />}
+                       {activeProtocol === 1 && <img src={identidadVisualPpts} alt="Identidad Visual en PPTs" className="wz-pi-image fade-in" />}
+                       {activeProtocol === 2 && <img src={canalesExternosProhibidos} alt="Canales Externos Prohibidos" className="wz-pi-image fade-in" />}
                     </div>
                   </div>
 
@@ -796,44 +805,43 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 <div className="wz-fade">
                   <h2 className="wz-title">Programa Docente TOP</h2>
                   <p className="wz-sub">Buscamos talentos, no solo expositores. Si demuestras excelencia, te abrimos las puertas a la categoría Élite.</p>
-                  
-                  <div className="wz-alert info" style={{ marginBottom: '2rem' }}>
-                    <strong>Sobre el Programa:</strong> [Espacio para explicar claramente los detalles de esta información. Puedes detallar aquí cómo se mide el NPS, o cualquier otro criterio importante que el docente deba entender a la perfección].
+                  <div className="wz-top-overview">
+                    <h3 className="wz-top-overview-title">Cómo funciona la evaluación</h3>
+                    <p className="wz-top-overview-text">
+                      El programa se revisa por ciclos de clases. La decisión se basa en evidencia de desempeño: experiencia del alumno, cumplimiento y consistencia del docente.
+                    </p>
+                    <div className="wz-top-kpis">
+                      <div className="wz-top-kpi">
+                        <span className="wz-top-kpi-label">NPS mínimo</span>
+                        <strong>4.5 / 5.0</strong>
+                      </div>
+                      <div className="wz-top-kpi">
+                        <span className="wz-top-kpi-label">Asistencia</span>
+                        <strong>100%</strong>
+                      </div>
+                      <div className="wz-top-kpi">
+                        <span className="wz-top-kpi-label">Revisión</span>
+                        <strong>Por ciclo</strong>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="wz-elite-grid">
-                    {/* Tarjeta Oscura: Beneficios */}
-                    <div className="wz-elite-card benefits">
-                      <h3 className="wz-ec-title gold">Beneficios Exclusivos</h3>
-                      <ul className="wz-elite-list">
-                        <li>
-                          <div className="wz-elite-check">✓</div>
-                          <span>Incremento escalonado de tarifa por hora.</span>
-                        </li>
-                        <li>
-                          <div className="wz-elite-check">✓</div>
-                          <span>Asignación prioritaria de múltiples módulos.</span>
-                        </li>
-                        <li>
-                          <div className="wz-elite-check">✓</div>
-                          <span>Presencia de marca en podcasts y networking regional.</span>
-                        </li>
+                  <div className="wz-top-grid">
+                    <div className="wz-top-card">
+                      <h3 className="wz-top-card-title">Beneficios del nivel Élite</h3>
+                      <ul className="wz-top-list">
+                        <li><strong>Tarifa:</strong> incremento escalonado por desempeño sostenido.</li>
+                        <li><strong>Asignación:</strong> prioridad en nuevos módulos y horarios clave.</li>
+                        <li><strong>Visibilidad:</strong> participación en podcasts, eventos y networking institucional.</li>
                       </ul>
                     </div>
-
-                    {/* Tarjeta Clara: Requisitos */}
-                    <div className="wz-elite-card requirements">
-                      <h3 className="wz-ec-title">Objetivos de Calidad</h3>
-                      <div>
-                        <div className="wz-elite-metric">
-                          <span className="wz-em-label">Calificación Mínima (NPS)</span>
-                          <div className="wz-em-value">4.5<small>/5.0</small></div>
-                        </div>
-                        <div className="wz-elite-metric" style={{ marginBottom: 0 }}>
-                          <span className="wz-em-label">Asistencia Perfecta</span>
-                          <span className="wz-em-tag">Requerido</span>
-                        </div>
-                      </div>
+                    <div className="wz-top-card">
+                      <h3 className="wz-top-card-title">Criterios de calidad</h3>
+                      <ul className="wz-top-list">
+                        <li><strong>NPS docente:</strong> promedio de encuesta del alumno al cierre de sesión.</li>
+                        <li><strong>Asistencia:</strong> cumplimiento total de clases programadas.</li>
+                        <li><strong>Entrega:</strong> materiales enviados en fecha y con estándar institucional.</li>
+                      </ul>
                     </div>
                   </div>
 
@@ -911,29 +919,85 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               {step === 10 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Documentación</h2>
-                  <p className="wz-sub">Adjunta tu CV actualizado y una fotografía profesional.</p>
+                  <p className="wz-sub" style={{ marginBottom:'2rem' }}>Adjunta tu CV actualizado y una fotografía profesional.</p>
                   
-                  <div className="wz-upload-section">
-                    <div className="wz-upload-zone" onClick={() => document.getElementById('cv-upload').click()}>
-                      <input id="cv-upload" type="file" accept=".pdf,.doc,.docx" style={{ display:'none' }}
-                        onChange={e => setFormData({...formData, cvFile: e.target.files[0]})} />
-                      <div className="wz-upload-icon">📄</div>
-                      <h4>Curriculum Vitae</h4>
-                      <p>PDF o DOC • Máximo 10 MB</p>
-                      {formData.cvFile && <span className="wz-upload-filename">{formData.cvFile.name}</span>}
+                  <div className="wz-upload-section" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+                    <div>
+                      <div className="wz-upload-zone" onClick={() => !formData.cvFile && document.getElementById('cv-upload').click()} style={{ border: formData.cvFile ? '1px solid #e2e8f0' : '2px dashed #cbd5e1', borderRadius: '16px', padding: formData.cvFile ? '1rem' : '1.25rem 1rem', textAlign: 'center', cursor: formData.cvFile ? 'default' : 'pointer', background: formData.cvFile ? '#ffffff' : '#f8fafc', boxShadow: formData.cvFile ? '0 4px 6px -1px rgba(0, 0, 0, 0.05)' : 'none', transition: 'all 0.3s ease', display: 'flex', flexDirection: 'column' }}>
+                        <input id="cv-upload" type="file" accept=".pdf,.doc,.docx" style={{ display:'none' }}
+                          onChange={e => setFormData({...formData, cvFile: e.target.files[0]})} />
+                        
+                        {formData.cvFile ? (
+                            <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                                <h4 style={{ fontSize: '1rem', color: '#0f172a', margin: '0', fontWeight: 800 }}>Curriculum Vitae</h4>
+                                <button onClick={(e) => { e.stopPropagation(); setFormData({...formData, cvFile: null}) }} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', padding: '0.2rem 0.5rem', fontSize: '1.4rem', lineHeight: 1 }} title="Eliminar archivo">×</button>
+                              </div>
+                              <div style={{ width: '100%', height: '220px', background: 'transparent', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                {formData.cvFile.type === 'application/pdf' ? (
+                                  <iframe src={URL.createObjectURL(formData.cvFile)} style={{ width: '100%', height: '100%', border: '1px solid #e2e8f0', borderRadius: '8px' }} title="CV Preview" />
+                                ) : (
+                                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', color: '#64748b', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom:'0.5rem' }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                    <span style={{ fontSize: '0.85rem' }}>Documento DOC/DOCX cargado</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                        ) : (
+                          <>
+                            <div className="wz-upload-svg" style={{ color: '#64748b', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+                              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            </div>
+                            <h4 style={{ fontSize: '1.05rem', color: '#0f172a', margin: '0 0 0.25rem 0', fontWeight: 800 }}>Curriculum Vitae</h4>
+                            <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '0', fontWeight: 500 }}>PDF o DOC • Máx. 10 MB</p>
+                          </>
+                        )}
+                      </div>
+                      
+                      {/* DETALLE FUERA DE LA CAJA */}
+                      {formData.cvFile && (
+                        <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0f172a', wordBreak: 'break-all', textAlign: 'center' }}>{formData.cvFile.name}</span>
+                          <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.1rem' }}>{(formData.cvFile.size / 1024 / 1024).toFixed(2)} MB</span>
+                        </div>
+                      )}
                     </div>
-                    <div className="wz-upload-zone" onClick={() => document.getElementById('foto-upload').click()}>
-                      <input id="foto-upload" type="file" accept="image/*" style={{ display:'none' }}
-                        onChange={e => setFormData({...formData, fotoFile: e.target.files[0]})} />
-                      <div className="wz-upload-icon">📸</div>
-                      <h4>Fotografía Profesional</h4>
-                      <p>JPG o PNG • Máximo 10 MB</p>
-                      {formData.fotoFile && <span className="wz-upload-filename">{formData.fotoFile.name}</span>}
-                    </div>
-                  </div>
 
-                  <div className="wz-alert info" style={{ marginTop:'1.5rem' }}>
-                    <strong>Nota:</strong> Los archivos serán referenciados en tu declaración. Envíalos directamente a coordinación académica por WhatsApp o correo.
+                    <div>
+                      <div className="wz-upload-zone" onClick={() => !formData.fotoFile && document.getElementById('foto-upload').click()} style={{ border: formData.fotoFile ? '1px solid #e2e8f0' : '2px dashed #cbd5e1', borderRadius: '16px', padding: formData.fotoFile ? '1rem' : '1.25rem 1rem', textAlign: 'center', cursor: formData.fotoFile ? 'default' : 'pointer', background: formData.fotoFile ? '#ffffff' : '#f8fafc', boxShadow: formData.fotoFile ? '0 4px 6px -1px rgba(0, 0, 0, 0.05)' : 'none', transition: 'all 0.3s ease', display: 'flex', flexDirection: 'column' }}>
+                        <input id="foto-upload" type="file" accept="image/*" style={{ display:'none' }}
+                          onChange={e => setFormData({...formData, fotoFile: e.target.files[0]})} />
+                        
+                        {formData.fotoFile ? (
+                            <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                                <h4 style={{ fontSize: '1rem', color: '#0f172a', margin: '0', fontWeight: 800 }}>Fotografía Profesional</h4>
+                                <button onClick={(e) => { e.stopPropagation(); setFormData({...formData, fotoFile: null}) }} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', padding: '0.2rem 0.5rem', fontSize: '1.4rem', lineHeight: 1 }} title="Eliminar foto">×</button>
+                              </div>
+                              <div style={{ width: '100%', height: '220px', background: 'transparent', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <img src={URL.createObjectURL(formData.fotoFile)} alt="Preview" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                              </div>
+                            </div>
+                        ) : (
+                          <>
+                            <div className="wz-upload-svg" style={{ color: '#64748b', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+                              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                            </div>
+                            <h4 style={{ fontSize: '1.05rem', color: '#0f172a', margin: '0 0 0.25rem 0', fontWeight: 800 }}>Fotografía Profesional</h4>
+                            <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '0', fontWeight: 500 }}>JPG o PNG • Máx. 10 MB</p>
+                          </>
+                        )}
+                      </div>
+                      
+                      {/* DETALLE FUERA DE LA CAJA */}
+                      {formData.fotoFile && (
+                        <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0f172a', wordBreak: 'break-all', textAlign: 'center' }}>{formData.fotoFile.name}</span>
+                          <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.1rem' }}>{(formData.fotoFile.size / 1024 / 1024).toFixed(2)} MB</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="wz-nav">
@@ -981,7 +1045,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               {step === 12 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Declaración de Conformidad</h2>
-                  <p className="wz-sub">Revisa tus datos y envía tu conformidad por WhatsApp a {marcaConfig[formData.marca]?.coordinador}.</p>
+                  <p className="wz-sub">Revisa tus datos y envía tu conformidad por WhatsApp a {marcaConfig[formData.marca]?.nombre}.</p>
                   <div className="wz-declaration">
                     <p>"Confirmo que acepto el Manual Operativo del Docente. Comprendo la metodología práctica y los horarios de entrega innegociables. Acepto el sistema de penalidades y autorizo el uso de mi firma digital para certificados."</p>
                   </div>
@@ -996,9 +1060,13 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                   </div>
                   <div className="wz-nav">
                     <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
-                    <button onClick={handleFinish} className="wz-btn-wa">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                      Enviar a {marcaConfig[formData.marca]?.coordinador}
+                    <button onClick={handleFinish} disabled={isSubmitting} className="wz-btn-wa" style={{ opacity: isSubmitting ? 0.7 : 1 }}>
+                      {isSubmitting ? 'Procesando y Subiendo Archivos...' : (
+                        <>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                          Enviar a {marcaConfig[formData.marca]?.nombre}
+                        </>
+                      )}
                     </button>
                   </div>
                   <p className="wz-footer">CIIP LATAM • GEOMINA • BIOMEDIC | © 2026</p>
@@ -1009,17 +1077,33 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         </div>
       </main>
 
-      {/* ═══ MODAL CONDICIÓN FULLSCREEN ═══ */}
+      {/* ═══ MODAL PENALIDAD (PASO 4) ═══ */}
       {showPenaltyAlert && (
-        <div className="wz-modal-overlay">
+        <div className="wz-modal-overlay fade-in">
           <div className="wz-modal-content condition-modal">
             <span className="wz-modal-tag">Término Innegociable</span>
             <h3 className="wz-modal-title">Penalidad por Incumplimiento</h3>
             <p className="wz-modal-desc">
               Si la Dirección Académica se ve en la necesidad de <strong>solicitarte el material</strong> por falta de entrega a tiempo en los plazos que acabas de aceptar, se contabilizará automáticamente como una <strong>penalidad de desempeño</strong> en tu perfil. No existen recordatorios previos.
             </p>
-            <button onClick={() => { setShowPenaltyAlert(false); setStep(5); }} className="wz-btn-firm">
+            <button onClick={() => { setShowPenaltyAlert(false); setStep(6); }} className="wz-btn-firm">
               Comprendo y Acepto la Condición
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ MODAL DRIVE INSTITUCIONAL (PASO 10) ═══ */}
+      {showDriveAlert && (
+        <div className="wz-modal-overlay fade-in">
+          <div className="wz-modal-content condition-modal" style={{ borderTop: '4px solid #0ea5e9' }}>
+            <span className="wz-modal-tag" style={{ background: 'rgba(14, 165, 233, 0.1)', color: '#0ea5e9' }}>Google Drive</span>
+            <h3 className="wz-modal-title" style={{ marginTop: '0.5rem' }}>Habilitación de Carpetas</h3>
+            <p className="wz-modal-desc" style={{ marginBottom: '1.5rem' }}>
+              No es necesario que crees ninguna carpeta. La Dirección Académica configurará automáticamente tu espacio institucional y <strong>recibirás un correo</strong> cuando tus carpetas de subida estén listas.
+            </p>
+            <button onClick={() => { setShowDriveAlert(false); setStep(11); }} className="wz-btn-main" style={{ width: '100%', padding: '0.9rem' }}>
+              Entendido, Continuar
             </button>
           </div>
         </div>
@@ -1622,6 +1706,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           border:1px solid #e2e8f0; overflow:hidden; position:relative;
           display:flex; align-items:center; justify-content:center;
         }
+        .wz-pi-image {
+          width: 100%;
+          height: 100%;
+          min-height: 280px;
+          object-fit: cover;
+          object-position: center;
+          display: block;
+        }
         .wz-pi-placeholder {
           width:100%; height:100%; min-height:280px; display:flex; align-items:center; justify-content:center;
           color:#64748b; font-size:0.9rem; font-weight:700; font-family:'Outfit',sans-serif; text-align:center; padding:2rem;
@@ -1792,29 +1884,91 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         /* ── GRID HELPER ── */
         .wz-grid-2 { display:grid; gap:2rem; margin-bottom:0.5rem; }
 
-        /* ── ELITE PROGRAM (PASO 6) ── */
-        .wz-elite-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1rem; }
-        .wz-elite-card { padding:1.75rem; border-radius:20px; transition:all 0.3s; }
-        .wz-elite-card.benefits {
-          background:#060e1a; color:#fff; border:1px solid rgba(56,189,248,0.1);
-          box-shadow: 0 10px 30px -15px rgba(6,14,26,0.5);
+        /* ── PROGRAMA TOP (PASO 8) ── */
+        .wz-top-overview {
+          border:1px solid #e2e8f0;
+          border-radius:16px;
+          background:#fff;
+          padding:1.1rem 1.2rem;
+          margin-bottom:1rem;
         }
-        .wz-elite-card.requirements { background:#fff; border:1px solid #e8ecf1; }
-        .wz-ec-title { font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:850; margin:0 0 1.25rem; letter-spacing:-0.4px; color:#0f172a; }
-        .wz-ec-title.gold { color:#f59e0b; }
-        .wz-elite-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.75rem; }
-        .wz-elite-list li { display:flex; align-items:flex-start; gap:0.65rem; font-size:0.85rem; line-height:1.45; font-weight:500; color:#cbd5e1; }
-        .wz-elite-check {
-          width:16px; height:16px; border-radius:50%; background:rgba(34,197,94,0.12); color:#22c55e;
-          display:flex; align-items:center; justify-content:center; font-size:0.6rem; font-weight:900; flex-shrink:0; margin-top:2.5px;
+        .wz-top-overview-title {
+          font-family:'Outfit',sans-serif;
+          font-size:1.02rem;
+          font-weight:820;
+          color:#0f172a;
+          margin:0 0 0.45rem;
         }
-        .wz-elite-metric { display:flex; justify-content:space-between; align-items:center; padding:0.85rem 0; border-bottom:1px solid #f1f5f9; }
-        .wz-em-label { font-size:0.8rem; font-weight:700; color:#64748b; }
-        .wz-em-value { font-family:'Outfit',sans-serif; font-size:2rem; font-weight:900; color:var(--bc); line-height:1; letter-spacing:-1px; }
-        .wz-em-value small { font-size:0.85rem; color:#64748b; font-weight:700; }
-        .wz-em-tag {
-          font-size:0.65rem; font-weight:800; text-transform:uppercase; color:#b45309; background:rgba(245,158,11,0.08);
-          padding:0.3rem 0.65rem; border-radius:6px; letter-spacing:0.5px;
+        .wz-top-overview-text {
+          margin:0;
+          color:#475569;
+          font-size:0.85rem;
+          line-height:1.55;
+          font-weight:550;
+        }
+        .wz-top-kpis {
+          margin-top:0.85rem;
+          display:grid;
+          grid-template-columns:repeat(3, minmax(0, 1fr));
+          gap:0.55rem;
+        }
+        .wz-top-kpi {
+          border:1px solid #e8ecf1;
+          border-radius:10px;
+          padding:0.65rem 0.7rem;
+          background:#f8fafc;
+        }
+        .wz-top-kpi-label {
+          display:block;
+          font-size:0.68rem;
+          font-weight:760;
+          letter-spacing:0.2px;
+          color:#64748b;
+          margin-bottom:0.2rem;
+        }
+        .wz-top-kpi strong {
+          font-family:'Outfit',sans-serif;
+          font-size:1.08rem;
+          font-weight:840;
+          color:#0f172a;
+        }
+        .wz-top-grid {
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:0.85rem;
+          margin-bottom:0.9rem;
+        }
+        .wz-top-card {
+          border:1px solid #e2e8f0;
+          border-radius:16px;
+          background:#fff;
+          padding:1rem 1.05rem;
+        }
+        .wz-top-card-title {
+          margin:0 0 0.7rem;
+          font-family:'Outfit',sans-serif;
+          font-size:0.98rem;
+          font-weight:810;
+          color:#0f172a;
+        }
+        .wz-top-list {
+          margin:0;
+          padding:0;
+          list-style:none;
+          display:flex;
+          flex-direction:column;
+          gap:0.55rem;
+        }
+        .wz-top-list li {
+          margin:0;
+          font-size:0.83rem;
+          line-height:1.5;
+          font-weight:540;
+          color:#334155;
+        }
+        .wz-top-list li strong {
+          color:#0f172a;
+          font-weight:760;
         }
 
         /* ── RESPONSIVE ── */
@@ -1825,10 +1979,12 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-main { padding:1.5rem 2rem; }
           .wz-protocol-split { flex-direction:column; gap:1.5rem; }
           .wz-protocol-image-container { width:100%; height:260px; min-height:260px; }
+          .wz-pi-image { min-height:260px; }
           .wz-pi-placeholder { min-height:260px; }
           .wz-metrics-grid { grid-template-columns:1fr 1fr !important; }
           .wz-metric-box.danger { grid-column:span 2; }
-          .wz-elite-grid { grid-template-columns:1fr; gap:1.5rem; }
+          .wz-top-kpis { grid-template-columns:repeat(3, minmax(0, 1fr)); }
+          .wz-top-grid { grid-template-columns:1fr; }
         }
         @media (max-width:680px) {
           .wz { padding: 0.5rem; }
@@ -1902,10 +2058,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-metric-value { font-size:3.5rem; }
           .wz-metric-box.danger .wz-metric-value { font-size:3.2rem; }
 
-          .wz-elite-card { padding:1.5rem; border-radius:20px; }
-          .wz-em-value { font-size:3.2rem; }
-          .wz-em-value small { font-size:1.2rem; }
-          .wz-ec-title { font-size:1.15rem; margin-bottom:1.25rem; }
+          .wz-top-overview { padding:1rem; }
+          .wz-top-kpis { grid-template-columns:1fr; }
+          .wz-top-kpi strong { font-size:1rem; }
+          .wz-top-card { padding:0.95rem; }
+          .wz-top-card-title { font-size:0.92rem; }
 
           .wz-nav { flex-direction:column-reverse; gap:0.5rem; margin-top:1.5rem; }
           .wz-btn-main, .wz-btn-ghost, .wz-btn-wa { width:100%; text-align:center; justify-content:center; padding:1rem; }

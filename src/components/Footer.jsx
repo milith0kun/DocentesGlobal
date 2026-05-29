@@ -1,6 +1,8 @@
-import geominaWhite from '../assets/geomina-new.png';
-import biomedicWhite from '../assets/biomedic-white.png';
-import logobiomedic from '../assets/logobiomedic.png';
+'use client';
+
+const geominaWhite = '/assets/geomina-new.png';
+const biomedicWhite = '/assets/biomedic-white.png';
+const logobiomedic = '/assets/logobiomedic.png';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -35,7 +37,7 @@ export default function Footer() {
             fontWeight: 500, 
             margin: 0, 
             color: '#cbd5e1',
-            fontFamily: "'Plus Jakarta Sans', sans-serif"
+            fontFamily: 'var(--font-body)'
           }}>
             © {currentYear} CIIP LATAM · Ecosistema Digital de Capacitación. Todos los derechos reservados.
           </p>

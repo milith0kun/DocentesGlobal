@@ -1,6 +1,9 @@
+'use client';
+
 import { useEffect, useRef, useState } from 'react';
-import geominaWhite from '../assets/geomina-new.png';
-import biomedicWhite from '../assets/biomedic-white.png';
+
+const geominaWhite = '/assets/geomina-new.png';
+const biomedicWhite = '/assets/biomedic-white.png';
 
 export default function DocenteTop() {
   const [animatedOffset, setAnimatedOffset] = useState(157.08);
