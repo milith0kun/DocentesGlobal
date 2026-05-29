@@ -4,4 +4,4 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 
-Sitemap: https://docentesglabal.vercel.app/sitemap.xml
+Sitemap: https://docentesglobal.vercel.app/sitemap.xml

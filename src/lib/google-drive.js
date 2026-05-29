@@ -2,6 +2,7 @@ import { Readable } from 'stream';
 import { getDriveClient } from './google-auth.js';
 
 const ROOT_FOLDER_ID = process.env.GOOGLE_DRIVE_ROOT_FOLDER_ID;
+const SHOULD_PUBLIC_UPLOADS = process.env.GOOGLE_DRIVE_PUBLIC_UPLOADS === 'true';
 
 function escapeDriveQueryValue(value = '') {
   return value.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
@@ -93,17 +94,19 @@ export async function uploadFileToDrive(buffer, fileName, mimeType, folderId) {
     fields: 'id, webViewLink',
   });
 
-  try {
-    await drive.permissions.create({
-      fileId: response.data.id,
-      requestBody: {
-        role: 'reader',
-        type: 'anyone',
-      },
-    });
-  } catch {
-    // Shared drives or restricted domains can reject "anyone" permission.
-    // Keep flow alive and return the file link anyway.
+  if (SHOULD_PUBLIC_UPLOADS) {
+    try {
+      await drive.permissions.create({
+        fileId: response.data.id,
+        requestBody: {
+          role: 'reader',
+          type: 'anyone',
+        },
+      });
+    } catch {
+      // Shared drives or restricted domains can reject public links.
+      // Keep flow alive and return the file link anyway.
+    }
   }
 
   return {

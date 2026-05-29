@@ -6,8 +6,15 @@ export async function POST(request) {
 
     if (!dni || !/^\d{8}$/.test(dni)) {
       return NextResponse.json(
-        { success: false, error: 'DNI inválido. Debe tener 8 dígitos.' },
+        { success: false, error: 'DNI invalido. Debe tener 8 digitos.' },
         { status: 400 }
+      );
+    }
+
+    if (!process.env.RENIEC_API_TOKEN) {
+      return NextResponse.json(
+        { success: false, error: 'Falta configurar RENIEC_API_TOKEN' },
+        { status: 500 }
       );
     }
 
@@ -22,6 +29,13 @@ export async function POST(request) {
     });
 
     const resData = await response.json();
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { success: false, error: 'No se pudo consultar RENIEC' },
+        { status: response.status }
+      );
+    }
 
     if (resData.success && resData.data) {
       let nombre = resData.data.nombre_completo;

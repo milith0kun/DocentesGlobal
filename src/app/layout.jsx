@@ -1,7 +1,7 @@
 import './globals.css';
 
 export const metadata = {
-  metadataBase: new URL('https://docentesglabal.vercel.app'),
+  metadataBase: new URL('https://docentesglobal.vercel.app'),
   title: 'Manual Digital Docente 2026 | CIIP Latam - Geomina - Biomedic',
   description: 'Manual operativo para docentes del ecosistema CIIP Latam, Geomina y Biomedic. Guía de metodología práctica, horarios de entrega, normas de imagen y programa Docente TOP 2026.',
   robots: {
@@ -23,7 +23,7 @@ export const metadata = {
     description: 'Guía de estándares metodológicos, de imagen y calidad para el ecosistema educativo de CIIP Latam, Geomina y Biomedic.',
   },
   alternates: {
-    canonical: 'https://docentesglabal.vercel.app/',
+    canonical: 'https://docentesglobal.vercel.app/',
   },
 };
 
@@ -43,7 +43,7 @@ export default function RootLayout({ children }) {
               '@type': 'EducationalOrganization',
               name: 'CIIP LATAM',
               alternateName: ['Geomina', 'Biomedic'],
-              url: 'https://docentesglabal.vercel.app/',
+              url: 'https://docentesglobal.vercel.app/',
               description: 'Ecosistema digital de capacitación profesional en Latinoamérica. Formación práctica en ingeniería, minería y salud.',
               areaServed: 'Latin America',
               contactPoint: {

@@ -1,16 +1,52 @@
-# React + Vite
+# Manual Digital Docente
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicacion web en Next.js para registrar la conformidad de docentes del ecosistema CIIP Latam, Geomina y Biomedic.
 
-Currently, two official plugins are available:
+## Funciones principales
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Presenta el manual operativo docente.
+- Guia al docente por un formulario de conformidad en 12 pasos.
+- Consulta DNI mediante la API configurada para RENIEC.
+- Genera un PDF de conformidad.
+- Guarda datos en Google Sheets.
+- Sube CV, foto y PDF a Google Drive.
+- Prepara un mensaje de confirmacion por WhatsApp.
 
-## React Compiler
+## Requisitos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js 20.19 o superior.
+- Credenciales de Google Drive y Google Sheets.
+- Token de consulta DNI compatible con `RENIEC_API_TOKEN`.
 
-## Expanding the ESLint configuration
+## Variables de entorno
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Configura estas variables en `.env.local`:
+
+```env
+GOOGLE_SPREADSHEET_ID=
+GOOGLE_DRIVE_ROOT_FOLDER_ID=
+GOOGLE_SERVICE_ACCOUNT_EMAIL=
+GOOGLE_PRIVATE_KEY=
+RENIEC_API_TOKEN=
+```
+
+Opcionalmente puedes usar `GOOGLE_APPLICATION_CREDENTIALS` con la ruta a un archivo JSON de cuenta de servicio.
+
+Por privacidad, los archivos subidos a Drive no se publican para cualquier persona por defecto. Si necesitas enlaces publicos, define:
+
+```env
+GOOGLE_DRIVE_PUBLIC_UPLOADS=true
+```
+
+## Comandos
+
+```bash
+npm run dev
+npm run build
+npm run lint
+node --test src/utils/emailValidation.test.js
+```
+
+## Notas de seguridad
+
+La API valida campos obligatorios y tipos/tamanos basicos de archivos en servidor. Mantener esa validacion es importante porque las validaciones del navegador pueden saltarse.

@@ -44,6 +44,185 @@ export default function Conformidad() {
           </div>
         </div>
       </div>
+
+      <style>{`
+        .conformidad-section {
+          padding: 6rem 0 3rem;
+        }
+
+        .conformidad-card {
+          background: rgba(255, 255, 255, 0.92);
+          border: 1px solid var(--card-border);
+          border-radius: 36px;
+          padding: 4.5rem 3.5rem;
+          box-shadow: var(--shadow-md);
+          text-align: center;
+          max-width: 800px;
+          margin: 0 auto;
+          backdrop-filter: blur(12px);
+        }
+
+        .conformidad-title {
+          font-size: 2.25rem;
+          font-weight: 850;
+          margin-bottom: 1rem;
+        }
+
+        .conformidad-desc {
+          font-size: 1rem;
+          color: var(--text-light);
+          max-width: 600px;
+          margin: 0 auto 2.5rem;
+          line-height: 1.65;
+        }
+
+        .mensaje-box {
+          background: linear-gradient(135deg, rgba(14, 165, 233, 0.04) 0%, rgba(6, 182, 212, 0.03) 100%);
+          border: 2px dashed rgba(14, 165, 233, 0.2);
+          border-radius: 24px;
+          padding: 2.5rem 2rem;
+          margin-bottom: 3rem;
+          position: relative;
+          transition: all var(--transition-normal);
+        }
+
+        .mensaje-box:hover {
+          border-color: rgba(14, 165, 233, 0.35);
+          background: linear-gradient(135deg, rgba(14, 165, 233, 0.06) 0%, rgba(6, 182, 212, 0.04) 100%);
+        }
+
+        .mensaje-content {
+          font-size: 1rem;
+          font-weight: 500;
+          color: var(--primary);
+          line-height: 1.7;
+          font-style: italic;
+        }
+
+        .copy-btn {
+          position: absolute;
+          bottom: -18px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #fff;
+          border: 1px solid rgba(14, 165, 233, 0.25);
+          color: var(--primary);
+          font-family: var(--font-body);
+          font-weight: 700;
+          font-size: 0.8rem;
+          padding: 0.5rem 1.5rem;
+          border-radius: 50px;
+          cursor: pointer;
+          box-shadow: var(--shadow-sm);
+          transition: all var(--transition-bounce);
+        }
+
+        .copy-btn:hover {
+          background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+          color: #fff;
+          border-color: transparent;
+          transform: translateX(-50%) translateY(-3px);
+          box-shadow: 0 6px 16px rgba(14, 165, 233, 0.25);
+        }
+
+        .copy-btn.copied {
+          background: var(--success);
+          color: #fff;
+          border-color: var(--success);
+          box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
+        }
+
+        .action-row {
+          display: flex;
+          justify-content: center;
+        }
+
+        .whatsapp-btn-large {
+          background: linear-gradient(135deg, #25d366 0%, #1da855 50%, #128c7e 100%);
+          color: #fff;
+          border: none;
+          font-family: var(--font-body);
+          font-weight: 800;
+          font-size: 1.1rem;
+          padding: 0.85rem 2.5rem 0.85rem 0.85rem;
+          border-radius: 50px;
+          cursor: pointer;
+          box-shadow: 0 10px 30px -5px rgba(37, 211, 102, 0.4);
+          display: inline-flex;
+          align-items: center;
+          gap: 1.25rem;
+          transition: all var(--transition-bounce);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .whatsapp-btn-large::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+          transition: left 0.5s ease;
+        }
+
+        .whatsapp-btn-large:hover::before {
+          left: 100%;
+        }
+
+        .whatsapp-btn-large:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 20px 40px -8px rgba(37, 211, 102, 0.5);
+        }
+
+        .whatsapp-btn-large:active {
+          transform: translateY(-1px);
+        }
+
+        .whatsapp-icon-bg {
+          width: 3rem;
+          height: 3rem;
+          background: rgba(255, 255, 255, 0.95);
+          color: #25d366;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          flex-shrink: 0;
+        }
+
+        .whatsapp-svg-icon {
+          width: 1.75rem;
+          height: 1.75rem;
+        }
+
+        .btn-label-text {
+          letter-spacing: -0.2px;
+        }
+
+        @media (max-width: 768px) {
+          .conformidad-card {
+            padding: 2.5rem 1.5rem;
+          }
+
+          .whatsapp-btn-large {
+            font-size: 0.95rem;
+            padding: 0.65rem 1.5rem 0.65rem 0.65rem;
+          }
+
+          .whatsapp-icon-bg {
+            width: 2.5rem;
+            height: 2.5rem;
+          }
+
+          .whatsapp-svg-icon {
+            width: 1.4rem;
+            height: 1.4rem;
+          }
+        }
+      `}</style>
     </section>
   );
 }

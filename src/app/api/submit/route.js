@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
+import { randomUUID } from 'node:crypto';
 import { createDocenteFolder, uploadFileToDrive } from '@/lib/google-drive.js';
 import { appendDocenteRow, ensureSheetHeaders } from '@/lib/google-sheets.js';
 import { validateGoogleAuthConfig } from '@/lib/google-auth.js';
-import { generateConformidadPDF } from '@/lib/pdf-generator.jsx';
 
 const marcaConfig = {
   ciip: { nombre: 'CIIP Latam' },
@@ -21,6 +21,50 @@ const PLACEHOLDER_ENV_MARKERS = {
   GOOGLE_DRIVE_ROOT_FOLDER_ID: ['TU_FOLDER_ID'],
 };
 
+const REQUIRED_FORM_FIELDS = [
+  'nombre',
+  'correo',
+  'marca',
+  'documento',
+  'fechaNacimiento',
+  'telefono',
+  'metodoPago',
+  'numeroCuenta',
+  'direccion',
+  'softwares',
+  'cursoSonado',
+  'mejoraAdmin',
+];
+
+const REQUIRED_ACCEPTANCES = [
+  'aceptaMetodologia',
+  'aceptaSabado',
+  'aceptaDomingo',
+  'aceptaLunes',
+  'aceptaProtocolo',
+  'aceptaAsistencia',
+  'aceptaTop',
+];
+
+const FILE_RULES = {
+  cv: {
+    label: 'CV',
+    maxBytes: 5 * 1024 * 1024,
+    extensions: ['pdf', 'doc', 'docx'],
+    mimeTypes: [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ],
+  },
+  foto: {
+    label: 'foto',
+    maxBytes: 4 * 1024 * 1024,
+    extensions: ['jpg', 'jpeg', 'png', 'webp'],
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+  },
+};
+
 function missingStorageEnv() {
   return REQUIRED_STORAGE_ENV.filter((key) => !process.env[key]);
 }
@@ -34,7 +78,7 @@ function placeholderStorageEnv() {
 }
 
 function generateUniqueCode(marca) {
-  const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const code = randomUUID().replace(/-/g, '').slice(0, 8).toUpperCase();
   return `MOD-${(marca || 'DOC').toUpperCase()}-${code}`;
 }
 
@@ -54,6 +98,56 @@ function fileExtension(fileName, fallback) {
     ?.toLowerCase()
     ?.trim();
   return ext || fallback;
+}
+
+function validateRequiredFields(fields) {
+  const missing = REQUIRED_FORM_FIELDS.filter((key) => !String(fields[key] || '').trim());
+  const missingAcceptances = REQUIRED_ACCEPTANCES.filter((key) => fields[key] !== 'true');
+
+  if (fields.metodoPago === 'otro' && !String(fields.metodoPagoOtro || '').trim()) {
+    missing.push('metodoPagoOtro');
+  }
+
+  if (!/^\d{8}$/.test(String(fields.documento || ''))) {
+    missing.push('documento valido');
+  }
+
+  if (!/^\S+@\S+\.\S{2,}$/.test(String(fields.correo || ''))) {
+    missing.push('correo valido');
+  }
+
+  if (!/^\d{2}\/\d{2}\/\d{4}$/.test(String(fields.fechaNacimiento || ''))) {
+    missing.push('fechaNacimiento valida');
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(marcaConfig, fields.marca)) {
+    missing.push('marca valida');
+  }
+
+  return [...new Set([...missing, ...missingAcceptances])];
+}
+
+function validateUpload(file, key) {
+  const rule = FILE_RULES[key];
+
+  if (!file || typeof file === 'string' || file.size <= 0) {
+    return `Falta subir ${rule.label}`;
+  }
+
+  if (file.size > rule.maxBytes) {
+    return `${rule.label} supera el tamano maximo permitido`;
+  }
+
+  const ext = fileExtension(file.name, '');
+  if (!rule.extensions.includes(ext)) {
+    return `${rule.label} tiene una extension no permitida`;
+  }
+
+  if (file.type && !rule.mimeTypes.includes(file.type)) {
+    return `${rule.label} tiene un tipo de archivo no permitido`;
+  }
+
+  return null;
 }
 
 export async function POST(request) {
@@ -103,7 +197,22 @@ export async function POST(request) {
     const cvFile = formData.get('cv');
     const fotoFile = formData.get('foto');
 
-    const marca = fields.marca || 'ciip';
+    const invalidFields = validateRequiredFields(fields);
+    const invalidCv = validateUpload(cvFile, 'cv');
+    const invalidFoto = validateUpload(fotoFile, 'foto');
+    const uploadErrors = [invalidCv, invalidFoto].filter(Boolean);
+
+    if (invalidFields.length > 0 || uploadErrors.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Datos incompletos o invalidos: ${[...invalidFields, ...uploadErrors].join(', ')}`,
+        },
+        { status: 400 }
+      );
+    }
+
+    const marca = fields.marca;
     const institucion = marcaConfig[marca]?.nombre || marca;
     const code = generateUniqueCode(marca);
     const fecha = new Date().toLocaleDateString('es-PE', { timeZone: 'America/Lima' });
@@ -142,10 +251,6 @@ export async function POST(request) {
     }
 
     const pdfData = { ...fields, code, fecha, institucion };
-    const pdfBuffer = await generateConformidadPDF(pdfData);
-    const pdfName = `Conformidad_${code}.pdf`;
-    const pdfResult = await uploadFileToDrive(pdfBuffer, pdfName, 'application/pdf', folderId);
-    links.pdfUrl = pdfResult.fileUrl;
 
     await ensureSheetHeaders();
     await appendDocenteRow(

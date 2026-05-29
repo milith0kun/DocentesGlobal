@@ -214,7 +214,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           '',
           `*Fecha:* ${resData.fecha}`,
           `*Carpeta Drive:* ${resData.driveFolder || 'Pendiente'}`,
-          `*PDF Conformidad:* ${resData.pdfUrl || 'Pendiente'}`,
         ].join('\n');
         
         window.open(`https://wa.me/${cfg.telefono}?text=${encodeURIComponent(msg)}`, '_blank');

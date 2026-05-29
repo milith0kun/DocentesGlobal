@@ -19,7 +19,7 @@ export default function Hero({ onStartWizard }) {
             </h1>
 
             <p className="hero-subtitle">
-              Guia oficial de estandares metodologicos, de imagen y calidad para el ecosistema educativo de CIIP
+              Guía oficial de estándares metodológicos, de imagen y calidad para el ecosistema educativo de CIIP
               Latam, Geomina y Biomedic.
             </p>
 
