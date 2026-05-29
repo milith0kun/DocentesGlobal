@@ -1,16 +1,10 @@
-import React, { useState } from 'react';
-import logociip from '../assets/logociip.png';
-import logogeomina from '../assets/logogeomina.png';
+import { useState } from 'react';
 import logobiomedic from '../assets/logobiomedic.png';
 import geominaWhite from '../assets/geomina-new.png';
 import biomedicWhite from '../assets/biomedic-white.png';
-import metodoPractico from '../assets/metodo_practico.png';
-import ceroRelleno from '../assets/cero_relleno.png';
-import controlRitmo from '../assets/control_ritmo.png';
+import { isValidEmail } from '../utils/emailValidation.js';
 
 export default function OnboardingWizard({ isOpen, onClose }) {
-  if (!isOpen) return null;
-
   const [step, setStep] = useState(1);
   const [isFinished, setIsFinished] = useState(false);
   const [showPenaltyAlert, setShowPenaltyAlert] = useState(false);
@@ -55,20 +49,16 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   };
 
   const handleFechaNacimientoChange = (e) => {
-    let val = e.target.value.replace(/\D/g, '');
-    if (val.length > 8) val = val.substring(0, 8);
-    
-    let formatted = '';
-    if (val.length > 0) {
-      formatted = val.substring(0, 2);
-      if (val.length > 2) {
-        formatted += '/' + val.substring(2, 4);
-        if (val.length > 4) {
-          formatted += '/' + val.substring(4, 8);
-        }
-      }
+    const val = e.target.value; // YYYY-MM-DD
+    if (!val) {
+      setFormData(prev => ({ ...prev, fechaNacimiento: '' }));
+      return;
     }
-    setFormData(prev => ({ ...prev, fechaNacimiento: formatted }));
+    const partes = val.split('-');
+    if (partes.length === 3) {
+      const formatted = `${partes[2]}/${partes[1]}/${partes[0]}`;
+      setFormData(prev => ({ ...prev, fechaNacimiento: formatted }));
+    }
   };
   const [formData, setFormData] = useState({
     nombre: '', correo: '', marca: '', documento: '', fechaNacimiento: '',
@@ -79,6 +69,16 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     cvFile: null, fotoFile: null,
     softwares: '', cursoSonado: '', mejoraAdmin: '', comentarios: '',
   });
+  const correoValido = isValidEmail(formData.correo);
+  const mostrarErrorCorreo = formData.correo.trim().length > 0 && !correoValido;
+
+  let fechaYYYYMMDD = '';
+  if (formData.fechaNacimiento) {
+    const partes = formData.fechaNacimiento.split('/');
+    if (partes.length === 3) {
+      fechaYYYYMMDD = `${partes[2]}-${partes[1]}-${partes[0]}`;
+    }
+  }
 
   const totalSteps = 11;
 
@@ -105,7 +105,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
   const handleNext = () => {
     if (step === 1 && !formData.marca) return;
-    if (step === 2 && (!formData.nombre.trim() || !formData.correo.trim() || !formData.documento.trim() || formData.fechaNacimiento.length !== 10)) return;
+    if (step === 2 && (!formData.nombre.trim() || !correoValido || !formData.documento.trim() || formData.fechaNacimiento.length !== 10)) return;
     if (step === 3 && !formData.aceptaMetodologia) return;
     if (step === 4 && (!formData.aceptaSabado || !formData.aceptaDomingo || !formData.aceptaLunes)) return;
     if (step === 4) { setShowPenaltyAlert(true); return; }
@@ -161,6 +161,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
   const stepWidths = { 1: '380px', 2: '460px', 3: '600px', 4: '620px', 5: '760px', 6: '720px', 7: '740px', 8: '680px', 9: '600px', 10: '640px', 11: '580px' };
 
+  if (!isOpen) return null;
+
   return (
     <div className="wz" style={{ '--bc': brandColor, '--bg': brandGlow }}>
       {/* ── HEADER ── */}
@@ -198,7 +200,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
       {!isFinished && (
         <div className="wz-stepper-premium">
           <div className="wz-stepper-info">
-            <span className="wz-stepper-step-badge">Paso {step} de {totalSteps}</span>
+            <span className="wz-stepper-step-badge" title={stepLabels[step]}>Paso {step} de {totalSteps}</span>
           </div>
           <div className="wz-stepper-segments">
             {Array.from({ length: totalSteps }).map((_, idx) => {
@@ -320,24 +322,27 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                         value={formData.correo}
                         disabled={!formData.documento.trim()}
                         onChange={e => setFormData({...formData, correo:e.target.value})}
-                        className="wz-input"
+                        className={`wz-input ${mostrarErrorCorreo ? 'invalid' : ''}`}
+                        aria-invalid={mostrarErrorCorreo}
+                        aria-describedby={mostrarErrorCorreo ? 'correo-error' : undefined}
                         autoComplete="off" />
+                      {mostrarErrorCorreo && (
+                        <span id="correo-error" className="wz-field-error">Ingresa un correo valido, por ejemplo nombre@dominio.com.</span>
+                      )}
                     </div>
                     <div className="wz-field">
                       <span className="wz-label">Fecha de Nacimiento</span>
-                      <input type="text"
-                        placeholder={formData.documento.trim() ? "DD/MM/AAAA" : "Escribe tu Documento primero..."}
-                        value={formData.fechaNacimiento}
+                      <input type="date"
+                        value={fechaYYYYMMDD}
                         disabled={!formData.documento.trim()}
                         onChange={handleFechaNacimientoChange}
-                        className="wz-input"
-                        maxLength={10} />
+                        className="wz-input" />
                     </div>
                   </div>
                   
                   <div className="wz-nav">
                     <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
-                    <button onClick={handleNext} disabled={!formData.nombre.trim()||!formData.correo.trim()||!formData.documento.trim()||formData.fechaNacimiento.length !== 10} className="wz-btn-main">Continuar</button>
+                    <button onClick={handleNext} disabled={!formData.nombre.trim()||!correoValido||!formData.documento.trim()||formData.fechaNacimiento.length !== 10} className="wz-btn-main">Continuar</button>
                   </div>
                 </div>
               )}
@@ -837,6 +842,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-input::placeholder { color:#b0b8c4; }
         .wz-input:focus { border-color:var(--bc); box-shadow:0 0 0 3px var(--bg); }
         .wz-input:disabled { background:#f8fafc; color:#64748b; cursor:not-allowed; }
+        .wz-input.invalid { border-color:#ef4444; background:#fff7f7; }
+        .wz-input.invalid:focus { border-color:#ef4444; box-shadow:0 0 0 3px rgba(239,68,68,0.1); }
+        .wz-field-error { font-size:0.76rem; color:#dc2626; font-weight:700; line-height:1.35; }
         
         .wz-input-spinner {
           position: absolute; right: 12px; top: 50%; transform: translateY(-50%);

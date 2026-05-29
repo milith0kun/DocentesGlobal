@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import geominaWhite from '../assets/geomina-new.png';
 import biomedicWhite from '../assets/biomedic-white.png';
 
