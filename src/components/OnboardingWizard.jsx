@@ -1432,23 +1432,37 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           box-shadow: 0 4px 10px var(--bg);
         }
 
-        @media (max-width: 480px) {
-          .wz-datepicker-popover {
-            position: fixed;
-            top: auto;
-            bottom: 0;
-            left: 0; right: 0;
-            width: 100%;
-            border-radius: 20px 20px 0 0;
-            border-left: none; border-right: none; border-bottom: none;
-            padding: 1.5rem 1.25rem 2rem;
-            animation: slideUpCalendar 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 1000;
+        @media (max-width: 768px) {
+          .wz-datepicker-years-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            max-height: 240px !important;
+            gap: 0.5rem !important;
+          }
+          .wz-datepicker-year-btn, .wz-datepicker-month-btn {
+            font-size: 0.95rem !important;
+            padding: 0.65rem 0 !important;
           }
           .wz-datepicker-overlay {
-            background: rgba(15, 23, 42, 0.4);
-            backdrop-filter: blur(3px);
-            z-index: 999;
+            position: fixed !important;
+            top: 0 !important; left: 0 !important; bottom: 0 !important; right: 0 !important;
+            width: 100vw !important; height: 100vh !important;
+            background: rgba(15, 23, 42, 0.75) !important;
+            z-index: 999 !important;
+          }
+          .wz-datepicker-popover {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            bottom: auto !important;
+            right: auto !important;
+            transform: translate(-50%, -50%) !important;
+            width: 90% !important;
+            max-width: 320px !important;
+            border-radius: 20px !important;
+            border: 1px solid #e2e8f0 !important;
+            padding: 1.5rem !important;
+            animation: popInCalendar 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            z-index: 1000 !important;
           }
         }
         @keyframes slideUpCalendar {
@@ -2295,36 +2309,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-h-center { gap:0.5rem; }
         }
 
-        /* ── OVERRIDES FINALES PARA EL MODAL DE FECHA (MÓVIL) ── */
-        @media (max-width: 768px) {
-          .wz-datepicker-years-grid {
-            grid-template-columns: repeat(3, 1fr) !important;
-            max-height: 240px !important;
-            gap: 0.5rem !important;
-          }
-          .wz-datepicker-year-btn, .wz-datepicker-month-btn {
-            font-size: 0.95rem !important;
-            padding: 0.65rem 0 !important;
-          }
-          .wz-datepicker-overlay {
-            position: fixed !important;
-            top: 0 !important; left: 0 !important; bottom: 0 !important; right: 0 !important;
-            width: 100vw !important; height: 100vh !important;
-            background: rgba(15, 23, 42, 0.75) !important;
-            z-index: 999 !important;
-          }
-          .wz-datepicker-popover {
-            position: fixed !important;
-            top: 50% !important;
-            left: 50% !important;
-            bottom: auto !important;
-            right: auto !important;
-            transform: translate(-50%, -50%) !important;
-            width: 90% !important;
-            max-width: 320px !important;
-            z-index: 1000 !important;
-          }
-        }
+
       `}</style>
 
       <svg style={{ position:'absolute', width:0, height:0, pointerEvents:'none' }}>
