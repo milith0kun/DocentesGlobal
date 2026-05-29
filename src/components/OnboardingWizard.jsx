@@ -357,9 +357,12 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                           value={formData.fechaNacimiento}
                           disabled={!formData.documento.trim()}
                           onChange={handleFechaNacimientoChange}
+                          onClick={() => { if (formData.documento.trim()) openCalendar(); }}
+                          onFocus={() => { if (formData.documento.trim()) openCalendar(); }}
                           className="wz-input"
                           maxLength={10}
-                          style={{ paddingRight: '2.5rem' }} />
+                          autoComplete="off"
+                          style={{ paddingRight: '2.5rem', cursor: formData.documento.trim() ? 'pointer' : 'not-allowed' }} />
                         
                         {formData.documento.trim() && (
                           <button

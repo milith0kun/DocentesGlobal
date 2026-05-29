@@ -63,9 +63,10 @@ export default function Hero({ onStartWizard }) {
             <div className="hero-actions" style={{ justifyContent: 'flex-start', gap: '1.25rem', marginTop: '0.5rem' }}>
               <button onClick={onStartWizard} className="btn-primary-hero-premium">
                 <span className="btn-label-wrap">
-                  <span className="btn-start-dot" aria-hidden="true"></span>
                   <span>Comenzar Manual</span>
-                  <span className="btn-arrow-premium" aria-hidden="true">→</span>
+                  <span className="btn-arrow-pill" aria-hidden="true">
+                    <span className="btn-arrow-premium">→</span>
+                  </span>
                 </span>
                 <span className="btn-shine"></span>
               </button>
@@ -176,23 +177,24 @@ export default function Hero({ onStartWizard }) {
         }
 
         .btn-primary-hero-premium {
+          min-width: clamp(220px, 28vw, 292px);
           min-height: 56px;
-          padding: 0.9rem 2.15rem;
-          font-size: 0.97rem;
+          padding: 0.8rem 1.1rem 0.8rem 1.55rem;
+          font-size: 1rem;
           border-radius: 18px;
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.24);
           cursor: pointer;
           position: relative;
           overflow: hidden;
           isolation: isolate;
           color: #fff;
-          font-weight: 800;
+          font-weight: 850;
           letter-spacing: 0.2px;
-          background: linear-gradient(135deg, #075985 0%, #0284c7 46%, #06b6d4 100%);
+          background: linear-gradient(135deg, #056d9d 0%, #0b8cc7 54%, #11a6da 100%);
           box-shadow:
-            0 14px 30px -12px rgba(2, 132, 199, 0.62),
-            inset 0 1px 0 rgba(255, 255, 255, 0.24),
-            inset 0 -2px 0 rgba(3, 105, 161, 0.42);
+            0 12px 26px -10px rgba(2, 132, 199, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2),
+            inset 0 -2px 0 rgba(3, 105, 161, 0.35);
           transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -202,17 +204,20 @@ export default function Hero({ onStartWizard }) {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 0.58rem;
+          gap: 0.8rem;
           white-space: nowrap;
         }
 
-        .btn-start-dot {
-          width: 0.46rem;
-          height: 0.46rem;
+        .btn-arrow-pill {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 1.7rem;
+          height: 1.7rem;
           border-radius: 999px;
-          background: rgba(255, 255, 255, 0.96);
-          box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.66);
-          animation: dotPulse 2.2s ease-out infinite;
+          background: rgba(255, 255, 255, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.28);
+          flex-shrink: 0;
         }
 
         .btn-primary-hero-premium::after {
@@ -225,37 +230,37 @@ export default function Hero({ onStartWizard }) {
         }
 
         .btn-primary-hero-premium:hover {
-          transform: translateY(-2px);
+          transform: translateY(-1px);
           box-shadow: 
-            0 16px 36px -8px rgba(14, 165, 233, 0.5),
-            0 0 0 1.5px rgba(14, 165, 233, 0.2) !important;
-          background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+            0 16px 32px -10px rgba(14, 165, 233, 0.46),
+            0 0 0 1px rgba(14, 165, 233, 0.22);
+          background: linear-gradient(135deg, #0677ab 0%, #0d95d2 54%, #15b0e3 100%);
         }
 
         .btn-primary-hero-premium:focus-visible {
           outline: none;
           box-shadow:
-            0 0 0 3px rgba(14, 165, 233, 0.2),
-            0 0 0 6px rgba(6, 182, 212, 0.18),
-            0 14px 28px -10px rgba(2, 132, 199, 0.55);
+            0 0 0 2px rgba(255, 255, 255, 0.88),
+            0 0 0 5px rgba(14, 165, 233, 0.38),
+            0 14px 28px -10px rgba(2, 132, 199, 0.48);
         }
 
         .btn-primary-hero-premium:active {
-          transform: translateY(-1px) scale(0.99);
+          transform: translateY(0) scale(0.995);
           box-shadow:
-            0 9px 20px -10px rgba(2, 132, 199, 0.72),
-            inset 0 2px 8px rgba(7, 89, 133, 0.28);
+            0 8px 18px -9px rgba(2, 132, 199, 0.6),
+            inset 0 2px 9px rgba(7, 89, 133, 0.24);
         }
 
         .btn-primary-hero-premium:hover .btn-arrow-premium {
-          transform: translateX(6px);
+          transform: translateX(3px);
         }
 
         .btn-arrow-premium {
           display: inline-block;
-          font-size: 1.05rem;
+          font-size: 1rem;
           line-height: 1;
-          transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+          transition: transform 0.2s ease;
         }
 
         .btn-shine {
@@ -267,7 +272,7 @@ export default function Hero({ onStartWizard }) {
           background: linear-gradient(
             90deg,
             transparent,
-            rgba(255, 255, 255, 0.25),
+            rgba(255, 255, 255, 0.18),
             transparent
           );
           transition: 0.6s;
@@ -275,21 +280,6 @@ export default function Hero({ onStartWizard }) {
 
         .btn-primary-hero-premium:hover .btn-shine {
           left: 100%;
-        }
-
-        @keyframes dotPulse {
-          0% {
-            transform: scale(0.96);
-            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.62);
-          }
-          70% {
-            transform: scale(1);
-            box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
-          }
-          100% {
-            transform: scale(0.96);
-            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
-          }
         }
 
         .btn-secondary-hero-premium:hover {
@@ -395,16 +385,17 @@ export default function Hero({ onStartWizard }) {
             min-height: 52px;
           }
           .btn-primary-hero-premium {
-            padding: 0.98rem 1.35rem;
-            font-size: 0.98rem;
+            min-width: 100%;
+            padding: 0.9rem 1.1rem 0.9rem 1.3rem;
+            font-size: 0.96rem;
             min-height: 52px;
           }
           .btn-label-wrap {
-            gap: 0.5rem;
+            gap: 0.7rem;
           }
-          .btn-start-dot {
-            width: 0.4rem;
-            height: 0.4rem;
+          .btn-arrow-pill {
+            width: 1.55rem;
+            height: 1.55rem;
           }
           .hero-title-break {
             display: none;
