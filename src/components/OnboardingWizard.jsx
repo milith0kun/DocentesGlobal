@@ -2123,10 +2123,10 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           }
           .wz-h-center { gap:0.5rem; max-width:calc(100vw - 100px); overflow:hidden; }
           .wz-logo { max-width:30vw; }
-          .wz-logo.lg-ciip { height:34px !important; max-width:72px; }
-          .wz-logo.lg-geo { height:22px !important; max-width:74px; transform:translateY(3px); }
-          .wz-logo.lg-bio { height:29px !important; max-width:66px; }
-          .wz-sep { height:20px; background:linear-gradient(to bottom,transparent,rgba(56,189,248,0.32),transparent); }
+          .wz-logo.lg-ciip { height:26px !important; max-width:60px; transform:translateY(0); }
+          .wz-logo.lg-geo { height:18px !important; max-width:64px; transform:translateY(1px); }
+          .wz-logo.lg-bio { height:24px !important; max-width:56px; transform:translateY(0); }
+          .wz-sep { height:16px; background:linear-gradient(to bottom,transparent,rgba(56,189,248,0.32),transparent); }
           .wz-brand-card {
             min-height: 58px;
             padding: 0.7rem 1rem !important;
@@ -2159,7 +2159,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             display: flex;
             flex-direction: column;
             flex: 1 0 auto;
-            align-items: flex-start;
+            align-items: center; /* Center horizontally */
             justify-content: flex-start;
             padding:1rem 0.875rem max(1.25rem, env(safe-area-inset-bottom));
             overflow: visible !important; /* NO internal scroll, let it grow */
@@ -2167,7 +2167,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             min-height: auto;
           }
           .wz-content {
-            max-width:100% !important;
+            width: 100% !important;
+            max-width: 420px !important; /* Don't stretch full width */
+            margin: auto !important; /* Vertically and horizontally center */
           }
           
           .wz-title { font-size:1.5rem !important; margin-bottom:0.5rem; }
