@@ -49,13 +49,11 @@ export default function Footer() {
               alt="CIIP" 
               className="footer-logo footer-logo-ciip"
             />
-            <div className="footer-logo-sep" />
             <img 
               src={geominaWhite} 
               alt="Geomina" 
               className="footer-logo footer-logo-geomina"
             />
-            <div className="footer-logo-sep" />
             <img 
               src={logobiomedic} 
               alt="Biomedic" 
