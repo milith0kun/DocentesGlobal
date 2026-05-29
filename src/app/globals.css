@@ -2065,31 +2065,3 @@ img {
   }
 }
 
-@media (max-width: 768px) {
-  html,
-  body {
-    min-height: 100%;
-    overflow-y: auto;
-  }
-
-  .home-shell {
-    min-height: 100dvh;
-  }
-
-  .home-main {
-    flex: 0 0 auto;
-    display: block;
-    min-height: auto;
-  }
-
-  .home-main > header {
-    flex: 0 0 auto !important;
-    min-height: auto;
-    display: block !important;
-  }
-
-  .clean-hero {
-    min-height: auto !important;
-    overflow: visible !important;
-  }
-}
