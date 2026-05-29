@@ -2115,7 +2115,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           }
           .wz-protocol-list-container::-webkit-scrollbar { display:none; }
           .wz-protocol-item { min-width:85%; scroll-snap-align:center; display:flex; flex-direction:column; padding:1.25rem; }
-          .wz-mobile-carousel-img { display:block; width:100%; height:180px; object-fit:cover; object-position:top; border-radius:12px; margin-bottom:1.25rem; }
+          .wz-mobile-carousel-img { display:block; width:100%; height:200px; object-fit:contain; border-radius:12px; margin-bottom:1.5rem; }
           .wz-metrics-grid { grid-template-columns:1fr 1fr !important; }
           .wz-metric-box.danger { grid-column:span 2; }
           .wz-top-kpis { grid-template-columns:repeat(3, minmax(0, 1fr)); }
