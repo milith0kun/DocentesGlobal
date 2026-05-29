@@ -1766,9 +1766,10 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           width: 100%;
           height: 100%;
           min-height: 280px;
-          object-fit: cover;
+          object-fit: contain;
           object-position: center;
           display: block;
+          padding: 1rem;
         }
         .wz-pi-placeholder {
           width:100%; height:100%; min-height:280px; display:flex; align-items:center; justify-content:center;
