@@ -2202,9 +2202,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-sub { font-size:0.85rem !important; margin-bottom:1.25rem !important; }
           .wz-grid-2 { grid-template-columns:1fr !important; gap:1rem !important; }
           
-          .wz-principle { flex-direction:column; gap:0.85rem; padding:1.25rem; }
-          .wz-principle-n { font-size:1.8rem; }
-          .wz-principle h3 { font-size:1.15rem; }
+          .wz-principles-list { gap:0.85rem; }
+          .wz-principle { flex-direction:row; gap:1rem; padding:1.15rem; align-items:flex-start; }
+          .wz-principle-num { font-size:1.8rem; line-height:1; }
+          .wz-principle-text h4 { font-size:1.05rem; margin-bottom:0.25rem; }
+          .wz-principle-text p { font-size:0.82rem; }
           
           .wz-agenda-row { flex-direction:column; gap:0.85rem; padding:1.25rem; }
           .wz-agenda-content { padding-left:0; border-left:none; padding-top:0.75rem; border-top:1px solid #e8ecf1; width:100%; }
