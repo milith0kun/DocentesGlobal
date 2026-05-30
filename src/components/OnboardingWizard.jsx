@@ -50,8 +50,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoadingDni(false);
     }
-    setLoadingDni(false);
   };
 
   const handleFechaNacimientoChange = (e) => {
