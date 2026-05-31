@@ -3,7 +3,7 @@ nixPkgs = ["nodejs_22"]
 cmds = ["useradd -m -s /bin/bash node || true"]
 
 [phases.install]
-cmds = ["npm ci"]
+cmds = ["npm install --legacy-peer-deps"]
 
 [phases.build]
 cmds = ["npm run build", "chown -R node:node /app || true"]
