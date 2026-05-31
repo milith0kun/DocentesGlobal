@@ -26,8 +26,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const [showDriveAlert, setShowDriveAlert] = useState(false);
   const [activeProtocol, setActiveProtocol] = useState(0);
   const [generatedCode, setGeneratedCode] = useState('');
+  const [submissionWarning, setSubmissionWarning] = useState('');
   const [loadingDni, setLoadingDni] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activePrinciple, setActivePrinciple] = useState(null);
+  const [viewedPrinciples, setViewedPrinciples] = useState([false, false, false]);
 
   const consultarDNI = async (dniVal) => {
     if (!/^\d{8}$/.test(dniVal)) return;
@@ -41,12 +44,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
       const resData = await parseJsonResponse(response);
       if (!response.ok || !resData) {
-        console.error('Error al consultar DNI', { status: response.status });
+        console.error('Error al consultar DNI. Status:', response.status, 'Data:', resData);
         return;
       }
 
       if (resData.success && resData.nombre) {
         setFormData(prev => ({ ...prev, nombre: resData.nombre }));
+      } else {
+        console.warn('No se obtuvo un resultado exitoso de RENIEC:', resData);
       }
     } catch (err) {
       console.error(err);
@@ -110,7 +115,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     setShowDatePicker(true);
   };
 
-  const totalSteps = 12;
+  const totalSteps = 11;
 
   const stepLabels = {
     1: 'Selección de Institución',
@@ -124,7 +129,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     9: 'Contacto y Datos de Pago',
     10: 'Subir Documentación',
     11: 'Perfil Profesional & Comentarios',
-    12: 'Declaración de Conformidad',
   };
 
   const toggleMarca = (key) => {
@@ -166,6 +170,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     if (step === 10 && (!formData.cvFile || !formData.fotoFile)) return;
     if (step === 10) { setShowDriveAlert(true); return; } // Muestra Modal de Drive
     if (step === 11 && (!formData.softwares.trim() || !formData.cursoSonado.trim() || !formData.mejoraAdmin.trim())) return;
+    if (step === 11) { handleFinish(); return; }
     if (step < totalSteps) setStep(s => s + 1);
   };
 
@@ -194,12 +199,13 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
       const resData = await parseJsonResponse(response);
       if (!response.ok || !resData) {
-        alert('Error del servidor al enviar el formulario. Intenta nuevamente.');
+        alert(resData?.error || 'Error del servidor al enviar el formulario. Intenta nuevamente.');
         return;
       }
       
       if (resData.success) {
         setGeneratedCode(resData.code);
+        setSubmissionWarning(resData.warning || '');
         const cfg = marcaConfig[formData.marca];
         const metodo = formData.metodoPago === 'otro' ? formData.metodoPagoOtro : formData.metodoPago?.toUpperCase();
         const comentarios = formData.comentarios
@@ -233,6 +239,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           '',
           `*Fecha:* ${resData.fecha}`,
           `*Carpeta Drive:* ${resData.driveFolder || 'Pendiente'}`,
+          resData.warning ? `*Aviso:* ${resData.warning}` : '',
         ].join('\n');
         
         window.open(`https://wa.me/${cfg.telefono}?text=${encodeURIComponent(msg)}`, '_blank');
@@ -247,16 +254,16 @@ export default function OnboardingWizard({ isOpen, onClose }) {
       setIsSubmitting(false);
     }
   };
-
   const handleReset = () => {
     setFormData({ nombre:'',correo:'',marca:'',documento:'',fechaNacimiento:'',aceptaMetodologia:false,aceptaSabado:false,aceptaDomingo:false,aceptaLunes:false,aceptaProtocolo:false,aceptaAsistencia:false,aceptaTop:false,telefono:'',metodoPago:'',metodoPagoOtro:'',numeroCuenta:'',direccion:'',cvFile:null,fotoFile:null,softwares:'',cursoSonado:'',mejoraAdmin:'',comentarios:'' });
-    setStep(1); setIsFinished(false); setGeneratedCode(''); onClose();
+    setActivePrinciple(null);
+    setViewedPrinciples([false, false, false]);
+    setStep(1); setIsFinished(false); setGeneratedCode(''); setSubmissionWarning(''); onClose();
   };
-
   const brandColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
   const brandGlow = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14,165,233,0.12)';
 
-  const stepWidths = { 1: '380px', 2: '460px', 3: '600px', 4: '620px', 5: '520px', 6: '760px', 7: '720px', 8: '740px', 9: '680px', 10: '600px', 11: '640px', 12: '580px' };
+  const stepWidths = { 1: '380px', 2: '460px', 3: '600px', 4: '620px', 5: '520px', 6: '760px', 7: '720px', 8: '740px', 9: '680px', 10: '600px', 11: '640px' };
 
   if (!isOpen) return null;
 
@@ -330,13 +337,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               <div style={{ textAlign:'center' }}>
                 <div className="wz-success-icon">✓</div>
                 <h1 className="wz-title" style={{ textAlign:'center', fontSize:'1.8rem', marginBottom:'0.35rem' }}>¡Conformidad Registrada!</h1>
-                <p className="wz-sub" style={{ textAlign:'center', marginBottom:'1.5rem' }}>Tu declaración ha sido enviada por WhatsApp y registrada exitosamente.</p>
-                <div className="wz-summary">
+                <p className="wz-sub" style={{ textAlign:'center', marginBottom:'1.35rem' }}>Registro guardado en el sistema. Se preparó el mensaje de confirmación para coordinación.</p>
+                <div className="wz-success-panel">
                   <div className="wz-sum-row"><span>Código</span><strong style={{ color:'#22c55e' }}>{generatedCode}</strong></div>
                   <div className="wz-sum-row"><span>Docente</span><strong>{formData.nombre}</strong></div>
                   <div className="wz-sum-row"><span>Ecosistema</span><strong style={{ color: brandColor }}>{marcaConfig[formData.marca]?.nombre}</strong></div>
-                  <div className="wz-sum-row" style={{ borderBottom:'none' }}><span>Estado</span><strong style={{ color:'#22c55e' }}>Compromisos aceptados</strong></div>
+                  <div className="wz-sum-row" style={{ borderBottom:'none' }}><span>Estado</span><strong style={{ color: submissionWarning ? '#b45309' : '#22c55e' }}>{submissionWarning ? 'Registrado con aviso' : 'Excel y Drive sincronizados'}</strong></div>
                 </div>
+                {submissionWarning && <p className="wz-success-note">{submissionWarning}</p>}
                 <button onClick={handleReset} className="wz-btn-main" style={{ width:'100%', marginTop:'1.25rem' }}>Volver al Inicio</button>
               </div>
             </div>
@@ -694,38 +702,81 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               )}
 
               {/* ═══ PASO 3: FILOSOFÍA ═══ */}
-              {step === 3 && (
-                <div className="wz-fade">
-                  <span className="wz-tag">Doing by Learning</span>
-                  <h2 className="wz-title">Nuestra Filosofía</h2>
-                  <p className="wz-sub" style={{ marginBottom: '2rem' }}>Transformamos carreras mediante habilidades prácticas. Este manual no es solo una guía, es el estándar de calidad que nos posiciona en Latinoamérica.</p>
-                  
-                  <div className="wz-principles-list">
-                    {[
-                      { n:'01', t:'Enfoque 100% Práctico y Aplicado', d:'Creemos firmemente en el poder de aprender haciendo. Por ello, transformamos la teoría en experiencia directa: cada nuevo concepto cobra vida al resolver casos reales de la industria en vivo. El software es nuestro gran escenario para que los estudiantes comprueben la aplicación inmediata de su conocimiento.' },
-                      { n:'02', t:'Inmersión Total en las Herramientas', d:'Evolucionamos la educación dejando atrás la exposición tradicional. Les invitamos a sustituir las extensas presentaciones por una inmersión directa en el entorno de trabajo digital. Queremos que sus sesiones sean espacios dinámicos y de acción pura, donde el estudiante alcance el dominio técnico interactuando con la herramienta desde el primer minuto.' },
-                      { n:'03', t:'Liderazgo y Fluidez del Aprendizaje', d:'Usted es el guía que marca el ritmo del éxito grupal. Confiamos en su liderazgo para mantener un avance constante y motivador, gestionando con agilidad las consultas o incidencias técnicas individuales. De esta manera, garantizamos que la energía de la clase fluya sin interrupciones y todo el equipo alcance su meta de aprendizaje.' },
-                    ].map((p,i) => (
-                      <div key={i} className="wz-principle">
-                        <div className="wz-principle-num">{p.n}</div>
-                        <div className="wz-principle-text">
-                          <h4>{p.t}</h4>
-                          <p>{p.d}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+              {step === 3 && (() => {
+                const allPrinciplesViewed = viewedPrinciples.every(v => v);
+                return (
+                  <div className="wz-fade">
+                    <span className="wz-tag">Doing by Learning</span>
+                    <h2 className="wz-title">Nuestra Filosofía</h2>
+                    <p className="wz-sub" style={{ marginBottom: '1.5rem' }}>Transformamos carreras mediante habilidades prácticas. Este manual no es solo una guía, es el estándar de calidad que nos posiciona en Latinoamérica.</p>
+                    
+                    <div className="wz-principles-list">
+                      {[
+                        { n:'01', t:'Enfoque 100% Práctico y Aplicado', d:'Creemos firmemente en el poder de aprender haciendo. Por ello, transformamos la teoría en experiencia directa: cada nuevo concepto cobra vida al resolver casos reales de la industria en vivo. El software es nuestro gran escenario para que los estudiantes comprueben la aplicación inmediata de su conocimiento.' },
+                        { n:'02', t:'Inmersión Total en las Herramientas', d:'Evolucionamos la educación dejando atrás la exposición tradicional. Les invitamos a sustituir las extensas presentaciones por una inmersión directa en el entorno de trabajo digital. Queremos que sus sesiones sean espacios dinámicos y de acción pura, donde el estudiante alcance el dominio técnico interactuando con la herramienta desde el primer minuto.' },
+                        { n:'03', t:'Liderazgo y Fluidez del Aprendizaje', d:'Usted es el guía que marca el ritmo del éxito grupal. Confiamos en su liderazgo para mantener un avance constante y motivador, gestionando con agilidad las consultas o incidencias técnicas individuales. De esta manera, garantizamos que la energía de la clase fluya sin interrupciones y todo el equipo alcance su meta de aprendizaje.' },
+                      ].map((p,i) => {
+                        const isOpen = activePrinciple === i;
+                        const isViewed = viewedPrinciples[i];
+                        return (
+                          <div key={i} 
+                            className={`wz-principle ${isOpen ? 'open' : ''} ${isViewed ? 'viewed' : ''}`}
+                            onClick={() => {
+                              setActivePrinciple(isOpen ? null : i);
+                              setViewedPrinciples(prev => {
+                                const next = [...prev];
+                                next[i] = true;
+                                return next;
+                              });
+                            }}
+                            style={{ cursor: 'pointer', paddingBottom: isOpen ? '1.25rem' : '1rem' }}
+                          >
+                            <div className="wz-principle-header" style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '1.25rem' }}>
+                              <div className="wz-principle-num">{p.n}</div>
+                              <div className="wz-principle-text" style={{ flex: 1 }}>
+                                <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                  {p.t}
+                                </h4>
+                              </div>
+                              <div className={`wz-principle-arrow ${isOpen ? 'rotated' : ''}`} style={{ transition: 'transform 0.3s ease', color: isOpen ? 'var(--bc)' : '#94a3b8' }}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                  <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                              </div>
+                            </div>
+                            
+                            <div className={`wz-principle-content-wrapper ${isOpen ? 'open' : ''}`}>
+                              <div className="wz-principle-content" style={{ marginTop: '0.85rem' }}>
+                                <p className="wz-principle-desc">{p.d}</p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
 
-                  <div className={`wz-check-row ${formData.aceptaMetodologia?'on':''}`} style={{ marginTop: '1.5rem' }} onClick={() => setFormData({...formData, aceptaMetodologia:!formData.aceptaMetodologia})}>
-                    <div className={`wz-checkbox ${formData.aceptaMetodologia?'on':''}`} />
-                    <span>He leído y comprendo firmemente la metodología Doing by Learning.</span>
+                    <div className={`wz-check-row ${formData.aceptaMetodologia?'on':''} ${!allPrinciplesViewed?'disabled':''}`} style={{ marginTop: '1.5rem' }} onClick={() => {
+                      if (allPrinciplesViewed) {
+                        setFormData({...formData, aceptaMetodologia:!formData.aceptaMetodologia});
+                      }
+                    }}>
+                      <div className={`wz-checkbox ${formData.aceptaMetodologia?'on':''}`} />
+                      <span>He leído y comprendo firmemente la metodología Doing by Learning.</span>
+                    </div>
+
+                    {!allPrinciplesViewed && (
+                      <p style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        <span style={{ color: 'var(--bc)', fontWeight: 'bold' }}>ℹ</span> Por favor, haz clic y lee los 3 pilares de nuestra metodología para poder aceptar.
+                      </p>
+                    )}
+
+                    <div className="wz-nav">
+                      <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
+                      <button onClick={handleNext} disabled={!formData.aceptaMetodologia || !allPrinciplesViewed} className="wz-btn-main">Confirmar</button>
+                    </div>
                   </div>
-                  <div className="wz-nav">
-                    <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
-                    <button onClick={handleNext} disabled={!formData.aceptaMetodologia} className="wz-btn-main">Confirmar</button>
-                  </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* ═══ PASO 4: FECHAS DE CORTE ═══ */}
               {step === 4 && (
@@ -1084,7 +1135,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
                   <div className="wz-nav">
                     <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
-                    <button onClick={handleNext} disabled={!formData.softwares.trim()||!formData.cursoSonado.trim()||!formData.mejoraAdmin.trim()} className="wz-btn-main">Siguiente</button>
+                    <button onClick={handleNext} disabled={isSubmitting || !formData.softwares.trim()||!formData.cursoSonado.trim()||!formData.mejoraAdmin.trim()} className="wz-btn-main">
+                      {isSubmitting ? 'Guardando registro...' : 'Finalizar registro'}
+                    </button>
                   </div>
                 </div>
               )}
@@ -1588,31 +1641,54 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           color:#fff;
         }
 
-        /* ── PILARES (PASO 2 - MANIFIESTO TIPOGRÁFICO) ── */
-        .wz-principles-list { display:flex; flex-direction:column; gap:1.25rem; }
+        /* ── PILARES (PASO 2 - MANIFIESTO TIPOGRÁFICO / ACORDEÓN) ── */
+        .wz-principles-list { display:flex; flex-direction:column; gap:1rem; }
         .wz-principle {
-          display:flex; align-items:flex-start; gap:1.5rem;
-          padding:1.5rem; border:1px solid #e8ecf1; border-radius:16px;
+          display:flex; flex-direction:column; align-items:stretch;
+          padding:1.15rem 1.35rem; border:1px solid #e8ecf1; border-radius:16px;
           background:#fff; transition:all 0.3s ease; position:relative; overflow:hidden;
         }
         .wz-principle::before {
           content:''; position:absolute; left:0; top:0; bottom:0; width:4px;
           background:var(--bg); transition:background 0.3s;
         }
-        .wz-principle:hover { border-color:var(--bc); transform:translateX(4px); box-shadow:0 12px 24px -12px rgba(0,0,0,0.06); }
+        .wz-principle:hover { border-color:var(--bc); transform:translateX(3px); box-shadow:0 8px 16px -8px rgba(0,0,0,0.06); }
         .wz-principle:hover::before { background:var(--bc); }
+        .wz-principle.open { border-color:var(--bc); }
+        .wz-principle.open::before { background:var(--bc); }
+        .wz-principle.viewed { border-color: rgba(34, 197, 94, 0.2); }
+        .wz-principle.viewed.open { border-color:var(--bc); }
+        
         .wz-principle-num {
-          font-family:'Outfit',sans-serif; font-size:2.5rem; font-weight:900;
+          font-family:'Outfit',sans-serif; font-size:2rem; font-weight:900;
           color:var(--bg); line-height:0.8; letter-spacing:-2px;
           transition:color 0.3s;
         }
         .wz-principle:hover .wz-principle-num { color:var(--bc); }
+        .wz-principle.open .wz-principle-num { color:var(--bc); }
+        
         .wz-principle-text h4 {
-          font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:850;
-          color:#0f172a; margin:0 0 0.35rem; letter-spacing:-0.3px;
+          font-family:'Outfit',sans-serif; font-size:1.1rem; font-weight:850;
+          color:#0f172a; margin:0; letter-spacing:-0.3px;
         }
-        .wz-principle-text p {
-          font-size:0.88rem; color:#475569; line-height:1.55; margin:0; font-weight:500;
+        
+        .wz-principle-content-wrapper {
+          display: grid;
+          grid-template-rows: 0fr;
+          transition: grid-template-rows 0.3s ease-in-out;
+        }
+        .wz-principle-content-wrapper.open {
+          grid-template-rows: 1fr;
+        }
+        .wz-principle-content {
+          overflow: hidden;
+        }
+        .wz-principle-desc {
+          font-size:0.86rem; color:#475569; line-height:1.55; margin:0; font-weight:500;
+          padding-left: 3.25rem;
+        }
+        .wz-principle-arrow.rotated {
+          transform: rotate(180deg);
         }
 
         /* ── CHECKBOX ROW ── */
@@ -1623,6 +1699,17 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         .wz-check-row:hover { border-color:#b0b8c4; background:rgba(255,255,255,0.6); }
         .wz-check-row.on { border-color:var(--bc); border-style:solid; background:#fff; box-shadow:0 0 0 1px var(--bc); }
+        .wz-check-row.disabled {
+          opacity: 0.55;
+          cursor: not-allowed;
+          background: rgba(241, 245, 249, 0.4);
+          border-color: #cbd5e1;
+        }
+        .wz-check-row.disabled:hover {
+          background: rgba(241, 245, 249, 0.4);
+          border-color: #cbd5e1;
+        }
+
         .wz-check-row span { font-size:0.88rem; font-weight:600; color:#334155; }
         .wz-check-row.on span { color:#0f172a; font-weight:700; }
         .wz-checkbox {
@@ -1826,6 +1913,26 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         .wz-summary {
           border:1px solid #e8ecf1; border-radius:12px; padding:0.75rem 1.15rem; margin-bottom:0.5rem;
+        }
+        .wz-success-panel {
+          border:1px solid rgba(34,197,94,0.18);
+          border-radius:14px;
+          padding:0.8rem 1.15rem;
+          margin-bottom:0.75rem;
+          background:linear-gradient(180deg, rgba(34,197,94,0.055), rgba(255,255,255,0.92));
+          box-shadow:0 12px 28px -22px rgba(15,23,42,0.28);
+        }
+        .wz-success-note {
+          margin:0.75rem 0 0;
+          padding:0.75rem 0.9rem;
+          border:1px solid rgba(245,158,11,0.22);
+          border-radius:10px;
+          background:rgba(245,158,11,0.06);
+          color:#92400e;
+          font-size:0.78rem;
+          line-height:1.45;
+          font-weight:650;
+          text-align:left;
         }
         .wz-sum-row {
           display:flex; justify-content:space-between; align-items:center;
@@ -2151,11 +2258,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-sub { font-size:0.85rem !important; margin-bottom:1.25rem !important; }
           .wz-grid-2 { grid-template-columns:1fr !important; gap:1rem !important; }
           
-          .wz-principles-list { gap:0.85rem; }
-          .wz-principle { flex-direction:row; gap:1rem; padding:1.15rem; align-items:flex-start; }
-          .wz-principle-num { font-size:1.8rem; line-height:1; }
-          .wz-principle-text h4 { font-size:1.05rem; margin-bottom:0.25rem; }
-          .wz-principle-text p { font-size:0.82rem; }
+          .wz-principles-list { gap:0.75rem; }
+          .wz-principle { flex-direction:column; align-items:stretch; padding:1rem 1.15rem; }
+          .wz-principle-num { font-size:1.6rem; }
+          .wz-principle-text h4 { font-size:1rem; }
+          .wz-principle-desc { padding-left:2.85rem; font-size:0.82rem; }
           
           .wz-agenda-row { flex-direction:row; flex-wrap:wrap; align-items:center; gap:0.85rem; padding:1.15rem; }
           .wz-agenda-time { flex:1; width:auto; display:flex; align-items:baseline; gap:0.5rem; }

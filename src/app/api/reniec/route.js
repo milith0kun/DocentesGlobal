@@ -1,7 +1,19 @@
 import { NextResponse } from 'next/server';
+import { rateLimit } from '@/lib/request-security.js';
 
 export async function POST(request) {
   try {
+    const limit = rateLimit(request, { keyPrefix: 'reniec', limit: 20, windowMs: 60_000 });
+    if (!limit.ok) {
+      return NextResponse.json(
+        { success: false, error: 'Demasiadas consultas. Intenta nuevamente en unos segundos.' },
+        {
+          status: 429,
+          headers: { 'Retry-After': String(limit.retryAfter) },
+        }
+      );
+    }
+
     const { dni } = await request.json();
 
     if (!dni || !/^\d{8}$/.test(dni)) {

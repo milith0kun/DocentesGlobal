@@ -64,7 +64,11 @@ export async function createDocenteFolder(nombre, documento, marca) {
     ambos: 'CIIP_Geomina',
   };
 
-  const marcaFolderName = marcaNames[marca] || marca || 'General';
+  const marcaFolderName = String(marca || '')
+    .split(',')
+    .map((item) => marcaNames[item.trim()] || item.trim())
+    .filter(Boolean)
+    .join('_') || 'General';
   const marcaFolderId = await getOrCreateFolder(marcaFolderName, yearFolderId);
 
   const safeName = normalizeFolderName(nombre, 'Docente');

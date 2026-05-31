@@ -3,12 +3,19 @@ import { randomUUID } from 'node:crypto';
 import { createDocenteFolder, uploadFileToDrive } from '@/lib/google-drive.js';
 import { appendDocenteRow } from '@/lib/google-sheets.js';
 import { validateGoogleAuthConfig } from '@/lib/google-auth.js';
+import { rateLimit } from '@/lib/request-security.js';
 
 const marcaConfig = {
   ciip: { nombre: 'CIIP Latam' },
   geomina: { nombre: 'Geomina' },
   biomedic: { nombre: 'Biomedic' },
   ambos: { nombre: 'CIIP Latam & Geomina' },
+};
+
+const marcaAliases = {
+  ciip: 'CIIP Latam',
+  geomina: 'Geomina',
+  biomedic: 'Biomedic',
 };
 
 const REQUIRED_STORAGE_ENV = [
@@ -46,10 +53,27 @@ const REQUIRED_ACCEPTANCES = [
   'aceptaTop',
 ];
 
+const FIELD_LIMITS = {
+  nombre: 140,
+  correo: 180,
+  marca: 40,
+  documento: 8,
+  fechaNacimiento: 10,
+  telefono: 32,
+  metodoPago: 80,
+  metodoPagoOtro: 80,
+  numeroCuenta: 140,
+  direccion: 220,
+  softwares: 1200,
+  cursoSonado: 1200,
+  mejoraAdmin: 1200,
+  comentarios: 1500,
+};
+
 const FILE_RULES = {
   cv: {
     label: 'CV',
-    maxBytes: 5 * 1024 * 1024,
+    maxBytes: 10 * 1024 * 1024,
     extensions: ['pdf', 'doc', 'docx'],
     mimeTypes: [
       'application/pdf',
@@ -79,7 +103,11 @@ function placeholderStorageEnv() {
 
 function generateUniqueCode(marca) {
   const code = randomUUID().replace(/-/g, '').slice(0, 8).toUpperCase();
-  return `MOD-${(marca || 'DOC').toUpperCase()}-${code}`;
+  const marcaCode = String(marca || 'DOC')
+    .replace(/[^a-z0-9]+/gi, '-')
+    .replace(/^-+|-+$/g, '')
+    .toUpperCase();
+  return `MOD-${marcaCode || 'DOC'}-${code}`;
 }
 
 function sanitizeNameForFile(value, fallback = 'archivo') {
@@ -98,6 +126,21 @@ function fileExtension(fileName, fallback) {
     ?.toLowerCase()
     ?.trim();
   return ext || fallback;
+}
+
+function normalizeFieldValue(key, value) {
+  const limit = FIELD_LIMITS[key] || 1000;
+  return String(value || '')
+    .split(String.fromCharCode(0))
+    .join('')
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .trim()
+    .slice(0, limit);
+}
+
+function hasInvalidFieldLength(fields) {
+  return Object.entries(FIELD_LIMITS).filter(([key, limit]) => String(fields[key] || '').length > limit);
 }
 
 function validateRequiredFields(fields) {
@@ -120,11 +163,66 @@ function validateRequiredFields(fields) {
     missing.push('fechaNacimiento valida');
   }
 
-  if (!Object.prototype.hasOwnProperty.call(marcaConfig, fields.marca)) {
+  if (!isValidMarca(fields.marca)) {
     missing.push('marca valida');
   }
 
   return [...new Set([...missing, ...missingAcceptances])];
+}
+
+function selectedMarcas(value) {
+  return String(value || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function isValidMarca(value) {
+  if (Object.prototype.hasOwnProperty.call(marcaConfig, value)) return true;
+
+  const marcas = selectedMarcas(value);
+  const unique = new Set(marcas);
+  return (
+    marcas.length > 0 &&
+    marcas.length <= 2 &&
+    unique.size === marcas.length &&
+    marcas.every((marca) => Object.prototype.hasOwnProperty.call(marcaAliases, marca))
+  );
+}
+
+function institutionName(value) {
+  if (marcaConfig[value]) return marcaConfig[value].nombre;
+
+  const names = selectedMarcas(value).map((marca) => marcaAliases[marca]).filter(Boolean);
+  return names.length > 0 ? names.join(' & ') : value;
+}
+
+function friendlyGoogleError(error) {
+  const raw = String(error?.message || '');
+
+  if (/Service Accounts do not have storage quota|storageQuotaExceeded/i.test(raw)) {
+    return 'Drive no pudo subir archivos porque la cuenta de servicio no tiene cuota de almacenamiento en una carpeta normal. Usa una Unidad compartida o autenticacion OAuth.';
+  }
+
+  if (/Drive API has not been used|drive.googleapis.com/i.test(raw)) {
+    return 'Google Drive API no esta habilitada en el proyecto de la cuenta de servicio.';
+  }
+
+  if (/Sheets API has not been used|sheets.googleapis.com|SERVICE_DISABLED/i.test(raw)) {
+    return 'Google Sheets API no esta habilitada en el proyecto de la cuenta de servicio.';
+  }
+
+  if (/GOOGLE_APPLICATION_CREDENTIALS/i.test(raw)) {
+    return 'Error en GOOGLE_APPLICATION_CREDENTIALS. Verifica que la ruta del JSON exista.';
+  }
+
+  if (/DECODER routines|private key|PEM|unsupported|Google Auth/i.test(raw)) {
+    return 'Error en GOOGLE_PRIVATE_KEY. Verifica formato PEM y saltos de linea (\\n).';
+  }
+
+  return raw && process.env.NODE_ENV !== 'production'
+    ? raw
+    : 'Error al procesar el envio. Revisa la configuracion del servidor.';
 }
 
 function validateUpload(file, key) {
@@ -150,8 +248,54 @@ function validateUpload(file, key) {
   return null;
 }
 
+async function validateFileSignature(file, key) {
+  const bytes = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+  const ext = fileExtension(file.name, '');
+
+  if (key === 'foto') {
+    const isJpeg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+    const isPng = bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47;
+    const isWebp =
+      bytes[0] === 0x52 &&
+      bytes[1] === 0x49 &&
+      bytes[2] === 0x46 &&
+      bytes[3] === 0x46 &&
+      bytes[8] === 0x57 &&
+      bytes[9] === 0x45 &&
+      bytes[10] === 0x42 &&
+      bytes[11] === 0x50;
+
+    if (!isJpeg && !isPng && !isWebp) {
+      return 'foto no parece ser una imagen valida';
+    }
+  }
+
+  if (key === 'cv') {
+    const isPdf = bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46;
+    const isZipBasedDocx = ext === 'docx' && bytes[0] === 0x50 && bytes[1] === 0x4b;
+    const isLegacyDoc = ext === 'doc' && bytes[0] === 0xd0 && bytes[1] === 0xcf && bytes[2] === 0x11 && bytes[3] === 0xe0;
+
+    if (!isPdf && !isZipBasedDocx && !isLegacyDoc) {
+      return 'CV no parece ser un PDF, DOC o DOCX valido';
+    }
+  }
+
+  return null;
+}
+
 export async function POST(request) {
   try {
+    const limit = rateLimit(request, { keyPrefix: 'submit', limit: 8, windowMs: 10 * 60_000 });
+    if (!limit.ok) {
+      return NextResponse.json(
+        { success: false, error: 'Demasiados envios desde esta conexion. Intenta nuevamente mas tarde.' },
+        {
+          status: 429,
+          headers: { 'Retry-After': String(limit.retryAfter) },
+        }
+      );
+    }
+
     const missing = missingStorageEnv();
     if (missing.length > 0) {
       return NextResponse.json(
@@ -187,10 +331,15 @@ export async function POST(request) {
 
     const formData = await request.formData();
     const fields = {};
+    const tooLongFields = [];
 
     for (const [key, value] of formData.entries()) {
       if (typeof value === 'string') {
-        fields[key] = value;
+        const limit = FIELD_LIMITS[key];
+        if (limit && value.length > limit) {
+          tooLongFields.push(`${key} demasiado largo`);
+        }
+        fields[key] = normalizeFieldValue(key, value);
       }
     }
 
@@ -198,22 +347,28 @@ export async function POST(request) {
     const fotoFile = formData.get('foto');
 
     const invalidFields = validateRequiredFields(fields);
+    const invalidLengths = [
+      ...tooLongFields,
+      ...hasInvalidFieldLength(fields).map(([key]) => `${key} demasiado largo`),
+    ];
     const invalidCv = validateUpload(cvFile, 'cv');
     const invalidFoto = validateUpload(fotoFile, 'foto');
-    const uploadErrors = [invalidCv, invalidFoto].filter(Boolean);
+    const signatureCv = invalidCv ? null : await validateFileSignature(cvFile, 'cv');
+    const signatureFoto = invalidFoto ? null : await validateFileSignature(fotoFile, 'foto');
+    const uploadErrors = [invalidCv, invalidFoto, signatureCv, signatureFoto].filter(Boolean);
 
-    if (invalidFields.length > 0 || uploadErrors.length > 0) {
+    if (invalidFields.length > 0 || invalidLengths.length > 0 || uploadErrors.length > 0) {
       return NextResponse.json(
         {
           success: false,
-          error: `Datos incompletos o invalidos: ${[...invalidFields, ...uploadErrors].join(', ')}`,
+          error: `Datos incompletos o invalidos: ${[...invalidFields, ...invalidLengths, ...uploadErrors].join(', ')}`,
         },
         { status: 400 }
       );
     }
 
     const marca = fields.marca;
-    const institucion = marcaConfig[marca]?.nombre || marca;
+    const institucion = institutionName(marca);
     const code = generateUniqueCode(marca);
     const fecha = new Date().toLocaleDateString('es-PE', { timeZone: 'America/Lima' });
     const baseName = sanitizeNameForFile(fields.nombre, 'Docente');
@@ -224,30 +379,40 @@ export async function POST(request) {
       pdfUrl: '',
       folderUrl: '',
     };
+    const warnings = [];
 
-    const { folderId, folderUrl } = await createDocenteFolder(
-      fields.nombre,
-      fields.documento,
-      marca
-    );
-    links.folderUrl = folderUrl;
+    try {
+      const { folderId, folderUrl } = await createDocenteFolder(
+        fields.nombre,
+        fields.documento,
+        marca
+      );
+      links.folderUrl = folderUrl;
 
-    if (cvFile && cvFile.size > 0) {
-      const cvBuffer = Buffer.from(await cvFile.arrayBuffer());
-      const cvExt = fileExtension(cvFile.name, 'pdf');
-      const cvName = `CV_${baseName}.${cvExt}`;
-      const cvMime = cvFile.type || 'application/octet-stream';
-      const cvResult = await uploadFileToDrive(cvBuffer, cvName, cvMime, folderId);
-      links.cvUrl = cvResult.fileUrl;
-    }
+      if (cvFile && cvFile.size > 0) {
+        const cvBuffer = Buffer.from(await cvFile.arrayBuffer());
+        const cvExt = fileExtension(cvFile.name, 'pdf');
+        const cvName = `CV_${baseName}.${cvExt}`;
+        const cvMime = cvFile.type || 'application/octet-stream';
+        const cvResult = await uploadFileToDrive(cvBuffer, cvName, cvMime, folderId);
+        links.cvUrl = cvResult.fileUrl;
+      }
 
-    if (fotoFile && fotoFile.size > 0) {
-      const fotoBuffer = Buffer.from(await fotoFile.arrayBuffer());
-      const fotoExt = fileExtension(fotoFile.name, 'jpg');
-      const fotoName = `Foto_${baseName}.${fotoExt}`;
-      const fotoMime = fotoFile.type || 'application/octet-stream';
-      const fotoResult = await uploadFileToDrive(fotoBuffer, fotoName, fotoMime, folderId);
-      links.fotoUrl = fotoResult.fileUrl;
+      if (fotoFile && fotoFile.size > 0) {
+        const fotoBuffer = Buffer.from(await fotoFile.arrayBuffer());
+        const fotoExt = fileExtension(fotoFile.name, 'jpg');
+        const fotoName = `Foto_${baseName}.${fotoExt}`;
+        const fotoMime = fotoFile.type || 'application/octet-stream';
+        const fotoResult = await uploadFileToDrive(fotoBuffer, fotoName, fotoMime, folderId);
+        links.fotoUrl = fotoResult.fileUrl;
+      }
+    } catch (driveError) {
+      console.error('Error subiendo archivos a Drive:', driveError);
+      const warning = friendlyGoogleError(driveError);
+      warnings.push(warning);
+      links.cvUrl = `PENDIENTE: ${warning}`;
+      links.fotoUrl = `PENDIENTE: ${warning}`;
+      links.folderUrl = links.folderUrl || `PENDIENTE: ${warning}`;
     }
 
     await appendDocenteRow(
@@ -288,17 +453,11 @@ export async function POST(request) {
       pdfUrl: links.pdfUrl,
       cvUrl: links.cvUrl,
       fotoUrl: links.fotoUrl,
+      warning: warnings.join(' '),
     });
   } catch (error) {
     console.error('Error en /api/submit:', error);
-    const raw = String(error?.message || '');
-    let friendly = raw || 'Error al procesar el envio';
-
-    if (/GOOGLE_APPLICATION_CREDENTIALS/i.test(raw)) {
-      friendly = 'Error en GOOGLE_APPLICATION_CREDENTIALS. Verifica que la ruta del JSON exista.';
-    } else if (/DECODER routines|private key|PEM|unsupported|Google Auth/i.test(raw)) {
-      friendly = 'Error en GOOGLE_PRIVATE_KEY. Verifica formato PEM y saltos de linea (\\n).';
-    }
+    const friendly = friendlyGoogleError(error);
 
     return NextResponse.json(
       {

@@ -10,7 +10,7 @@ export default defineConfig([
     files: ['**/*.{js,jsx}'],
     extends: [
       js.configs.recommended,
-      nextPlugin.flatConfig.coreWebVitals,
+      nextPlugin.configs['core-web-vitals'],
     ],
     languageOptions: {
       globals: {
