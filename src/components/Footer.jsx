@@ -1,191 +1,202 @@
 'use client';
 
-const geominaWhite = '/assets/geomina-new.png';
-const biomedicWhite = '/assets/biomedic-white.png';
-const logobiomedic = '/assets/logobiomedic.png';
+const ciipLogo = '/assets/biomedic-white.png';
+const geominaLogo = '/assets/geomina-new.png';
+const biomedicLogo = '/assets/logobiomedic.png';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="site-footer" style={{
-      background: 'linear-gradient(180deg, rgba(6, 14, 26, 0) 0%, #060e1a 100%)',
-      color: '#94a3b8',
-      padding: '1.05rem 0 0.95rem',
-      position: 'relative',
-      zIndex: 10
-    }}>
-      <div className="container">
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '0.95rem'
-        }} className="footer-bar-content">
-          
-          {/* Left Side: Copyright */}
-          <p className="footer-copy" style={{ 
-            fontSize: '0.74rem', 
-            fontWeight: 500, 
-            margin: 0, 
-            color: '#cbd5e1',
-            fontFamily: 'var(--font-body)'
-          }}>
-            © {currentYear} CIIP LATAM · Ecosistema Digital de Capacitación. Todos los derechos reservados.
-          </p>
+    <footer className="site-footer">
+      <div className="footer-glow" aria-hidden="true" />
 
-          {/* Right Side: Partner logos */}
-          <div className="footer-partners">
-            <img 
-              src={biomedicWhite} 
-              alt="CIIP" 
-              className="footer-logo footer-logo-ciip"
-            />
-            <img 
-              src={geominaWhite} 
-              alt="Geomina" 
-              className="footer-logo footer-logo-geomina"
-            />
-            <img 
-              src={logobiomedic} 
-              alt="Biomedic" 
-              className="footer-logo footer-logo-biomedic"
-            />
+      <div className="container footer-container">
+        <div className="footer-panel">
+          <div className="footer-copy-block">
+            <span className="footer-kicker">Manual Docente 2026</span>
+            <p className="footer-copy">
+              © {currentYear} CIIP LATAM · Ecosistema Digital de Capacitación. Todos los derechos reservados.
+            </p>
           </div>
 
+          <div className="footer-partners" aria-label="Instituciones aliadas">
+            <img src={ciipLogo} alt="CIIP LATAM" className="footer-logo footer-logo-ciip" />
+            <span className="footer-logo-sep" aria-hidden="true" />
+            <img src={geominaLogo} alt="Geomina" className="footer-logo footer-logo-geomina" />
+            <span className="footer-logo-sep" aria-hidden="true" />
+            <img src={biomedicLogo} alt="Biomedic" className="footer-logo footer-logo-biomedic" />
+          </div>
         </div>
       </div>
 
       <style>{`
-        .footer-bar-content {
-          min-height: 36px;
+        .site-footer {
+          position: relative;
+          z-index: 10;
+          overflow: hidden;
+          color: #dbeafe;
+          background:
+            linear-gradient(180deg, rgba(7, 18, 31, 0) 0%, rgba(7, 18, 31, 0.34) 18%, rgba(7, 18, 31, 0.84) 52%, #06101d 100%),
+            linear-gradient(135deg, #07121f 0%, #0a213a 58%, #06101d 100%);
+          padding: 1.85rem 0 1.25rem;
+          border-top: 0;
+        }
+
+        .footer-glow {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background:
+            radial-gradient(90% 42px at 50% 0%, rgba(56, 189, 248, 0.12), rgba(56, 189, 248, 0) 74%),
+            linear-gradient(90deg, rgba(56, 189, 248, 0) 0%, rgba(56, 189, 248, 0.1) 50%, rgba(56, 189, 248, 0) 100%),
+            repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 84px);
+          opacity: 0.72;
+        }
+
+        .footer-container {
+          position: relative;
+          z-index: 1;
+          max-width: 1280px;
+        }
+
+        .footer-panel {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: clamp(1rem, 3vw, 2.6rem);
+          align-items: end;
+          min-height: 92px;
+        }
+
+        .footer-copy-block {
+          display: grid;
+          gap: 0.32rem;
+        }
+
+        .footer-kicker {
+          color: rgba(186, 230, 253, 0.9);
+          font-family: var(--font-body);
+          font-size: 0.68rem;
+          font-weight: 800;
+          letter-spacing: 1.6px;
+          text-transform: uppercase;
+        }
+
+        .footer-copy {
+          max-width: 58ch;
+          margin: 0;
+          color: rgba(226, 232, 240, 0.88);
+          font-family: var(--font-body);
+          font-size: 0.78rem;
+          font-weight: 560;
+          line-height: 1.55;
+        }
+
+        .footer-partners {
+          display: inline-flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: clamp(0.82rem, 1.5vw, 1.1rem);
+          padding: 0.78rem 0 0.78rem clamp(1rem, 2vw, 1.55rem);
+          border-left: 1px solid rgba(186, 230, 253, 0.18);
         }
 
         .footer-logo {
-          opacity: 0.7;
+          display: block;
+          width: auto;
           object-fit: contain;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          opacity: 0.82;
+          transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
         }
+
         .footer-logo:hover {
-          opacity: 0.95;
-          transform: scale(1.04);
+          opacity: 1;
+          transform: translateY(-1px);
         }
+
         .footer-logo-ciip {
-          height: 44px;
+          height: 42px;
+          filter: drop-shadow(0 8px 18px rgba(56, 189, 248, 0.12));
         }
+
         .footer-logo-geomina {
-          height: 29px;
+          height: 28px;
           margin-top: 2px;
+          filter: drop-shadow(0 8px 18px rgba(56, 189, 248, 0.1));
         }
+
         .footer-logo-biomedic {
-          height: 40px;
-          filter: invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.15) url(#remove-black-footer);
+          height: 38px;
+          filter: invert(1) hue-rotate(180deg) brightness(1.18) contrast(1.12) url(#remove-black-footer);
         }
+
         .footer-logo-sep {
-          width: 72%;
-          max-width: 146px;
-          height: 1px;
-          background: rgba(255, 255, 255, 0.15);
+          width: 1px;
+          height: 28px;
+          background: linear-gradient(180deg, transparent, rgba(186, 230, 253, 0.25), transparent);
         }
 
-        @media (min-width: 1024px) {
-          .footer-bar-content {
-            flex-wrap: nowrap !important;
-          }
-          .footer-copy {
-            max-width: 58ch;
-          }
-          .footer-partners {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: flex-end;
-            justify-content: center;
-            gap: 0.55rem;
-            min-width: 210px;
-          }
-        }
-
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
           .site-footer {
-            padding: 2rem 0 1.35rem !important;
-            background: linear-gradient(180deg, rgba(6, 14, 26, 0) 0%, #09192a 28%, #050b14 100%) !important;
+            padding: 1.45rem 0 1.25rem;
           }
-          .footer-separator {
-            margin-bottom: 1.1rem !important;
+
+          .footer-panel {
+            grid-template-columns: 1fr;
+            justify-items: center;
+            text-align: center;
+            min-height: auto;
+            gap: 1rem;
           }
-          .footer-bar-content {
-            flex-direction: column !important;
-            text-align: center !important;
-            justify-content: center !important;
-            gap: 0.95rem !important;
-          }
-          .footer-partners {
-            display: flex !important;
-            flex-direction: row !important;
-            align-items: center !important;
-            justify-content: center !important;
-            gap: 0.9rem !important;
-            width: 100%;
-            max-width: 22rem;
-            flex-wrap: nowrap;
-            margin: 0 auto;
-          }
+
           .footer-copy {
-            max-width: 17.5rem;
-            font-size: 0.76rem !important;
-            line-height: 1.45 !important;
-            color: #e2e8f0 !important;
+            max-width: 22rem;
           }
-          .footer-logo {
-            opacity: 0.92 !important;
-            flex: 0 1 auto;
-            object-fit: contain;
-          }
-          .footer-logo-ciip {
-            height: 32px !important;
-            max-width: 90px;
-          }
-          .footer-logo-geomina {
-            height: 20px !important;
-            max-width: 90px;
-            margin-top: 2px !important;
-          }
-          .footer-logo-biomedic {
-            height: 28px !important;
-            max-width: 82px;
-            filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.15) url(#remove-black-footer) !important;
-          }
-          .footer-logo-sep {
-            width: 1px !important;
-            max-width: none !important;
-            height: 16px !important;
-            background: rgba(255, 255, 255, 0.16) !important;
+
+          .footer-partners {
+            border-left: 0;
+            border-top: 1px solid rgba(186, 230, 253, 0.16);
+            padding: 1rem 0 0;
+            width: min(100%, 24rem);
+            justify-content: center;
           }
         }
 
-        @media (max-width: 380px) {
+        @media (max-width: 480px) {
+          .footer-kicker {
+            font-size: 0.62rem;
+          }
+
+          .footer-copy {
+            font-size: 0.74rem;
+          }
+
           .footer-partners {
-            gap: 0.7rem !important;
-            max-width: 20rem;
+            gap: 0.72rem;
           }
+
           .footer-logo-ciip {
-            height: 28px !important;
-            max-width: 80px;
+            height: 31px;
+            max-width: 88px;
           }
+
           .footer-logo-geomina {
-            height: 18px !important;
-            max-width: 80px;
-            margin-top: 1px !important;
+            height: 19px;
+            max-width: 82px;
           }
+
           .footer-logo-biomedic {
-            height: 25px !important;
-            max-width: 70px;
-            filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.15) url(#remove-black-footer) !important;
+            height: 27px;
+            max-width: 78px;
+          }
+
+          .footer-logo-sep {
+            height: 18px;
           }
         }
       `}</style>
-      <svg style={{ position:'absolute', width:0, height:0, pointerEvents:'none' }} width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg">
+
+      <svg style={{ position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }} width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <filter id="remove-black-footer">
             <feColorMatrix type="matrix" values="

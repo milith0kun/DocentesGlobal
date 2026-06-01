@@ -1,11 +1,29 @@
-'use client';
-
-const mascot = '/assets/ciip-latam.png';
+import { useRef } from 'react';
 
 export default function Hero({ onStartWizard }) {
+  const heroRef = useRef(null);
+
+  const handleMouseMove = (e) => {
+    if (!heroRef.current) return;
+    const rect = heroRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    heroRef.current.style.setProperty('--mouse-x', `${x}px`);
+    heroRef.current.style.setProperty('--mouse-y', `${y}px`);
+  };
+
   return (
-    <section className="hero-section home-hero clean-hero">
-      <div className="hero-clean-bg" aria-hidden="true" />
+    <section 
+      ref={heroRef}
+      onMouseMove={handleMouseMove}
+      className="hero-section home-hero clean-hero"
+    >
+      <div className="hero-clean-bg" aria-hidden="true">
+        <div className="hero-grid-pattern" />
+        <div className="hero-grid-interactive" />
+      </div>
+
+
 
       <div className="container hero-container">
         <div className="home-hero-grid">
@@ -28,10 +46,17 @@ export default function Hero({ onStartWizard }) {
             </button>
           </div>
 
+          {/* Video a la derecha sin marco ni animaciones de CSS */}
           <div className="hero-visual" aria-hidden="true">
-            <div className="hero-visual-frame">
-              <img src={mascot} alt="Mascota CIIP Latam" className="hero-mascot" />
-            </div>
+            <video 
+              src="/videos/hero-docente-alpha.webm" 
+              className="hero-mascot"
+              autoPlay 
+              loop 
+              muted 
+              playsInline 
+              preload="auto"
+            />
           </div>
         </div>
       </div>
@@ -52,8 +77,45 @@ export default function Hero({ onStartWizard }) {
           inset: 0;
           pointer-events: none;
           background:
-            radial-gradient(80% 60% at 18% 8%, rgba(56, 189, 248, 0.14) 0%, rgba(56, 189, 248, 0) 58%),
-            radial-gradient(54% 44% at 88% 82%, rgba(14, 165, 233, 0.1) 0%, rgba(14, 165, 233, 0) 72%);
+            radial-gradient(80% 60% at 18% 8%, rgba(56, 189, 248, 0.08) 0%, rgba(56, 189, 248, 0) 58%),
+            radial-gradient(54% 44% at 88% 82%, rgba(14, 165, 233, 0.06) 0%, rgba(14, 165, 233, 0) 72%);
+          overflow: hidden;
+        }
+
+        /* Technical Grid Pattern Overlay */
+        .hero-grid-pattern, .hero-grid-interactive {
+          position: absolute;
+          inset: 0;
+          background-size: 50px 50px;
+          z-index: 0;
+          animation: gridScroll 40s linear infinite;
+        }
+
+        .hero-grid-pattern {
+          background-image: 
+            linear-gradient(to right, rgba(14, 165, 233, 0.08) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(14, 165, 233, 0.08) 1px, transparent 1px);
+          mask-image: radial-gradient(ellipse at 50% 50%, black 50%, transparent 80%);
+          -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 50%, transparent 80%);
+        }
+
+        .hero-grid-interactive {
+          background-image: 
+            linear-gradient(to right, rgba(14, 165, 233, 0.45) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(14, 165, 233, 0.45) 1px, transparent 1px);
+          mask-image: radial-gradient(175px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), black, transparent);
+          -webkit-mask-image: radial-gradient(175px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), black, transparent);
+          opacity: 0;
+          transition: opacity 0.4s ease;
+        }
+
+        .clean-hero:hover .hero-grid-interactive {
+          opacity: 1;
+        }
+
+        @keyframes gridScroll {
+          from { background-position: 0 0; }
+          to { background-position: 0 50px; }
         }
 
         .clean-hero .hero-container {
@@ -182,27 +244,18 @@ export default function Hero({ onStartWizard }) {
           min-height: clamp(220px, 25vw, 310px);
         }
 
-        .clean-hero .hero-visual-frame {
-          width: clamp(190px, 24vw, 292px);
-          aspect-ratio: 1;
-          border-radius: 999px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: radial-gradient(circle at 50% 42%, rgba(14, 165, 233, 0.18) 0%, rgba(14, 165, 233, 0.06) 62%, rgba(14, 165, 233, 0) 100%);
-          box-shadow: inset 0 0 0 1px rgba(14, 116, 144, 0.08);
-          opacity: 0;
-          transform: translateY(10px) scale(0.985);
-          animation: heroFadeScale 640ms cubic-bezier(0.16, 1, 0.3, 1) 180ms forwards;
-        }
-
         .clean-hero .hero-mascot {
           width: 100%;
-          max-width: clamp(170px, 20vw, 250px);
+          max-width: clamp(320px, 48vw, 750px);
           height: auto;
           object-fit: contain;
-          filter: drop-shadow(0 14px 26px rgba(14, 116, 144, 0.18));
-          animation: heroBob 6s ease-in-out 900ms infinite;
+          transform: scale(1.35); /* Zoom to remove transparent padding */
+          transform-origin: center center;
+          filter: drop-shadow(0 24px 40px rgba(14, 116, 144, 0.12));
+          /* Hardware acceleration to prevent any sub-pixel jitter */
+          will-change: transform;
+          -webkit-transform: translateZ(0) scale(1.35);
+          transform: translateZ(0) scale(1.35);
         }
 
         @keyframes heroFadeUp {
@@ -216,34 +269,11 @@ export default function Hero({ onStartWizard }) {
           }
         }
 
-        @keyframes heroFadeScale {
-          from {
-            opacity: 0;
-            transform: translateY(10px) scale(0.985);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-
-        @keyframes heroBob {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-5px);
-          }
-        }
-
         @media (prefers-reduced-motion: reduce) {
           .clean-hero .hero-badge,
           .clean-hero .hero-title,
           .clean-hero .hero-subtitle,
-          .clean-hero .hero-cta,
-          .clean-hero .hero-visual-frame,
-          .clean-hero .hero-mascot {
+          .clean-hero .hero-cta {
             animation: none !important;
             opacity: 1 !important;
             transform: none !important;
@@ -318,14 +348,12 @@ export default function Hero({ onStartWizard }) {
 
           .clean-hero .hero-visual {
             min-height: 168px;
-          }
-
-          .clean-hero .hero-visual-frame {
-            width: 186px;
+            margin-top: 1rem;
           }
 
           .clean-hero .hero-mascot {
-            max-width: 154px;
+            max-width: 320px;
+            transform: scale(1.15); /* Slightly less zoom on mobile to prevent overflow */
           }
         }
       `}</style>
