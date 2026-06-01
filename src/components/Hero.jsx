@@ -2,42 +2,90 @@ import { useRef, useEffect } from 'react';
 
 export default function Hero({ onStartWizard }) {
   const heroRef = useRef(null);
-  const videoRef = useRef(null);
+  const primaryVideoRef = useRef(null);
+  const secondaryVideoRef = useRef(null);
 
-  // Seamless video loop fix to prevent browser stutter at the end of WebM files
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    const videos = [primaryVideoRef.current, secondaryVideoRef.current].filter(Boolean);
+    if (videos.length < 2) return;
 
-    let frameId;
-    const checkLoop = () => {
-      // Force restart slightly before the actual end to avoid the native decoding freeze
-      if (video.duration && video.currentTime >= video.duration - 0.12) {
-        video.currentTime = 0.05;
+    const crossfadeSeconds = 0.85;
+    const restartOffsetSeconds = 0.08;
+    let activeIndex = 0;
+    let isCrossfading = false;
+    let frameId = 0;
+    let transitionTimer = 0;
+
+    const setActiveVideo = (nextIndex) => {
+      videos.forEach((item, index) => {
+        item.classList.toggle('is-active', index === nextIndex);
+      });
+    };
+
+    const playVideo = async (video, startTime) => {
+      if (Number.isFinite(startTime)) {
+        video.currentTime = startTime;
       }
+
+      try {
+        await video.play();
+      } catch {
+        // Autoplay can be delayed by the browser until the media is ready.
+      }
+    };
+
+    const completeCrossfade = () => {
+      const previousIndex = activeIndex;
+      activeIndex = activeIndex === 0 ? 1 : 0;
+      videos[previousIndex].pause();
+      videos[previousIndex].currentTime = 0;
+      isCrossfading = false;
+    };
+
+    const startCrossfade = () => {
+      if (isCrossfading) return;
+      const activeVideo = videos[activeIndex];
+      if (!activeVideo.duration) return;
+
+      isCrossfading = true;
+      const nextIndex = activeIndex === 0 ? 1 : 0;
+      const nextVideo = videos[nextIndex];
+      setActiveVideo(nextIndex);
+      playVideo(nextVideo, restartOffsetSeconds);
+      transitionTimer = window.setTimeout(completeCrossfade, crossfadeSeconds * 1000);
+    };
+
+    const tick = () => {
+      const activeVideo = videos[activeIndex];
+      if (
+        !isCrossfading &&
+        activeVideo.duration &&
+        activeVideo.currentTime >= activeVideo.duration - crossfadeSeconds
+      ) {
+        startCrossfade();
+      }
+
       frameId = requestAnimationFrame(checkLoop);
     };
 
-    const onPlay = () => {
-      frameId = requestAnimationFrame(checkLoop);
-    };
-    
-    const onPause = () => {
-      cancelAnimationFrame(frameId);
+    const checkLoop = () => {
+      tick();
     };
 
-    video.addEventListener('play', onPlay);
-    video.addEventListener('pause', onPause);
-    
-    // Kickstart if already playing
-    if (!video.paused) {
-      onPlay();
-    }
+    const start = () => {
+      videos.forEach((item) => {
+        item.loop = false;
+      });
+      setActiveVideo(0);
+      playVideo(videos[0], restartOffsetSeconds);
+      frameId = requestAnimationFrame(checkLoop);
+    };
+
+    start();
 
     return () => {
-      video.removeEventListener('play', onPlay);
-      video.removeEventListener('pause', onPause);
       cancelAnimationFrame(frameId);
+      window.clearTimeout(transitionTimer);
     };
   }, []);
 
@@ -87,11 +135,19 @@ export default function Hero({ onStartWizard }) {
           {/* Video a la derecha sin marco ni animaciones de CSS */}
           <div className="hero-visual" aria-hidden="true">
             <video 
-              ref={videoRef}
+              ref={primaryVideoRef}
+              src="/videos/hero-docente-alpha.webm" 
+              className="hero-mascot is-active"
+              autoPlay 
+              muted 
+              playsInline 
+              preload="auto"
+              disableRemotePlayback
+            />
+            <video 
+              ref={secondaryVideoRef}
               src="/videos/hero-docente-alpha.webm" 
               className="hero-mascot"
-              autoPlay 
-              loop 
               muted 
               playsInline 
               preload="auto"
@@ -278,6 +334,7 @@ export default function Hero({ onStartWizard }) {
         }
 
         .clean-hero .hero-visual {
+          position: relative;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -289,13 +346,27 @@ export default function Hero({ onStartWizard }) {
           max-width: clamp(320px, 48vw, 750px);
           height: auto;
           object-fit: contain;
+          opacity: 0;
           transform: scale(1.35); /* Zoom to remove transparent padding */
           transform-origin: center center;
           filter: drop-shadow(0 24px 40px rgba(14, 116, 144, 0.12));
           /* Hardware acceleration to prevent any sub-pixel jitter */
-          will-change: transform;
+          will-change: opacity, transform;
           -webkit-transform: translateZ(0) scale(1.35);
           transform: translateZ(0) scale(1.35);
+          transition: opacity 850ms linear;
+        }
+
+        .clean-hero .hero-mascot + .hero-mascot {
+          position: absolute;
+          inset: 50% auto auto 50%;
+          width: 100%;
+          transform: translate3d(-50%, -50%, 0) scale(1.35);
+          -webkit-transform: translate3d(-50%, -50%, 0) scale(1.35);
+        }
+
+        .clean-hero .hero-mascot.is-active {
+          opacity: 1;
         }
 
         @keyframes heroFadeUp {
@@ -394,6 +465,11 @@ export default function Hero({ onStartWizard }) {
           .clean-hero .hero-mascot {
             max-width: 320px;
             transform: scale(1.15); /* Slightly less zoom on mobile to prevent overflow */
+          }
+
+          .clean-hero .hero-mascot + .hero-mascot {
+            transform: translate3d(-50%, -50%, 0) scale(1.15);
+            -webkit-transform: translate3d(-50%, -50%, 0) scale(1.15);
           }
         }
       `}</style>

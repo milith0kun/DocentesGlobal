@@ -27,6 +27,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const [activeProtocol, setActiveProtocol] = useState(0);
   const [generatedCode, setGeneratedCode] = useState('');
   const [submissionWarning, setSubmissionWarning] = useState('');
+  const [whatsappUrl, setWhatsappUrl] = useState('');
   const [loadingDni, setLoadingDni] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activePrinciple, setActivePrinciple] = useState(null);
@@ -83,7 +84,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     aceptaProtocolo: false, aceptaAsistencia: false, aceptaTop: false,
     telefono: '', metodoPago: '', metodoPagoOtro: '', numeroCuenta: '', direccion: '',
     cvFile: null, fotoFile: null,
-    softwares: '', cursoSonado: '', mejoraAdmin: '', comentarios: '',
+    profesion: '', softwares: '', cursoSonado: '', mejoraAdmin: '', comentarios: '',
   });
   const correoValido = isValidEmail(formData.correo);
   const mostrarErrorCorreo = formData.correo.trim().length > 0 && !correoValido;
@@ -169,7 +170,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     if (step === 9 && formData.metodoPago === 'otro' && !formData.metodoPagoOtro.trim()) return;
     if (step === 10 && (!formData.cvFile || !formData.fotoFile)) return;
     if (step === 10) { setShowDriveAlert(true); return; } // Muestra Modal de Drive
-    if (step === 11 && (!formData.softwares.trim() || !formData.cursoSonado.trim() || !formData.mejoraAdmin.trim())) return;
+    if (step === 11 && (!formData.profesion.trim() || !formData.softwares.trim() || !formData.cursoSonado.trim() || !formData.mejoraAdmin.trim())) return;
     if (step === 11) { handleFinish(); return; }
     if (step < totalSteps) setStep(s => s + 1);
   };
@@ -242,7 +243,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           resData.warning ? `*Aviso:* ${resData.warning}` : '',
         ].join('\n');
         
-        window.open(`https://wa.me/${cfg.telefono}?text=${encodeURIComponent(msg)}`, '_blank');
+        setWhatsappUrl(`https://wa.me/${cfg.telefono}?text=${encodeURIComponent(msg)}`);
         setIsFinished(true);
       } else {
         alert('Error al enviar los datos: ' + resData.error);
@@ -255,10 +256,10 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     }
   };
   const handleReset = () => {
-    setFormData({ nombre:'',correo:'',marca:'',documento:'',fechaNacimiento:'',aceptaMetodologia:false,aceptaSabado:false,aceptaDomingo:false,aceptaLunes:false,aceptaProtocolo:false,aceptaAsistencia:false,aceptaTop:false,telefono:'',metodoPago:'',metodoPagoOtro:'',numeroCuenta:'',direccion:'',cvFile:null,fotoFile:null,softwares:'',cursoSonado:'',mejoraAdmin:'',comentarios:'' });
+    setFormData({ nombre:'',correo:'',marca:'',documento:'',fechaNacimiento:'',aceptaMetodologia:false,aceptaSabado:false,aceptaDomingo:false,aceptaLunes:false,aceptaProtocolo:false,aceptaAsistencia:false,aceptaTop:false,telefono:'',metodoPago:'',metodoPagoOtro:'',numeroCuenta:'',direccion:'',cvFile:null,fotoFile:null,profesion:'',softwares:'',cursoSonado:'',mejoraAdmin:'',comentarios:'' });
     setActivePrinciple(null);
     setViewedPrinciples([false, false, false]);
-    setStep(1); setIsFinished(false); setGeneratedCode(''); setSubmissionWarning(''); onClose();
+    setStep(1); setIsFinished(false); setGeneratedCode(''); setSubmissionWarning(''); setWhatsappUrl(''); onClose();
   };
   const brandColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
   const brandGlow = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14,165,233,0.12)';
@@ -334,18 +335,41 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           {/* ═══ ÉXITO ═══ */}
           {isFinished && (
             <div className="wz-fade">
-              <div style={{ textAlign:'center' }}>
-                <div className="wz-success-icon">✓</div>
-                <h1 className="wz-title" style={{ textAlign:'center', fontSize:'1.8rem', marginBottom:'0.35rem' }}>¡Conformidad Registrada!</h1>
-                <p className="wz-sub" style={{ textAlign:'center', marginBottom:'1.35rem' }}>Registro guardado en el sistema. Se preparó el mensaje de confirmación para coordinación.</p>
-                <div className="wz-success-panel">
-                  <div className="wz-sum-row"><span>Código</span><strong style={{ color:'#22c55e' }}>{generatedCode}</strong></div>
-                  <div className="wz-sum-row"><span>Docente</span><strong>{formData.nombre}</strong></div>
-                  <div className="wz-sum-row"><span>Ecosistema</span><strong style={{ color: brandColor }}>{marcaConfig[formData.marca]?.nombre}</strong></div>
-                  <div className="wz-sum-row" style={{ borderBottom:'none' }}><span>Estado</span><strong style={{ color: submissionWarning ? '#b45309' : '#22c55e' }}>{submissionWarning ? 'Registrado con aviso' : 'Excel y Drive sincronizados'}</strong></div>
+              <div className="wz-success-layout">
+                <div className="wz-success-media" aria-hidden="true">
+                  <video
+                    src="/videos/hero-docente-alpha.webm"
+                    className="wz-success-video"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    disableRemotePlayback
+                  />
                 </div>
-                {submissionWarning && <p className="wz-success-note">{submissionWarning}</p>}
-                <button onClick={handleReset} className="wz-btn-main" style={{ width:'100%', marginTop:'1.25rem' }}>Volver al Inicio</button>
+                <div className="wz-success-copy">
+                  <h1 className="wz-title" style={{ textAlign:'center', fontSize:'2rem', marginBottom:'0.5rem' }}>¡Conformidad Registrada!</h1>
+                  <p className="wz-sub" style={{ textAlign:'center', marginBottom:'1.2rem', fontSize:'0.95rem' }}>Tu conformidad ha sido registrada exitosamente. Para finalizar tu proceso, por favor envía el mensaje de confirmación a tu coordinador académico a través de WhatsApp.</p>
+                  <div className="wz-success-panel">
+                    <div className="wz-sum-row"><span>Código de Registro</span><strong style={{ color:'#059669', fontSize:'1.1rem' }}>{generatedCode}</strong></div>
+                    <div className="wz-sum-row"><span>Docente</span><strong>{formData.nombre}</strong></div>
+                    <div className="wz-sum-row" style={{ borderBottom:'none' }}><span>Institución</span><strong style={{ color: brandColor }}>{marcaConfig[formData.marca]?.nombre}</strong></div>
+                  </div>
+                  {submissionWarning && <p className="wz-success-note">{submissionWarning}</p>}
+                  <div className="wz-success-actions">
+                    <button
+                      type="button"
+                      onClick={() => whatsappUrl && window.open(whatsappUrl, '_blank', 'noopener,noreferrer')}
+                      className="wz-btn-main wz-btn-whatsapp"
+                      disabled={!whatsappUrl}
+                      style={{ fontSize: '1rem', padding: '0.85rem' }}
+                    >
+                      Enviar confirmación por WhatsApp
+                    </button>
+                    <button onClick={handleReset} className="wz-btn-ghost">Volver al Inicio</button>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -1113,6 +1137,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                   <p className="wz-sub">Queremos conocerte mejor. Tu opinión nos ayuda a crecer juntos.</p>
                   
                   <div className="wz-field" style={{ marginBottom:'1.25rem' }}>
+                    <span className="wz-label">Profesión o especialidad principal</span>
+                    <input type="text" placeholder="Ej. Ingeniero Civil, Administrador, Médico, etc." value={formData.profesion}
+                      onChange={e => setFormData({...formData, profesion:e.target.value})} className="wz-input" />
+                  </div>
+                  <div className="wz-field" style={{ marginBottom:'1.25rem' }}>
                     <span className="wz-label">Softwares especializados que domina</span>
                     <textarea placeholder="Ej. AutoCAD, SAP2000, ETABS, Civil 3D, ArcGIS..." value={formData.softwares}
                       onChange={e => setFormData({...formData, softwares:e.target.value})} className="wz-textarea" rows={3} />
@@ -1135,7 +1164,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
                   <div className="wz-nav">
                     <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
-                    <button onClick={handleNext} disabled={isSubmitting || !formData.softwares.trim()||!formData.cursoSonado.trim()||!formData.mejoraAdmin.trim()} className="wz-btn-main">
+                    <button onClick={handleNext} disabled={isSubmitting || !formData.profesion.trim() || !formData.softwares.trim() || !formData.cursoSonado.trim() || !formData.mejoraAdmin.trim()} className="wz-btn-main">
                       {isSubmitting ? 'Guardando registro...' : 'Finalizar registro'}
                     </button>
                   </div>
@@ -1157,7 +1186,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     <div className="wz-sum-row"><span>Institución</span><strong style={{ color:brandColor }}>{marcaConfig[formData.marca]?.nombre}</strong></div>
                     <div className="wz-sum-row"><span>Teléfono</span><strong>{formData.telefono}</strong></div>
                     <div className="wz-sum-row"><span>Método de Pago</span><strong>{formData.metodoPago === 'otro' ? formData.metodoPagoOtro : formData.metodoPago?.toUpperCase()}</strong></div>
-                    <div className="wz-sum-row" style={{ borderBottom:'none' }}><span>Compromisos</span><strong style={{ color:'#22c55e' }}>Todos Aceptados</strong></div>
+                    <div className="wz-sum-row" style={{ borderBottom:'none' }}><span>Compromisos</span><strong style={{ color:'#059669' }}>Todos Aceptados</strong></div>
                   </div>
                   <div className="wz-nav">
                     <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
@@ -1922,6 +1951,44 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           background:linear-gradient(180deg, rgba(34,197,94,0.055), rgba(255,255,255,0.92));
           box-shadow:0 12px 28px -22px rgba(15,23,42,0.28);
         }
+        .wz-success-layout {
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          gap:1.5rem;
+        }
+        .wz-success-media {
+          width: 100%;
+          max-width: 320px;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          overflow:hidden;
+          margin: 0 auto;
+        }
+        .wz-success-video {
+          width:100%;
+          height:auto;
+          object-fit:contain;
+          transform:scale(1.08);
+          filter:drop-shadow(0 22px 34px rgba(14,116,144,0.12));
+        }
+        .wz-success-copy {
+          width: 100%;
+        }
+        .wz-success-actions {
+          display:grid;
+          grid-template-columns:1fr;
+          gap:0.65rem;
+          margin-top:1.15rem;
+        }
+        .wz-btn-whatsapp {
+          width:100%;
+          background:#16a34a;
+        }
+        .wz-btn-whatsapp:hover:not(:disabled) {
+          background:#15803d;
+        }
         .wz-success-note {
           margin:0.75rem 0 0;
           padding:0.75rem 0.9rem;
@@ -1944,13 +2011,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-footer {
           text-align:center; font-size:0.65rem; font-weight:700; color:#b0b8c4;
           margin-top:1.25rem; letter-spacing:0.5px; text-transform:uppercase;
-        }
-
-        .wz-success-icon {
-          width:56px; height:56px; border-radius:50%; margin:0 auto 1rem;
-          background:rgba(34,197,94,0.08); color:#22c55e;
-          display:flex; align-items:center; justify-content:center;
-          font-size:1.5rem; font-weight:900; border:2px solid rgba(34,197,94,0.2);
         }
 
         /* ── BUTTONS ── */
@@ -2151,6 +2211,22 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
         /* ── RESPONSIVE ── */
         @media (max-width:860px) {
+          .wz-success-layout {
+            gap:0.8rem;
+          }
+          .wz-success-media {
+            min-height:170px;
+            order:-1;
+            margin: 0 auto;
+          }
+          .wz-success-video {
+            width:min(100%, 300px);
+            transform:scale(1.02);
+          }
+          .wz-success-copy .wz-title,
+          .wz-success-copy .wz-sub {
+            text-align:center !important;
+          }
           .wz-main { padding:1.5rem 2rem; }
           .wz-protocol-split { display:block; margin-bottom:0; }
           .wz-protocol-image-container { display:none; }
@@ -2253,6 +2329,10 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             max-width: 350px !important; /* Much narrower on mobile */
             margin: auto !important; /* Vertically and horizontally center */
           }
+          .wz-content:has(.wz-success-layout) {
+            width: min(94%, 390px) !important;
+            max-width: 390px !important;
+          }
           
           .wz-title { font-size:1.5rem !important; margin-bottom:0.5rem; }
           .wz-sub { font-size:0.85rem !important; margin-bottom:1.25rem !important; }
@@ -2320,6 +2400,144 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-h-center { gap:0.5rem; }
         }
 
+        /* ── OPTIMIZACIONES DE ALTURA (EVITAR SCROLL EN LAPTOPS Y VIEWPORTS BAJOS) ── */
+        @media (max-height: 800px) {
+          .wz-header {
+            height: 64px !important;
+          }
+          .wz-logo {
+            height: 32px !important;
+          }
+          .wz-logo.lg-ciip {
+            height: 44px !important;
+          }
+          .wz-logo.lg-geo {
+            height: 26px !important;
+          }
+          .wz-stepper-premium {
+            padding: 0.5rem 1.5rem !important;
+            gap: 0.25rem !important;
+          }
+          .wz-stepper-step-name {
+            font-size: 0.78rem !important;
+          }
+          .wz-main {
+            padding: 0.75rem 1.5rem !important;
+          }
+          .wz-title {
+            font-size: 1.4rem !important;
+            margin-bottom: 0.2rem !important;
+          }
+          .wz-sub {
+            font-size: 0.82rem !important;
+            margin-bottom: 0.85rem !important;
+          }
+          .wz-field {
+            margin-bottom: 0.65rem !important;
+          }
+          .wz-field .wz-label {
+            font-size: 0.76rem !important;
+            margin-bottom: 0.2rem !important;
+          }
+          .wz-input {
+            padding: 0.55rem 0.8rem !important;
+            font-size: 0.82rem !important;
+          }
+          .wz-textarea {
+            padding: 0.55rem 0.8rem !important;
+            font-size: 0.82rem !important;
+            min-height: 48px !important;
+            height: 48px !important;
+          }
+          .wz-principles-list {
+            gap: 0.5rem !important;
+          }
+          .wz-principle {
+            padding: 0.6rem 0.85rem !important;
+          }
+          .wz-principle-num {
+            font-size: 1.4rem !important;
+          }
+          .wz-principle-text h4 {
+            font-size: 0.88rem !important;
+          }
+          .wz-success-layout {
+            gap: 0.85rem !important;
+          }
+          .wz-success-media {
+            min-height: 180px !important;
+          }
+          .wz-success-video {
+            width: min(100%, 260px) !important;
+          }
+          .wz-success-copy h1.wz-title {
+            font-size: 1.5rem !important;
+          }
+          .wz-success-panel {
+            padding: 0.55rem 0.85rem !important;
+          }
+          .wz-sum-row {
+            padding: 0.35rem 0 !important;
+            font-size: 0.8rem !important;
+          }
+          .wz-success-actions {
+            margin-top: 0.85rem !important;
+            gap: 0.5rem !important;
+          }
+          .wz-btn-main, .wz-btn-ghost, .wz-btn-wa {
+            padding: 0.6rem 1.4rem !important;
+            font-size: 0.82rem !important;
+          }
+        }
+
+        @media (max-height: 680px) {
+          .wz-header {
+            height: 52px !important;
+          }
+          .wz-logo {
+            height: 26px !important;
+          }
+          .wz-logo.lg-ciip {
+            height: 36px !important;
+          }
+          .wz-logo.lg-geo {
+            height: 22px !important;
+          }
+          .wz-stepper-premium {
+            padding: 0.35rem 1rem !important;
+          }
+          .wz-main {
+            padding: 0.4rem 1rem !important;
+          }
+          .wz-title {
+            font-size: 1.25rem !important;
+          }
+          .wz-sub {
+            font-size: 0.78rem !important;
+            margin-bottom: 0.5rem !important;
+          }
+          .wz-field {
+            margin-bottom: 0.5rem !important;
+          }
+          .wz-textarea {
+            min-height: 40px !important;
+            height: 40px !important;
+            padding: 0.45rem 0.75rem !important;
+          }
+          .wz-success-layout {
+            grid-template-columns: 1fr !important;
+            text-align: center !important;
+          }
+          .wz-success-media {
+            display: none !important;
+          }
+          .wz-success-copy h1.wz-title {
+            text-align: center !important;
+          }
+          .wz-success-copy p.wz-sub {
+            text-align: center !important;
+          }
+        }
 
       `}</style>
 

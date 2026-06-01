@@ -125,7 +125,7 @@ export default function Horarios() {
               </div>
             </div>
             <p className="drive-status" style={{ fontSize: '0.82rem', color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: '0.6rem', margin: 0, fontWeight: '500' }}>
-              <span className="pulse-dot-premium" style={{ width: '8px', height: '8px', background: '#22c55e', borderRadius: '50%', boxShadow: '0 0 8px #22c55e' }} />
+              <span className="pulse-dot-premium" style={{ width: '8px', height: '8px', background: '#10b981', borderRadius: '50%', boxShadow: '0 0 8px #10b981' }} />
               Recibirás un aviso cuando las carpetas de tu módulo sean habilitadas.
             </p>
           </div>
@@ -208,9 +208,9 @@ export default function Horarios() {
         }
 
         @keyframes pulseGreen {
-          0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
-          70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
-          100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+          0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+          70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+          100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
 
         @media (max-width: 992px) {

@@ -49,6 +49,20 @@ function safeRowValues(values) {
 function rowValues(data, links) {
   const metodo = paymentMethod(data);
   const timestamp = new Date().toLocaleString('es-PE', { timeZone: 'America/Lima' });
+  const marcaLabel = String(data.marca || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((item) => {
+      const labels = {
+        ciip: 'CIIP LATAM',
+        geomina: 'GEOMINA',
+        biomedic: 'BIOMEDIC',
+        ambos: 'CIIP LATAM / GEOMINA',
+      };
+      return labels[item] || item.toUpperCase();
+    })
+    .join(' / ');
 
   return safeRowValues({
     adminObservaciones: '',
@@ -69,10 +83,16 @@ function rowValues(data, links) {
     softwares: data.softwares || '',
     documento: data.documento || '',
     direccion: data.direccion || '',
-    domicilio: data.domicilio || '',
-    resumenDocente: data.resumenDocente || '',
+    domicilio: data.domicilio || data.direccion || '',
+    resumenDocente: data.resumenDocente || [
+      data.nombre,
+      data.institucion,
+      data.profesion,
+      data.softwares ? `Softwares: ${data.softwares}` : '',
+      data.cursoSonado ? `Curso de interes: ${data.cursoSonado}` : '',
+    ].filter(Boolean).join(' | '),
     honorarios: data.honorarios || '',
-    columna1: '',
+    columna1: marcaLabel ? `NUEVO DOCENTE ${marcaLabel}` : '',
     code: data.code || '',
     aceptaMetodologia: booleanText(data.aceptaMetodologia),
     aceptaProtocolo: booleanText(data.aceptaProtocolo),
@@ -298,7 +318,7 @@ function isLikelyResponseRow(row = []) {
   return (/^\S+@\S+\.\S{2,}$/.test(correo) && Boolean(nombre)) || (Boolean(nombre) && hasFiles);
 }
 
-function findNextResponseRow(rows, headerIndex) {
+function findNextResponseTarget(rows, headerIndex) {
   let lastDataRow = headerIndex + 1;
 
   for (let index = headerIndex + 1; index < rows.length; index += 1) {
@@ -307,7 +327,42 @@ function findNextResponseRow(rows, headerIndex) {
     }
   }
 
-  return lastDataRow + 1;
+  return {
+    targetRow: lastDataRow + 1,
+    formatSourceRow: lastDataRow,
+  };
+}
+
+async function copyRowFormat(sheets, sourceRow, targetRow, columnCount) {
+  if (!SHEET_GID || sourceRow < 1 || targetRow < 1 || sourceRow === targetRow) return;
+
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId: SPREADSHEET_ID,
+    requestBody: {
+      requests: [
+        {
+          copyPaste: {
+            source: {
+              sheetId: Number(SHEET_GID),
+              startRowIndex: sourceRow - 1,
+              endRowIndex: sourceRow,
+              startColumnIndex: 0,
+              endColumnIndex: columnCount,
+            },
+            destination: {
+              sheetId: Number(SHEET_GID),
+              startRowIndex: targetRow - 1,
+              endRowIndex: targetRow,
+              startColumnIndex: 0,
+              endColumnIndex: columnCount,
+            },
+            pasteType: 'PASTE_FORMAT',
+            pasteOrientation: 'NORMAL',
+          },
+        },
+      ],
+    },
+  });
 }
 
 export async function appendDocenteRow(data, links = {}) {
@@ -320,7 +375,7 @@ export async function appendDocenteRow(data, links = {}) {
     const rows = await getSheetValues(sheets, sheetName);
     const headerIndex = findHeaderIndex(rows);
     const headers = rows[headerIndex] || [];
-    const targetRow = findNextResponseRow(rows, headerIndex);
+    const { targetRow, formatSourceRow } = findNextResponseTarget(rows, headerIndex);
     const existingRow = await getRowValues(sheets, sheetName, targetRow);
 
     if (!isEmptyRow(existingRow)) {
@@ -333,6 +388,8 @@ export async function appendDocenteRow(data, links = {}) {
     const row = headers.length > 0
       ? headers.map((header) => resolveValueForHeader(header, values))
       : buildLegacyRow(values);
+
+    await copyRowFormat(sheets, formatSourceRow, targetRow, Math.max(headers.length, row.length));
 
     const response = await sheets.spreadsheets.values.update({
       spreadsheetId: SPREADSHEET_ID,

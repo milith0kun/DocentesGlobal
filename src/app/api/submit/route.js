@@ -39,6 +39,7 @@ const REQUIRED_FORM_FIELDS = [
   'metodoPago',
   'numeroCuenta',
   'direccion',
+  'profesion',
   'softwares',
   'cursoSonado',
   'mejoraAdmin',
@@ -58,13 +59,14 @@ const FIELD_LIMITS = {
   nombre: 140,
   correo: 180,
   marca: 40,
-  documento: 8,
+  documento: 20,
   fechaNacimiento: 10,
   telefono: 32,
   metodoPago: 80,
   metodoPagoOtro: 80,
   numeroCuenta: 140,
   direccion: 220,
+  profesion: 140,
   softwares: 1200,
   cursoSonado: 1200,
   mejoraAdmin: 1200,
@@ -179,7 +181,7 @@ function validateRequiredFields(fields) {
     missing.push('metodoPagoOtro');
   }
 
-  if (!/^\d{8}$/.test(String(fields.documento || ''))) {
+  if (!/^[a-zA-Z0-9-]{6,20}$/.test(String(fields.documento || ''))) {
     missing.push('documento valido');
   }
 
@@ -479,6 +481,7 @@ export async function POST(request) {
         metodoPagoOtro: fields.metodoPagoOtro,
         numeroCuenta: fields.numeroCuenta,
         direccion: fields.direccion,
+        profesion: fields.profesion,
         softwares: fields.softwares,
         cursoSonado: fields.cursoSonado,
         mejoraAdmin: fields.mejoraAdmin,
