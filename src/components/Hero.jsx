@@ -1,7 +1,45 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 
 export default function Hero({ onStartWizard }) {
   const heroRef = useRef(null);
+  const videoRef = useRef(null);
+
+  // Seamless video loop fix to prevent browser stutter at the end of WebM files
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    let frameId;
+    const checkLoop = () => {
+      // Force restart slightly before the actual end to avoid the native decoding freeze
+      if (video.duration && video.currentTime >= video.duration - 0.12) {
+        video.currentTime = 0.05;
+      }
+      frameId = requestAnimationFrame(checkLoop);
+    };
+
+    const onPlay = () => {
+      frameId = requestAnimationFrame(checkLoop);
+    };
+    
+    const onPause = () => {
+      cancelAnimationFrame(frameId);
+    };
+
+    video.addEventListener('play', onPlay);
+    video.addEventListener('pause', onPause);
+    
+    // Kickstart if already playing
+    if (!video.paused) {
+      onPlay();
+    }
+
+    return () => {
+      video.removeEventListener('play', onPlay);
+      video.removeEventListener('pause', onPause);
+      cancelAnimationFrame(frameId);
+    };
+  }, []);
 
   const handleMouseMove = (e) => {
     if (!heroRef.current) return;
@@ -49,6 +87,7 @@ export default function Hero({ onStartWizard }) {
           {/* Video a la derecha sin marco ni animaciones de CSS */}
           <div className="hero-visual" aria-hidden="true">
             <video 
+              ref={videoRef}
               src="/videos/hero-docente-alpha.webm" 
               className="hero-mascot"
               autoPlay 
@@ -56,6 +95,7 @@ export default function Hero({ onStartWizard }) {
               muted 
               playsInline 
               preload="auto"
+              disableRemotePlayback
             />
           </div>
         </div>
