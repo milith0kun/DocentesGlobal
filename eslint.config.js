@@ -8,10 +8,6 @@ export default defineConfig([
   globalIgnores(['dist', '.next', 'node_modules']),
   {
     files: ['**/*.{js,jsx}'],
-    extends: [
-      js.configs.recommended,
-      nextPlugin.configs['core-web-vitals'],
-    ],
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -20,9 +16,13 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
     plugins: {
+      '@next/next': nextPlugin,
       react: reactPlugin,
     },
     rules: {
+      ...js.configs.recommended.rules,
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs['core-web-vitals'].rules,
       'react/jsx-uses-vars': 'error',
       '@next/next/no-img-element': 'off',
       '@next/next/no-page-custom-font': 'off',

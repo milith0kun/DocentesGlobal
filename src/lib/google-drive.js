@@ -2,6 +2,8 @@ import { Readable } from 'stream';
 import { getDriveClient } from './google-auth.js';
 
 const ROOT_FOLDER_ID = process.env.GOOGLE_DRIVE_ROOT_FOLDER_ID;
+const CV_FOLDER_ID = process.env.GOOGLE_DRIVE_CV_FOLDER_ID;
+const FOTO_FOLDER_ID = process.env.GOOGLE_DRIVE_FOTO_FOLDER_ID;
 const SHOULD_PUBLIC_UPLOADS = process.env.GOOGLE_DRIVE_PUBLIC_UPLOADS === 'true';
 
 function escapeDriveQueryValue(value = '') {
@@ -9,9 +11,18 @@ function escapeDriveQueryValue(value = '') {
 }
 
 function assertDriveConfig() {
-  if (!ROOT_FOLDER_ID) {
-    throw new Error('Falta GOOGLE_DRIVE_ROOT_FOLDER_ID en variables de entorno');
+  if (!ROOT_FOLDER_ID && (!CV_FOLDER_ID || !FOTO_FOLDER_ID)) {
+    throw new Error('Falta GOOGLE_DRIVE_ROOT_FOLDER_ID o GOOGLE_DRIVE_CV_FOLDER_ID/GOOGLE_DRIVE_FOTO_FOLDER_ID en variables de entorno');
   }
+}
+
+export function getFormResponseFolders() {
+  if (!CV_FOLDER_ID || !FOTO_FOLDER_ID) return null;
+
+  return {
+    cvFolderId: CV_FOLDER_ID,
+    fotoFolderId: FOTO_FOLDER_ID,
+  };
 }
 
 export async function getOrCreateFolder(name, parentId) {

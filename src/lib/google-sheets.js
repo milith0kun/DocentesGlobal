@@ -5,6 +5,7 @@ const SHEET_NAME = process.env.GOOGLE_SHEET_NAME || 'Docentes';
 const SHEET_GID = process.env.GOOGLE_SHEET_GID;
 
 const LEGACY_COLUMN_COUNT = 32;
+const MAX_WRITE_RETRIES = 3;
 
 function assertSheetsConfig() {
   if (!SPREADSHEET_ID) {
@@ -262,6 +263,15 @@ async function getSheetValues(sheets, sheetName) {
   return response.data.values || [];
 }
 
+async function getRowValues(sheets, sheetName, rowNumber) {
+  const response = await sheets.spreadsheets.values.get({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${quoteSheetName(sheetName)}!A${rowNumber}:ZZ${rowNumber}`,
+  });
+
+  return response.data.values?.[0] || [];
+}
+
 function isLikelyHeaderRow(row = []) {
   const normalized = row.map((cell) => normalizeHeader(cell));
   return (
@@ -280,14 +290,24 @@ function isEmptyRow(row = []) {
   return row.every((cell) => !String(cell || '').trim());
 }
 
+function isLikelyResponseRow(row = []) {
+  const correo = String(row[2] || '').trim();
+  const nombre = String(row[3] || '').trim();
+  const hasFiles = Boolean(String(row[10] || '').trim() || String(row[11] || '').trim());
+
+  return (/^\S+@\S+\.\S{2,}$/.test(correo) && Boolean(nombre)) || (Boolean(nombre) && hasFiles);
+}
+
 function findNextResponseRow(rows, headerIndex) {
+  let lastDataRow = headerIndex + 1;
+
   for (let index = headerIndex + 1; index < rows.length; index += 1) {
-    if (isEmptyRow(rows[index])) {
-      return index + 1;
+    if (isLikelyResponseRow(rows[index])) {
+      lastDataRow = index + 1;
     }
   }
 
-  return rows.length + 1;
+  return lastDataRow + 1;
 }
 
 export async function appendDocenteRow(data, links = {}) {
@@ -295,23 +315,38 @@ export async function appendDocenteRow(data, links = {}) {
   const sheets = getSheetsClient();
   const sheetName = await resolveSheetName(sheets);
   const values = rowValues(data, links);
-  const rows = await getSheetValues(sheets, sheetName);
-  const headerIndex = findHeaderIndex(rows);
-  const headers = rows[headerIndex] || [];
-  const targetRow = findNextResponseRow(rows, headerIndex);
-  const row = headers.length > 0
-    ? headers.map((header) => resolveValueForHeader(header, values))
-    : buildLegacyRow(values);
 
-  const response = await sheets.spreadsheets.values.update({
-    spreadsheetId: SPREADSHEET_ID,
-    range: `${quoteSheetName(sheetName)}!A${targetRow}`,
-    valueInputOption: 'USER_ENTERED',
-    requestBody: { values: [row] },
-  });
+  for (let attempt = 1; attempt <= MAX_WRITE_RETRIES; attempt += 1) {
+    const rows = await getSheetValues(sheets, sheetName);
+    const headerIndex = findHeaderIndex(rows);
+    const headers = rows[headerIndex] || [];
+    const targetRow = findNextResponseRow(rows, headerIndex);
+    const existingRow = await getRowValues(sheets, sheetName, targetRow);
 
-  return {
-    updatedRange: response.data.updatedRange,
-    updatedRows: response.data.updatedRows,
-  };
+    if (!isEmptyRow(existingRow)) {
+      if (attempt === MAX_WRITE_RETRIES) {
+        throw new Error(`La fila destino ${targetRow} ya tiene datos. No se escribio para evitar sobrescritura.`);
+      }
+      continue;
+    }
+
+    const row = headers.length > 0
+      ? headers.map((header) => resolveValueForHeader(header, values))
+      : buildLegacyRow(values);
+
+    const response = await sheets.spreadsheets.values.update({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${quoteSheetName(sheetName)}!A${targetRow}`,
+      valueInputOption: 'USER_ENTERED',
+      requestBody: { values: [row] },
+    });
+
+    return {
+      targetRow,
+      updatedRange: response.data.updatedRange,
+      updatedRows: response.data.updatedRows,
+    };
+  }
+
+  throw new Error('No se pudo encontrar una fila segura para guardar la respuesta.');
 }

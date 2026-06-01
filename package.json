@@ -11,6 +11,7 @@
     "build": "node scripts/patch-next-webpack-loaders.cjs && next build",
     "start": "next start",
     "lint": "eslint .",
+    "verify:integrations": "node scripts/verify-integrations.mjs",
     "google:oauth:url": "node scripts/google-oauth-url.mjs",
     "google:oauth:token": "node scripts/google-oauth-token.mjs",
     "postinstall": "node scripts/patch-next-webpack-loaders.cjs"

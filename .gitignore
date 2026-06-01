@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+.env.production
+.env.produciion
 client_secret_*.json
 image.png
 

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { randomUUID } from 'node:crypto';
-import { createDocenteFolder, uploadFileToDrive } from '@/lib/google-drive.js';
+import { createDocenteFolder, getFormResponseFolders, uploadFileToDrive } from '@/lib/google-drive.js';
 import { appendDocenteRow } from '@/lib/google-sheets.js';
 import { validateGoogleAuthConfig } from '@/lib/google-auth.js';
 import { rateLimit } from '@/lib/request-security.js';
@@ -20,12 +20,13 @@ const marcaAliases = {
 
 const REQUIRED_STORAGE_ENV = [
   'GOOGLE_SPREADSHEET_ID',
-  'GOOGLE_DRIVE_ROOT_FOLDER_ID',
 ];
 
 const PLACEHOLDER_ENV_MARKERS = {
   GOOGLE_SPREADSHEET_ID: ['TU_SPREADSHEET_ID'],
   GOOGLE_DRIVE_ROOT_FOLDER_ID: ['TU_FOLDER_ID'],
+  GOOGLE_DRIVE_CV_FOLDER_ID: ['TU_FOLDER_ID'],
+  GOOGLE_DRIVE_FOTO_FOLDER_ID: ['TU_FOLDER_ID'],
 };
 
 const REQUIRED_FORM_FIELDS = [
@@ -90,11 +91,27 @@ const FILE_RULES = {
 };
 
 function missingStorageEnv() {
-  return REQUIRED_STORAGE_ENV.filter((key) => !process.env[key]);
+  const missing = REQUIRED_STORAGE_ENV.filter((key) => !process.env[key]);
+  const hasFormFolders = Boolean(
+    process.env.GOOGLE_DRIVE_CV_FOLDER_ID &&
+    process.env.GOOGLE_DRIVE_FOTO_FOLDER_ID
+  );
+  const hasRootFolder = Boolean(process.env.GOOGLE_DRIVE_ROOT_FOLDER_ID);
+
+  if (!hasFormFolders && !hasRootFolder) {
+    missing.push('GOOGLE_DRIVE_CV_FOLDER_ID/GOOGLE_DRIVE_FOTO_FOLDER_ID o GOOGLE_DRIVE_ROOT_FOLDER_ID');
+  }
+
+  return missing;
 }
 
 function placeholderStorageEnv() {
-  return REQUIRED_STORAGE_ENV.filter((key) => {
+  return [
+    ...REQUIRED_STORAGE_ENV,
+    'GOOGLE_DRIVE_ROOT_FOLDER_ID',
+    'GOOGLE_DRIVE_CV_FOLDER_ID',
+    'GOOGLE_DRIVE_FOTO_FOLDER_ID',
+  ].filter((key) => {
     const value = String(process.env[key] || '');
     const markers = PLACEHOLDER_ENV_MARKERS[key] || [];
     return markers.some((marker) => value.includes(marker));
@@ -117,6 +134,17 @@ function sanitizeNameForFile(value, fallback = 'archivo') {
     .trim()
     .replace(/\s+/g, '_');
   return normalized || fallback;
+}
+
+function googleFormStyleFileName(originalName, docenteName, fallbackExt) {
+  const ext = fileExtension(originalName, fallbackExt);
+  const base = String(originalName || 'archivo')
+    .replace(/\.[^.]+$/, '')
+    .trim() || 'archivo';
+  const safeBase = sanitizeNameForFile(base, 'archivo');
+  const safeDocente = sanitizeNameForFile(docenteName, 'Docente').replace(/_/g, ' ');
+
+  return `${safeBase} - ${safeDocente}.${ext}`;
 }
 
 function fileExtension(fileName, fallback) {
@@ -382,28 +410,50 @@ export async function POST(request) {
     const warnings = [];
 
     try {
-      const { folderId, folderUrl } = await createDocenteFolder(
-        fields.nombre,
-        fields.documento,
-        marca
-      );
-      links.folderUrl = folderUrl;
+      const formFolders = getFormResponseFolders();
+      let folderId = null;
+
+      if (formFolders) {
+        links.folderUrl = '';
+      } else {
+        const { folderId: docenteFolderId, folderUrl } = await createDocenteFolder(
+          fields.nombre,
+          fields.documento,
+          marca
+        );
+        folderId = docenteFolderId;
+        links.folderUrl = folderUrl;
+      }
 
       if (cvFile && cvFile.size > 0) {
         const cvBuffer = Buffer.from(await cvFile.arrayBuffer());
         const cvExt = fileExtension(cvFile.name, 'pdf');
-        const cvName = `CV_${baseName}.${cvExt}`;
+        const cvName = formFolders
+          ? googleFormStyleFileName(cvFile.name, fields.nombre, cvExt)
+          : `CV_${baseName}.${cvExt}`;
         const cvMime = cvFile.type || 'application/octet-stream';
-        const cvResult = await uploadFileToDrive(cvBuffer, cvName, cvMime, folderId);
+        const cvResult = await uploadFileToDrive(
+          cvBuffer,
+          cvName,
+          cvMime,
+          formFolders?.cvFolderId || folderId
+        );
         links.cvUrl = cvResult.fileUrl;
       }
 
       if (fotoFile && fotoFile.size > 0) {
         const fotoBuffer = Buffer.from(await fotoFile.arrayBuffer());
         const fotoExt = fileExtension(fotoFile.name, 'jpg');
-        const fotoName = `Foto_${baseName}.${fotoExt}`;
+        const fotoName = formFolders
+          ? googleFormStyleFileName(fotoFile.name, fields.nombre, fotoExt)
+          : `Foto_${baseName}.${fotoExt}`;
         const fotoMime = fotoFile.type || 'application/octet-stream';
-        const fotoResult = await uploadFileToDrive(fotoBuffer, fotoName, fotoMime, folderId);
+        const fotoResult = await uploadFileToDrive(
+          fotoBuffer,
+          fotoName,
+          fotoMime,
+          formFolders?.fotoFolderId || folderId
+        );
         links.fotoUrl = fotoResult.fileUrl;
       }
     } catch (driveError) {
