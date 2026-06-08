@@ -1023,12 +1023,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     ))}
                   </div>
 
-                  <div className="wz-certificate">
-                    <div className="wz-certificate-copy">
-                      <span className="wz-certificate-kicker">Reconocimiento institucional</span>
-                      <h3>Certificado del Programa Docente TOP</h3>
-                      <p>Haz clic sobre el certificado para verlo ampliado y revisar el modelo institucional completo.</p>
-                    </div>
+                  <div className="wz-certificate" aria-label="Certificado del Programa Docente TOP">
                     <button
                       type="button"
                       className="wz-certificate-preview"
@@ -1039,7 +1034,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                         src="/assets/certificado-docente-top.png"
                         alt="Vista previa del certificado institucional"
                       />
-                      <span>Clic para ampliar</span>
                     </button>
                   </div>
 
@@ -2571,47 +2565,17 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           line-height:1.45;
         }
         .wz-certificate {
-          display:grid;
-          grid-template-columns:minmax(0, 1fr) 220px;
+          display:flex;
           align-items:center;
-          gap:0.85rem;
-          padding:0.72rem 0.8rem;
-          margin-bottom:0.7rem;
-          border:1px solid rgba(212,161,49,0.32);
-          border-radius:14px;
-          background:linear-gradient(135deg, #071728 0%, #0d2d4b 66%, #124f65 100%);
-          box-shadow:0 16px 34px -26px rgba(7,23,40,0.9);
-        }
-        .wz-certificate-copy {
-          min-width:0;
-        }
-        .wz-certificate-kicker {
-          display:block;
-          margin-bottom:0.24rem;
-          color:#f4c968;
-          font-size:0.64rem;
-          font-weight:850;
-          letter-spacing:0.7px;
-          text-transform:uppercase;
-        }
-        .wz-certificate h3 {
-          margin:0 0 0.28rem;
-          color:#fff;
-          font-family:'Outfit',sans-serif;
-          font-size:0.92rem;
-          font-weight:820;
-        }
-        .wz-certificate p {
-          max-width:30rem;
-          margin:0;
-          color:#cbd5e1;
-          font-size:0.7rem;
-          line-height:1.4;
+          justify-content:flex-end;
+          padding:0;
+          margin:-0.1rem 0 0.55rem;
+          min-height:0;
         }
         .wz-certificate-preview {
           position:relative;
-          min-width:0;
           display:block;
+          width:min(240px, 42vw);
           padding:0;
           border:1px solid rgba(244,201,104,0.38);
           border-radius:10px;
@@ -2623,25 +2587,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-certificate-preview img {
           display:block;
           width:100%;
-          height:124px;
+          aspect-ratio:4 / 3;
+          height:auto;
           object-fit:contain;
           object-position:center;
           transition:transform 0.22s ease;
         }
         .wz-certificate-preview:hover img {
           transform:scale(1.025);
-        }
-        .wz-certificate-preview span {
-          position:absolute;
-          right:0.6rem;
-          bottom:0.55rem;
-          padding:0.28rem 0.52rem;
-          border-radius:6px;
-          background:rgba(7,23,40,0.82);
-          color:#fff;
-          font-size:0.66rem;
-          font-weight:850;
-          line-height:1;
         }
         .wz-certificate-overlay {
           position:fixed;
@@ -2653,15 +2606,15 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           padding:clamp(0.75rem, 2vw, 1.5rem);
           background:rgba(5,15,27,0.88);
           backdrop-filter:blur(10px);
-          overflow-y:auto;
+          overflow:hidden;
         }
         .wz-certificate-modal {
           position:relative;
-          width:min(1120px, 100%);
-          max-height:calc(100dvh - 1.5rem);
+          width:min(1120px, calc(100vw - 2rem));
+          max-height:calc(100dvh - 2rem);
           display:flex;
           flex-direction:column;
-          padding:1rem;
+          padding:0.75rem;
           border:1px solid rgba(244,201,104,0.3);
           border-radius:14px;
           background:linear-gradient(145deg, #071728 0%, #0c2945 100%);
@@ -2685,7 +2638,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         .wz-certificate-modal-head {
           flex:0 0 auto;
-          padding:0.2rem 3.2rem 0.85rem 0.2rem;
+          padding:0.1rem 3.2rem 0.55rem 0.2rem;
         }
         .wz-certificate-modal-head span {
           color:#f4c968;
@@ -2701,8 +2654,12 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           font-size:clamp(1.05rem, 2vw, 1.45rem);
         }
         .wz-certificate-image-wrap {
+          flex:1 1 auto;
           min-height:0;
-          overflow:auto;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          overflow:hidden;
           border-radius:8px;
           background:#fff;
           overscroll-behavior:contain;
@@ -2710,9 +2667,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         .wz-certificate-image {
           display:block;
-          width:100%;
+          width:auto;
           height:auto;
-          max-width:none;
+          max-width:100%;
+          max-height:calc(100dvh - 6rem);
+          object-fit:contain;
         }
 
         /* ── RESPONSIVE ── */
@@ -2889,17 +2848,17 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-attendance-grid { grid-template-columns:1fr; }
           .wz-attendance-card { padding:0.9rem; }
           .wz-certificate {
-            grid-template-columns:1fr;
-            align-items:stretch;
+            justify-content:center;
+            margin-bottom:0.55rem;
           }
           .wz-certificate-preview {
-            width:100%;
+            width:min(230px, 72vw);
           }
           .wz-certificate-overlay {
-            align-items:flex-start;
             padding:0.5rem;
           }
           .wz-certificate-modal {
+            width:calc(100vw - 1rem);
             max-height:calc(100dvh - 1rem);
             padding:0.65rem;
             border-radius:10px;
@@ -2923,6 +2882,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             right:0.5rem;
             width:34px;
             height:34px;
+          }
+          .wz-certificate-image {
+            max-height:calc(100dvh - 5rem);
           }
 
           .wz-nav { flex-direction:column-reverse; gap:0.5rem; margin-top:1.5rem; }
@@ -3137,14 +3099,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             line-height:1.35 !important;
           }
           .wz-certificate {
-            padding:0.72rem 0.85rem !important;
             margin-bottom:0.65rem !important;
-          }
-          .wz-certificate h3 {
-            font-size:0.9rem !important;
-          }
-          .wz-certificate p {
-            font-size:0.68rem !important;
           }
           .wz-btn-main, .wz-btn-ghost, .wz-btn-wa {
             padding: 0.6rem 1.4rem !important;
@@ -3232,9 +3187,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             padding:0.5rem !important;
           }
           .wz-top-benefit p {
-            display:none !important;
-          }
-          .wz-certificate p {
             display:none !important;
           }
         }
