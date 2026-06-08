@@ -1,11 +1,19 @@
+'use client';
+
+import { useState } from 'react';
+
 export default function Filosofia() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
   const pilares = [
     {
       num: '01',
       title: '100% Práctico',
       desc: 'Prohibido el relleno teórico. Cada concepto debe ser demostrado resolviendo casos reales directamente en software.',
+      detail: 'La clase debe sentirse como una experiencia de trabajo real: menos exposición pasiva, más demostración guiada y práctica aplicada.',
+      image: '/assets/filosofia-practica.webp',
       icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="4 17 10 11 4 5" />
           <line x1="12" y1="19" x2="20" y2="19" />
         </svg>
@@ -15,8 +23,10 @@ export default function Filosofia() {
       num: '02',
       title: 'Cero Relleno',
       desc: 'Nada de videos extensos ni PPTs saturados de texto. Acción pura sobre las herramientas digitales.',
+      detail: 'El estudiante debe percibir avance en cada sesión. Priorizamos ejemplos concretos, ejercicios visibles y recursos claros.',
+      image: '/assets/filosofia-herramientas.webp',
       icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
           <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
         </svg>
       )
@@ -25,8 +35,10 @@ export default function Filosofia() {
       num: '03',
       title: 'Control de Ritmo',
       desc: 'El docente domina el tiempo en aula. Los incidentes técnicos individuales no detienen el avance grupal.',
+      detail: 'El liderazgo docente mantiene la energía del grupo, ordena las consultas y evita que la sesión pierda foco.',
+      image: '/assets/filosofia-ritmo.webp',
       icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10" />
           <polyline points="12 6 12 12 16 14" />
         </svg>
@@ -34,146 +46,243 @@ export default function Filosofia() {
     }
   ];
 
+  const active = pilares[activeIndex];
+
   return (
-    <section id="filosofia" className="filosofia-section" style={{ padding: '6.5rem 0' }}>
+    <section id="filosofia" className="filosofia-section">
       <div className="container">
-        <div className="section-header" style={{ marginBottom: '4.5rem' }}>
-          <span className="section-tag" style={{
-            background: 'rgba(14, 165, 233, 0.06)',
-            borderColor: 'rgba(14, 165, 233, 0.15)',
-            color: '#0ea5e9', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '2.5px'
-          }}>
-            NUESTRA ESENCIA
-          </span>
-          <h2 className="section-title" style={{
-            fontSize: '2.8rem', fontWeight: 850, letterSpacing: '-1.5px', marginTop: '1rem',
-            fontFamily: 'var(--font-heading)'
-          }}>
-            Nuestra Filosofía: <span className="highlight-text-premium">Doing by Learning</span>
+        <div className="section-header filosofia-header">
+          <span className="section-tag filosofia-tag">NUESTRA ESENCIA</span>
+          <h2 className="section-title filosofia-title">
+            Nuestra Filosofía: <span>Doing by Learning</span>
           </h2>
-          <p className="section-desc" style={{ fontSize: '1.15rem', color: '#64748b', maxWidth: '680px', margin: '1.25rem auto 0', lineHeight: 1.7 }}>
+          <p className="section-desc filosofia-desc">
             Transformamos carreras mediante habilidades prácticas. Este manual establece el estándar de calidad educativa que nos posiciona como referentes en Latinoamérica.
           </p>
         </div>
 
-        <div className="pilares-grid" style={{
-          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem'
-        }}>
-          {pilares.map((pilar, index) => (
-            <div key={index} className="pilar-card-premium" style={{
-              background: 'rgba(255, 255, 255, 0.8)',
-              backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
-              border: '1px solid rgba(224, 242, 254, 0.7)',
-              borderRadius: '28px', padding: '3rem 2.25rem',
-              position: 'relative', overflow: 'hidden',
-              boxShadow: '0 10px 30px -15px rgba(2, 132, 199, 0.06)',
-              transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-              cursor: 'default'
-            }}>
-              {/* Dynamic light hover effect */}
-              <div className="pilar-hover-light" />
-              
-              <div className="pilar-header" style={{
-                display: 'flex', justifyContent: 'space-between',
-                alignItems: 'center', marginBottom: '2.25rem', position: 'relative', zIndex: 2
-              }}>
-                <span className="pilar-number-premium" style={{
-                  fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '3rem',
-                  background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(6, 182, 212, 0.06) 100%)',
-                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text', lineHeight: 1, transition: 'all 0.4s ease'
-                }}>
-                  {pilar.num}
-                </span>
-                
-                <span className="pilar-icon-premium" style={{
-                  width: '3.5rem', height: '3.5rem',
-                  background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.06) 0%, rgba(6, 182, 212, 0.04) 100%)',
-                  borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#0ea5e9', border: '1px solid rgba(14, 165, 233, 0.1)',
-                  transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
-                }}>
-                  {pilar.icon}
-                </span>
-              </div>
-              
-              <h3 className="pilar-title" style={{
-                fontSize: '1.45rem', fontWeight: 800, color: '#1e293b',
-                marginBottom: '1rem', position: 'relative', zIndex: 2,
-                fontFamily: 'var(--font-heading)'
-              }}>
-                {pilar.title}
-              </h3>
-              
-              <p className="pilar-desc" style={{
-                fontSize: '0.95rem', color: '#64748b', lineHeight: 1.65,
-                position: 'relative', zIndex: 2, margin: 0, fontWeight: '500'
-              }}>
-                {pilar.desc}
-              </p>
+        <div className="filosofia-layout">
+          <div className="filosofia-pilares">
+            {pilares.map((pilar, index) => {
+              const isActive = activeIndex === index;
+              return (
+                <button
+                  key={pilar.num}
+                  type="button"
+                  className={`pilar-card-premium ${isActive ? 'active' : ''}`}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  onClick={() => setActiveIndex(index)}
+                  aria-pressed={isActive}
+                >
+                  <span className="pilar-number-premium">{pilar.num}</span>
+                  <span className="pilar-icon-premium">{pilar.icon}</span>
+                  <span className="pilar-copy">
+                    <strong>{pilar.title}</strong>
+                    <small>{pilar.desc}</small>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <aside className="filosofia-preview" aria-live="polite">
+            <img src={active.image} alt={`Vista del pilar ${active.title}`} loading="lazy" />
+            <div className="filosofia-preview-copy">
+              <span>{active.num}</span>
+              <h3>{active.title}</h3>
+              <p>{active.detail}</p>
             </div>
-          ))}
+          </aside>
         </div>
       </div>
 
-      {/* Styled JSX */}
       <style>{`
-        .highlight-text-premium {
+        .filosofia-section {
+          padding: 6.5rem 0;
+        }
+        .filosofia-header {
+          margin-bottom: 3.2rem;
+        }
+        .filosofia-tag {
+          background: rgba(14, 165, 233, 0.06);
+          border-color: rgba(14, 165, 233, 0.15);
+          color: #0ea5e9;
+          font-size: 0.72rem;
+          font-weight: 800;
+          letter-spacing: 2.5px;
+        }
+        .filosofia-title {
+          font-size: 2.8rem;
+          font-weight: 850;
+          letter-spacing: -1.5px;
+          margin-top: 1rem;
+          font-family: var(--font-heading);
+        }
+        .filosofia-title span {
           background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
-          font-weight: 850;
         }
-
-        .pilar-card-premium:hover {
-          transform: translateY(-8px);
-          border-color: rgba(14, 165, 233, 0.28) !important;
-          box-shadow: 
-            0 24px 48px -12px rgba(2, 132, 199, 0.12), 
-            0 8px 20px -4px rgba(2, 132, 199, 0.06) !important;
-          background: #ffffff !important;
+        .filosofia-desc {
+          font-size: 1.15rem;
+          color: #64748b;
+          max-width: 680px;
+          margin: 1.25rem auto 0;
+          line-height: 1.7;
         }
-
-        .pilar-hover-light {
-          position: absolute;
-          top: 0;
-          left: 0;
+        .filosofia-layout {
+          display: grid;
+          grid-template-columns: minmax(0, 0.92fr) minmax(360px, 1fr);
+          gap: 1.5rem;
+          align-items: stretch;
+        }
+        .filosofia-pilares {
+          display: flex;
+          flex-direction: column;
+          gap: 0.9rem;
+        }
+        .pilar-card-premium {
+          width: 100%;
+          min-height: 118px;
+          display: grid;
+          grid-template-columns: auto auto minmax(0, 1fr);
+          align-items: center;
+          gap: 1rem;
+          border: 1px solid rgba(224, 242, 254, 0.8);
+          border-radius: 18px;
+          padding: 1.15rem 1.2rem;
+          background: rgba(255, 255, 255, 0.82);
+          text-align: left;
+          cursor: pointer;
+          box-shadow: 0 10px 30px -18px rgba(2, 132, 199, 0.16);
+          transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+        }
+        .pilar-card-premium:hover,
+        .pilar-card-premium.active {
+          transform: translateX(4px);
+          border-color: rgba(14, 165, 233, 0.42);
+          background: #ffffff;
+          box-shadow: 0 18px 42px -24px rgba(2, 132, 199, 0.34);
+        }
+        .pilar-number-premium {
+          font-family: var(--font-heading);
+          font-weight: 900;
+          font-size: 1.35rem;
+          color: rgba(14, 165, 233, 0.42);
+          line-height: 1;
+        }
+        .pilar-card-premium.active .pilar-number-premium {
+          color: #0284c7;
+        }
+        .pilar-icon-premium {
+          width: 3rem;
+          height: 3rem;
+          border-radius: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #0ea5e9;
+          background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(6, 182, 212, 0.05));
+          border: 1px solid rgba(14, 165, 233, 0.12);
+          transition: color 0.22s ease, background 0.22s ease, transform 0.22s ease;
+        }
+        .pilar-card-premium.active .pilar-icon-premium,
+        .pilar-card-premium:hover .pilar-icon-premium {
+          color: #fff;
+          background: linear-gradient(135deg, #0284c7, #0ea5e9);
+          transform: scale(1.04);
+        }
+        .pilar-copy {
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.38rem;
+        }
+        .pilar-copy strong {
+          color: #1e293b;
+          font-family: var(--font-heading);
+          font-size: 1.08rem;
+          font-weight: 820;
+        }
+        .pilar-copy small {
+          color: #64748b;
+          font-size: 0.88rem;
+          font-weight: 500;
+          line-height: 1.5;
+        }
+        .filosofia-preview {
+          min-height: 100%;
+          display: grid;
+          grid-template-rows: minmax(260px, 1fr) auto;
+          overflow: hidden;
+          border: 1px solid rgba(224, 242, 254, 0.85);
+          border-radius: 24px;
+          background: #071728;
+          box-shadow: 0 24px 54px -34px rgba(15, 23, 42, 0.42);
+        }
+        .filosofia-preview img {
           width: 100%;
           height: 100%;
-          background: radial-gradient(circle at top left, rgba(14, 165, 233, 0.04) 0%, transparent 60%);
-          opacity: 0;
-          transition: opacity 0.4s ease;
-          pointer-events: none;
-          z-index: 1;
+          min-height: 260px;
+          object-fit: cover;
+          object-position: center;
+          display: block;
         }
-
-        .pilar-card-premium:hover .pilar-hover-light {
-          opacity: 1;
+        .filosofia-preview-copy {
+          padding: 1.2rem 1.35rem;
+          background: linear-gradient(135deg, #071728 0%, #0d2c4c 100%);
+          color: #fff;
         }
-
-        .pilar-card-premium:hover .pilar-number-premium {
-          background: linear-gradient(135deg, rgba(14, 165, 233, 0.35) 0%, rgba(6, 182, 212, 0.2) 100%) !important;
-          -webkit-background-clip: text !important;
-          background-clip: text !important;
-          transform: scale(1.05);
+        .filosofia-preview-copy span {
+          color: #67e8f9;
+          font-size: 0.74rem;
+          font-weight: 850;
+          letter-spacing: 1px;
         }
-
-        .pilar-card-premium:hover .pilar-icon-premium {
-          color: #ffffff !important;
-          background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%) !important;
-          border-color: transparent !important;
-          box-shadow: 0 8px 20px rgba(14, 165, 233, 0.25) !important;
-          transform: scale(1.08) rotate(-4deg);
+        .filosofia-preview-copy h3 {
+          margin: 0.32rem 0 0.5rem;
+          font-family: var(--font-heading);
+          font-size: 1.25rem;
+          font-weight: 850;
         }
-
+        .filosofia-preview-copy p {
+          margin: 0;
+          color: #cbd5e1;
+          font-size: 0.92rem;
+          line-height: 1.58;
+          font-weight: 500;
+        }
         @media (max-width: 992px) {
-          .pilares-grid {
-            grid-template-columns: 1fr !important;
-            gap: 1.5rem !important;
+          .filosofia-section {
+            padding: 5rem 0;
+          }
+          .filosofia-layout {
+            grid-template-columns: 1fr;
+          }
+          .filosofia-preview {
+            grid-template-rows: minmax(220px, 320px) auto;
+          }
+        }
+        @media (max-width: 640px) {
+          .filosofia-title {
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+          }
+          .filosofia-desc {
+            font-size: 0.98rem;
           }
           .pilar-card-premium {
-            padding: 2.5rem 2rem !important;
+            min-height: auto;
+            grid-template-columns: auto minmax(0, 1fr);
+            padding: 1rem;
+          }
+          .pilar-icon-premium {
+            display: none;
+          }
+          .filosofia-preview {
+            grid-template-rows: minmax(190px, 240px) auto;
+            border-radius: 18px;
           }
         }
       `}</style>

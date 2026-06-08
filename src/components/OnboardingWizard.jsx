@@ -6,9 +6,9 @@ import { isValidEmail } from '../utils/emailValidation.js';
 const logobiomedic = '/assets/logobiomedic.png';
 const geominaWhite = '/assets/geomina-new.png';
 const biomedicWhite = '/assets/biomedic-white.png';
-const camaraFondoVirtual = '/assets/camara_fondo_virtual.png';
-const identidadVisualPpts = '/assets/identidad_visual_ppts.png';
-const canalesExternosProhibidos = '/assets/canales_externos_prohibidos.png';
+const camaraFondoVirtual = '/assets/camara_fondo_virtual.webp';
+const identidadVisualPpts = '/assets/identidad_visual_ppts.webp';
+const canalesExternosProhibidos = '/assets/canales_externos_prohibidos.webp';
 const phoneCountries = [
   { code: 'PE', name: 'Perú', dial: '+51', min: 9, max: 9 },
   { code: 'BO', name: 'Bolivia', dial: '+591', min: 8, max: 8 },
@@ -755,32 +755,36 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               {/* ═══ PASO 3: FILOSOFÍA ═══ */}
               {step === 3 && (() => {
                 const allPrinciplesViewed = viewedPrinciples.every(v => v);
+                const principles = [
+                  { n:'01', t:'Enfoque 100% Práctico y Aplicado', d:'Creemos firmemente en el poder de aprender haciendo. Por ello, transformamos la teoría en experiencia directa: cada nuevo concepto cobra vida al resolver casos reales de la industria en vivo. El software es nuestro gran escenario para que los estudiantes comprueben la aplicación inmediata de su conocimiento.' },
+                  { n:'02', t:'Inmersión Total en las Herramientas', d:'Evolucionamos la educación dejando atrás la exposición tradicional. Les invitamos a sustituir las extensas presentaciones por una inmersión directa en el entorno de trabajo digital. Queremos que sus sesiones sean espacios dinámicos y de acción pura, donde el estudiante alcance el dominio técnico interactuando con la herramienta desde el primer minuto.' },
+                  { n:'03', t:'Liderazgo y Fluidez del Aprendizaje', d:'Usted es el guía que marca el ritmo del éxito grupal. Confiamos en su liderazgo para mantener un avance constante y motivador, gestionando con agilidad las consultas o incidencias técnicas individuales. De esta manera, garantizamos que la energía de la clase fluya sin interrupciones y todo el equipo alcance su meta de aprendizaje.' },
+                ];
+                const selectedPrinciple = principles[activePrinciple ?? 0];
                 return (
                   <div className="wz-fade">
                     <span className="wz-tag">Doing by Learning</span>
                     <h2 className="wz-title">Nuestra Filosofía</h2>
                     <p className="wz-sub" style={{ marginBottom: '1.5rem' }}>Transformamos carreras mediante habilidades prácticas. Este manual no es solo una guía, es el estándar de calidad que nos posiciona en Latinoamérica.</p>
                     
-                    <div className="wz-principles-list">
-                      {[
-                        { n:'01', t:'Enfoque 100% Práctico y Aplicado', d:'Creemos firmemente en el poder de aprender haciendo. Por ello, transformamos la teoría en experiencia directa: cada nuevo concepto cobra vida al resolver casos reales de la industria en vivo. El software es nuestro gran escenario para que los estudiantes comprueben la aplicación inmediata de su conocimiento.' },
-                        { n:'02', t:'Inmersión Total en las Herramientas', d:'Evolucionamos la educación dejando atrás la exposición tradicional. Les invitamos a sustituir las extensas presentaciones por una inmersión directa en el entorno de trabajo digital. Queremos que sus sesiones sean espacios dinámicos y de acción pura, donde el estudiante alcance el dominio técnico interactuando con la herramienta desde el primer minuto.' },
-                        { n:'03', t:'Liderazgo y Fluidez del Aprendizaje', d:'Usted es el guía que marca el ritmo del éxito grupal. Confiamos en su liderazgo para mantener un avance constante y motivador, gestionando con agilidad las consultas o incidencias técnicas individuales. De esta manera, garantizamos que la energía de la clase fluya sin interrupciones y todo el equipo alcance su meta de aprendizaje.' },
-                      ].map((p,i) => {
-                        const isOpen = activePrinciple === i;
+                    <div className="wz-principles-stage">
+                      <div className="wz-principles-list">
+                        {principles.map((p,i) => {
+                        const isOpen = (activePrinciple ?? 0) === i;
                         const isViewed = viewedPrinciples[i];
                         return (
                           <div key={i} 
                             className={`wz-principle ${isOpen ? 'open' : ''} ${isViewed ? 'viewed' : ''}`}
+                            onMouseEnter={() => setActivePrinciple(i)}
                             onClick={() => {
-                              setActivePrinciple(isOpen ? null : i);
+                              setActivePrinciple(i);
                               setViewedPrinciples(prev => {
                                 const next = [...prev];
                                 next[i] = true;
                                 return next;
                               });
                             }}
-                            style={{ cursor: 'pointer', paddingBottom: isOpen ? '1.25rem' : '1rem' }}
+                            style={{ cursor: 'pointer' }}
                           >
                             <div className="wz-principle-header" style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '1.25rem' }}>
                               <div className="wz-principle-num">{p.n}</div>
@@ -789,21 +793,21 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                                   {p.t}
                                 </h4>
                               </div>
-                              <div className={`wz-principle-arrow ${isOpen ? 'rotated' : ''}`} style={{ transition: 'transform 0.3s ease', color: isOpen ? 'var(--bc)' : '#94a3b8' }}>
+                              <div className="wz-principle-arrow" style={{ color: isOpen ? 'var(--bc)' : '#94a3b8' }}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                  <polyline points="6 9 12 15 18 9"></polyline>
+                                  <polyline points="9 18 15 12 9 6"></polyline>
                                 </svg>
-                              </div>
-                            </div>
-                            
-                            <div className={`wz-principle-content-wrapper ${isOpen ? 'open' : ''}`}>
-                              <div className="wz-principle-content" style={{ marginTop: '0.85rem' }}>
-                                <p className="wz-principle-desc">{p.d}</p>
                               </div>
                             </div>
                           </div>
                         );
                       })}
+                      </div>
+                      <aside className="wz-principle-detail">
+                        <span>{selectedPrinciple.n}</span>
+                        <h3>{selectedPrinciple.t}</h3>
+                        <p>{selectedPrinciple.d}</p>
+                      </aside>
                     </div>
 
                     <div className={`wz-check-row ${formData.aceptaMetodologia?'on':''} ${!allPrinciplesViewed?'disabled':''}`} style={{ marginTop: '1.5rem' }} onClick={() => {
@@ -1031,7 +1035,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                         aria-label="Ver certificado ampliado"
                       >
                         <img
-                          src="/assets/certificado-docente-top.png"
+                          src="/assets/certificado-docente-top.webp"
                           alt="Vista previa del certificado institucional"
                         />
                       </button>
@@ -1351,7 +1355,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             </div>
             <div className="wz-certificate-image-wrap">
               <img
-                src="/assets/certificado-docente-top.png"
+                src="/assets/certificado-docente-top.webp"
                 alt="Modelo de certificado institucional CIIP Latam para docentes"
                 className="wz-certificate-image"
               />
@@ -1927,10 +1931,17 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
 
         /* ── PILARES (PASO 2 - MANIFIESTO TIPOGRÁFICO / ACORDEÓN) ── */
-        .wz-principles-list { display:flex; flex-direction:column; gap:1rem; }
+        .wz-principles-stage {
+          display:grid;
+          grid-template-columns:minmax(0, 0.92fr) minmax(280px, 1fr);
+          gap:1rem;
+          align-items:stretch;
+        }
+        .wz-principles-list { display:flex; flex-direction:column; gap:0.8rem; }
         .wz-principle {
           display:flex; flex-direction:column; align-items:stretch;
-          padding:1.15rem 1.35rem; border:1px solid #e8ecf1; border-radius:16px;
+          min-height:84px;
+          padding:1rem 1.2rem; border:1px solid #e8ecf1; border-radius:14px;
           background:#fff; transition:all 0.3s ease; position:relative; overflow:hidden;
         }
         .wz-principle::before {
@@ -1961,23 +1972,50 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           color:#0f172a; margin:0; letter-spacing:-0.3px;
         }
         
-        .wz-principle-content-wrapper {
-          display: grid;
-          grid-template-rows: 0fr;
-          transition: grid-template-rows 0.3s ease-in-out;
+        .wz-principle-arrow {
+          flex:0 0 auto;
+          transition:transform 0.2s ease, color 0.2s ease;
         }
-        .wz-principle-content-wrapper.open {
-          grid-template-rows: 1fr;
+        .wz-principle.open .wz-principle-arrow {
+          transform:translateX(2px);
         }
-        .wz-principle-content {
-          overflow: hidden;
+        .wz-principle-detail {
+          min-height:calc(84px * 3 + 1.6rem);
+          padding:1.35rem 1.45rem;
+          border:1px solid rgba(14,165,233,0.2);
+          border-radius:16px;
+          background:linear-gradient(135deg, rgba(240,249,255,0.92) 0%, #ffffff 70%);
+          box-shadow:0 16px 36px -28px rgba(2,132,199,0.5);
+          display:flex;
+          flex-direction:column;
+          justify-content:center;
         }
-        .wz-principle-desc {
-          font-size:0.86rem; color:#475569; line-height:1.55; margin:0; font-weight:500;
-          padding-left: 3.25rem;
+        .wz-principle-detail span {
+          display:inline-flex;
+          width:max-content;
+          margin-bottom:0.75rem;
+          padding:0.28rem 0.65rem;
+          border-radius:999px;
+          background:var(--bg);
+          color:var(--bc);
+          font-size:0.72rem;
+          font-weight:850;
+          letter-spacing:1px;
         }
-        .wz-principle-arrow.rotated {
-          transform: rotate(180deg);
+        .wz-principle-detail h3 {
+          margin:0 0 0.7rem;
+          color:#0f172a;
+          font-family:'Outfit',sans-serif;
+          font-size:1.12rem;
+          font-weight:850;
+          line-height:1.22;
+        }
+        .wz-principle-detail p {
+          margin:0;
+          color:#475569;
+          font-size:0.86rem;
+          font-weight:520;
+          line-height:1.62;
         }
 
         /* ── CHECKBOX ROW ── */
@@ -2826,11 +2864,17 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             grid-template-columns:1fr;
           }
           
-          .wz-principles-list { gap:0.75rem; }
+          .wz-principles-stage { grid-template-columns:1fr; gap:0.75rem; }
+          .wz-principles-list { gap:0.65rem; }
           .wz-principle { flex-direction:column; align-items:stretch; padding:1rem 1.15rem; }
           .wz-principle-num { font-size:1.6rem; }
           .wz-principle-text h4 { font-size:1rem; }
-          .wz-principle-desc { padding-left:2.85rem; font-size:0.82rem; }
+          .wz-principle-detail {
+            min-height:auto;
+            padding:1rem 1.05rem;
+          }
+          .wz-principle-detail h3 { font-size:1rem; }
+          .wz-principle-detail p { font-size:0.82rem; line-height:1.55; }
           
           .wz-agenda-row { flex-direction:row; flex-wrap:wrap; align-items:center; gap:0.85rem; padding:1.15rem; }
           .wz-agenda-time { flex:1; width:auto; display:flex; align-items:baseline; gap:0.5rem; }
