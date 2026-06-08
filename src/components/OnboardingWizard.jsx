@@ -1005,22 +1005,24 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     </div>
                   </div>
 
-                  <div className="wz-top-benefits">
-                    {[
-                      ['Capacitación de Primer Nivel', 'Acceso a becas y capacitaciones 100% gratuitas, además de descuentos exclusivos en programas avanzados de la institución.'],
-                      ['Networking de Alto Valor', 'Conexiones directas con redes de expertos internacionales y profesionales líderes en la industria de la región.'],
-                      ['Representación de Marca', 'Oportunidad de representar a la institución como ponente principal en eventos internacionales y conferencias globales.'],
-                      ['Presencia en Medios', 'Participación exclusiva en los podcasts oficiales, entrevistas de difusión y paneles de opinión especializados.'],
-                      ['Lanzamientos e Innovación', 'Prioridad para liderar nuevos proyectos de desarrollo, consultoría y cursos emergentes de la organización.'],
-                    ].map(([title, text], index) => (
-                      <article className="wz-top-benefit" key={title}>
-                        <span>{String(index + 1).padStart(2, '0')}</span>
-                        <div>
-                          <h3>{title}</h3>
-                          <p>{text}</p>
-                        </div>
-                      </article>
-                    ))}
+                  <div className="wz-top-benefit-stage">
+                    <div className="wz-top-benefits">
+                      {[
+                        ['Capacitación de Primer Nivel', 'Acceso a becas y capacitaciones 100% gratuitas, además de descuentos exclusivos en programas avanzados de la institución.'],
+                        ['Networking de Alto Valor', 'Conexiones directas con redes de expertos internacionales y profesionales líderes en la industria de la región.'],
+                        ['Representación de Marca', 'Oportunidad de representar a la institución como ponente principal en eventos internacionales y conferencias globales.'],
+                        ['Presencia en Medios', 'Participación exclusiva en los podcasts oficiales, entrevistas de difusión y paneles de opinión especializados.'],
+                        ['Lanzamientos e Innovación', 'Prioridad para liderar nuevos proyectos de desarrollo, consultoría y cursos emergentes de la organización.'],
+                      ].map(([title, text], index) => (
+                        <article className="wz-top-benefit" key={title}>
+                          <span>{String(index + 1).padStart(2, '0')}</span>
+                          <div>
+                            <h3>{title}</h3>
+                            <p>{text}</p>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
                     <div className="wz-certificate" aria-label="Certificado del Programa Docente TOP">
                       <button
                         type="button"
@@ -2527,11 +2529,15 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           color:#0f172a;
           font-weight:760;
         }
+        .wz-top-benefit-stage {
+          position:relative;
+          margin-bottom:0.85rem;
+        }
         .wz-top-benefits {
           display:grid;
           grid-template-columns:repeat(3, minmax(0, 1fr));
           gap:0.65rem;
-          margin-bottom:0.85rem;
+          margin-bottom:0;
         }
         .wz-top-benefit {
           min-width:0;
@@ -2564,6 +2570,10 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           line-height:1.45;
         }
         .wz-certificate {
+          position:absolute;
+          right:0;
+          bottom:0;
+          width:calc((100% - 1.3rem) / 3);
           display:flex;
           align-items:center;
           justify-content:flex-end;
@@ -2574,7 +2584,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-certificate-preview {
           position:relative;
           display:block;
-          width:min(250px, 100%);
+          width:min(170px, 100%);
           padding:0;
           border:1px solid rgba(244,201,104,0.38);
           border-radius:10px;
@@ -2846,9 +2856,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-top-card-title { font-size:0.92rem; }
           .wz-attendance-grid { grid-template-columns:1fr; }
           .wz-attendance-card { padding:0.9rem; }
+          .wz-top-benefit-stage {
+            margin-bottom:0.75rem;
+          }
           .wz-certificate {
+            position:static;
+            width:100%;
             justify-content:center;
-            margin-bottom:0;
+            margin-top:0.65rem;
           }
           .wz-certificate-preview {
             width:min(230px, 72vw);
