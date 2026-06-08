@@ -1039,7 +1039,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                         src="/assets/certificado-docente-top.png"
                         alt="Vista previa del certificado institucional"
                       />
-                      <span>Click para ampliar</span>
+                      <span>Clic para ampliar</span>
                     </button>
                   </div>
 
@@ -2568,11 +2568,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         .wz-certificate {
           display:grid;
-          grid-template-columns:minmax(0, 0.9fr) minmax(260px, 1.1fr);
+          grid-template-columns:minmax(0, 1fr) 220px;
           align-items:center;
-          gap:1rem;
-          padding:1rem 1.1rem;
-          margin-bottom:0.9rem;
+          gap:0.85rem;
+          padding:0.72rem 0.8rem;
+          margin-bottom:0.7rem;
           border:1px solid rgba(212,161,49,0.32);
           border-radius:14px;
           background:linear-gradient(135deg, #071728 0%, #0d2d4b 66%, #124f65 100%);
@@ -2594,15 +2594,15 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           margin:0 0 0.28rem;
           color:#fff;
           font-family:'Outfit',sans-serif;
-          font-size:1rem;
+          font-size:0.92rem;
           font-weight:820;
         }
         .wz-certificate p {
-          max-width:34rem;
+          max-width:30rem;
           margin:0;
           color:#cbd5e1;
-          font-size:0.76rem;
-          line-height:1.45;
+          font-size:0.7rem;
+          line-height:1.4;
         }
         .wz-certificate-preview {
           position:relative;
@@ -2619,8 +2619,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-certificate-preview img {
           display:block;
           width:100%;
-          aspect-ratio:1448 / 1086;
-          object-fit:cover;
+          height:124px;
+          object-fit:contain;
           object-position:center;
           transition:transform 0.22s ease;
         }
