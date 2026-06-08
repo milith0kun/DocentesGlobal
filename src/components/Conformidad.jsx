@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 export default function Conformidad() {
   const [copied, setCopied] = useState(false);
-  const mensajeText = 'Confirmo que acepto el Manual Operativo del Docente. Comprendo la metodología práctica y los horarios de entrega innegociables: Sábado y Domingo 1:00 PM y Lunes 9:00 AM. Acepto el sistema de penalidades por inasistencias y autorizo el uso de mi firma digital para certificados.';
+  const mensajeText = 'Confirmo que acepto el Manual Operativo del Docente. Comprendo la metodología práctica, los horarios de entrega innegociables: Sábado y Domingo 1:00 PM y Lunes 9:00 AM, y la Política de Asistencia y Compromiso Académico. Autorizo el uso de mi firma digital para certificados.';
   const whatsappUrl = `https://wa.me/51925084564?text=${encodeURIComponent(mensajeText)}`;
 
   const handleCopy = () => {

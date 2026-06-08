@@ -140,21 +140,20 @@ export default function Protocolos() {
               </div>
 
               <div className="penalidad-alert-premium" style={{
-                background: 'rgba(239, 68, 68, 0.04)',
-                border: '1px solid rgba(239, 68, 68, 0.15)',
+                background: 'rgba(14, 165, 233, 0.04)',
+                border: '1px solid rgba(14, 165, 233, 0.15)',
                 borderRadius: '20px', padding: '1.5rem 1.75rem',
                 transition: 'all 0.3s ease', cursor: 'default'
               }}>
                 <div className="penalidad-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                   <span className="penalidad-badge-premium" style={{
-                    fontSize: '0.7rem', fontWeight: 800, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '1.5px',
-                    padding: '0.35rem 0.9rem', background: 'rgba(239, 68, 68, 0.08)', borderRadius: '50px',
-                    border: '1px solid rgba(239, 68, 68, 0.1)'
-                  }}>Penalidad Grave</span>
-                  <span className="penalidad-value" style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.25rem', color: '#b91c1c' }}>50% Retención</span>
+                    fontSize: '0.7rem', fontWeight: 800, color: '#0369a1', textTransform: 'uppercase', letterSpacing: '1.5px',
+                    padding: '0.35rem 0.9rem', background: 'rgba(14, 165, 233, 0.08)', borderRadius: '50px',
+                    border: '1px solid rgba(14, 165, 233, 0.1)'
+                  }}>Compromiso Contractual</span>
                 </div>
-                <p className="penalidad-desc" style={{ fontSize: '0.84rem', color: '#991b1b', lineHeight: 1.6, margin: 0, fontWeight: '500' }}>
-                  Aplicable sobre los honorarios del módulo si se registran más de 2 inasistencias en un ciclo de 4 clases sin sustento justificado oficial.
+                <p className="penalidad-desc" style={{ fontSize: '0.84rem', color: '#334155', lineHeight: 1.6, margin: 0, fontWeight: '500' }}>
+                  Las faltas injustificadas no están permitidas. El incumplimiento de sesiones o las ausencias frecuentes impactarán en el récord docente y se aplicará la medida correspondiente según el contrato.
                 </p>
               </div>
             </div>

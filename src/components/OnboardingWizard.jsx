@@ -31,6 +31,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const [loadingDni, setLoadingDni] = useState(false);
   const [dniLookupMessage, setDniLookupMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCertificate, setShowCertificate] = useState(false);
   const [activePrinciple, setActivePrinciple] = useState(null);
   const [viewedPrinciples, setViewedPrinciples] = useState([false, false, false]);
 
@@ -261,13 +262,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const handleReset = () => {
     setFormData({ nombre:'',correo:'',marca:'',documento:'',fechaNacimiento:'',aceptaMetodologia:false,aceptaSabado:false,aceptaDomingo:false,aceptaLunes:false,aceptaProtocolo:false,aceptaAsistencia:false,aceptaTop:false,telefono:'',metodoPago:'',metodoPagoOtro:'',numeroCuenta:'',direccion:'',cvFile:null,fotoFile:null,profesion:'',softwares:'',cursoSonado:'',mejoraAdmin:'',comentarios:'' });
     setActivePrinciple(null);
+    setShowCertificate(false);
     setViewedPrinciples([false, false, false]);
     setStep(1); setIsFinished(false); setGeneratedCode(''); setSubmissionWarning(''); setWhatsappUrl(''); onClose();
   };
   const brandColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
   const brandGlow = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14,165,233,0.12)';
 
-  const stepWidths = { 1: '380px', 2: '460px', 3: '600px', 4: '620px', 5: '520px', 6: '760px', 7: '720px', 8: '740px', 9: '680px', 10: '600px', 11: '640px' };
+  const stepWidths = { 1: '380px', 2: '460px', 3: '600px', 4: '620px', 5: '520px', 6: '760px', 7: '860px', 8: '980px', 9: '680px', 10: '600px', 11: '640px' };
 
   if (!isOpen) return null;
 
@@ -896,30 +898,54 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               {/* ═══ PASO 7: ASISTENCIA ═══ */}
               {step === 7 && (
                 <div className="wz-fade">
-                  <h2 className="wz-title">Política de Asistencia</h2>
-                  <p className="wz-sub">Tu compromiso con el horario garantiza la excelencia del programa.</p>
+                  <h2 className="wz-title">Política de Asistencia y Compromiso Académico</h2>
+                  <p className="wz-sub">
+                    El contrato firmado representa un compromiso sagrado con la institución y, principalmente,
+                    con los alumnos que confían en su guía. Para garantizar una experiencia educativa sin
+                    interrupciones, establecemos los siguientes lineamientos:
+                  </p>
 
-                  <div className="wz-metrics-grid">
-                    <div className="wz-metric-box">
-                      <div className="wz-metric-value">0</div>
-                      <div className="wz-metric-label">Reprogramaciones<br/>Personales</div>
-                    </div>
-                    
-                    <div className="wz-metric-box">
-                      <div className="wz-metric-value">4</div>
-                      <div className="wz-metric-label">Días de Aviso<br/>por Emergencia</div>
-                    </div>
-                    
-                    <div className="wz-metric-box danger">
-                      <div className="wz-metric-tag">Penalidad Grave</div>
-                      <div className="wz-metric-value">50%</div>
-                      <div className="wz-metric-label">de retención por más de 2<br/>inasistencias en 4 clases.</div>
-                    </div>
+                  <div className="wz-attendance-grid">
+                    {[
+                      {
+                        number: '01',
+                        title: 'Aviso de Emergencia',
+                        badge: 'Mínimo 4 días',
+                        text: 'En caso de fuerza mayor, se debe notificar a la Dirección Académica con al menos 4 días de anticipación para coordinar las medidas correspondientes y evitar la cancelación de clases.',
+                      },
+                      {
+                        number: '02',
+                        title: 'Gestión de Reemplazos',
+                        badge: 'Autorización previa',
+                        text: 'Si por una situación muy particular y excepcional el docente no puede asistir, deberá proponer un reemplazo de igual o mayor nivel profesional, sujeto a la autorización previa de la Dirección Académica.',
+                      },
+                      {
+                        number: '03',
+                        title: 'Frecuencia y Penalidades',
+                        badge: 'Según contrato',
+                        text: 'Esta medida es viable únicamente en casos de extrema urgencia y de forma muy esporádica. Las faltas injustificadas no están permitidas. El incumplimiento de sesiones o las ausencias frecuentes impactarán en el récord docente y se aplicará la penalidad correspondiente según el contrato.',
+                      },
+                      {
+                        number: '04',
+                        title: 'Aporte de Valor',
+                        badge: 'Compromiso activo',
+                        text: 'El docente se compromete de manera activa a enviar material adicional voluntario como un aporte continuo al desarrollo de los estudiantes.',
+                      },
+                    ].map((item) => (
+                      <article className="wz-attendance-card" key={item.number}>
+                        <div className="wz-attendance-card-head">
+                          <span className="wz-attendance-number">{item.number}</span>
+                          <span className="wz-attendance-badge">{item.badge}</span>
+                        </div>
+                        <h3>{item.title}</h3>
+                        <p>{item.text}</p>
+                      </article>
+                    ))}
                   </div>
 
                   <div className={`wz-check-row ${formData.aceptaAsistencia?'on':''}`} onClick={() => setFormData({...formData, aceptaAsistencia:!formData.aceptaAsistencia})}>
                     <div className={`wz-checkbox ${formData.aceptaAsistencia?'on':''}`} />
-                    <span>Acepto la política de asistencia y comprendo las penalidades.</span>
+                    <span>He leído y acepto la Política de Asistencia y Compromiso Académico.</span>
                   </div>
                   <div className="wz-nav">
                     <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
@@ -932,45 +958,60 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               {step === 8 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Programa Docente TOP</h2>
-                  <p className="wz-sub">Buscamos talentos, no solo expositores. Si demuestras excelencia, te abrimos las puertas a la categoría Élite.</p>
+                  <p className="wz-sub">
+                    Buscamos talentos que inspiren, no solo expositores. Si cumple con los criterios de calidad
+                    académica, asistencia perfecta del 100% y entrega puntual de materiales, accederá a la
+                    categoría Élite y podrá aspirar a beneficios institucionales exclusivos.
+                  </p>
                   <div className="wz-top-overview">
-                    <h3 className="wz-top-overview-title">Cómo funciona la evaluación</h3>
+                    <h3 className="wz-top-overview-title">Criterios para acceder a la categoría Élite</h3>
                     <p className="wz-top-overview-text">
-                      El programa se revisa por ciclos de clases. La decisión se basa en evidencia de desempeño: experiencia del alumno, cumplimiento y consistencia del docente.
+                      La evaluación reconoce el desempeño integral, la constancia y el aporte real del docente
+                      a la experiencia de aprendizaje.
                     </p>
                     <div className="wz-top-kpis">
                       <div className="wz-top-kpi">
-                        <span className="wz-top-kpi-label">NPS mínimo</span>
-                        <strong>4.5 / 5.0</strong>
+                        <span className="wz-top-kpi-label">Calidad</span>
+                        <strong>Académica</strong>
                       </div>
                       <div className="wz-top-kpi">
                         <span className="wz-top-kpi-label">Asistencia</span>
                         <strong>100%</strong>
                       </div>
                       <div className="wz-top-kpi">
-                        <span className="wz-top-kpi-label">Revisión</span>
-                        <strong>Por ciclo</strong>
+                        <span className="wz-top-kpi-label">Materiales</span>
+                        <strong>Puntuales</strong>
                       </div>
                     </div>
                   </div>
 
-                  <div className="wz-top-grid">
-                    <div className="wz-top-card">
-                      <h3 className="wz-top-card-title">Beneficios del nivel Élite</h3>
-                      <ul className="wz-top-list">
-                        <li><strong>Tarifa:</strong> incremento escalonado por desempeño sostenido.</li>
-                        <li><strong>Asignación:</strong> prioridad en nuevos módulos y horarios clave.</li>
-                        <li><strong>Visibilidad:</strong> participación en podcasts, eventos y networking institucional.</li>
-                      </ul>
+                  <div className="wz-top-benefits">
+                    {[
+                      ['Capacitación de Primer Nivel', 'Acceso a becas y capacitaciones 100% gratuitas, además de descuentos exclusivos en programas avanzados de la institución.'],
+                      ['Networking de Alto Valor', 'Conexiones directas con redes de expertos internacionales y profesionales líderes en la industria de la región.'],
+                      ['Representación de Marca', 'Oportunidad de representar a la institución como ponente principal en eventos internacionales y conferencias globales.'],
+                      ['Presencia en Medios', 'Participación exclusiva en los podcasts oficiales, entrevistas de difusión y paneles de opinión especializados.'],
+                      ['Lanzamientos e Innovación', 'Prioridad para liderar nuevos proyectos de desarrollo, consultoría y cursos emergentes de la organización.'],
+                    ].map(([title, text], index) => (
+                      <article className="wz-top-benefit" key={title}>
+                        <span>{String(index + 1).padStart(2, '0')}</span>
+                        <div>
+                          <h3>{title}</h3>
+                          <p>{text}</p>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+
+                  <div className="wz-certificate">
+                    <div className="wz-certificate-copy">
+                      <span className="wz-certificate-kicker">Reconocimiento institucional</span>
+                      <h3>Certificado del Programa Docente TOP</h3>
+                      <p>Conoce el modelo de certificado que reconoce la participación, el compromiso y la excelencia académica del docente.</p>
                     </div>
-                    <div className="wz-top-card">
-                      <h3 className="wz-top-card-title">Criterios de calidad</h3>
-                      <ul className="wz-top-list">
-                        <li><strong>NPS docente:</strong> promedio de encuesta del alumno al cierre de sesión.</li>
-                        <li><strong>Asistencia:</strong> cumplimiento total de clases programadas.</li>
-                        <li><strong>Entrega:</strong> materiales enviados en fecha y con estándar institucional.</li>
-                      </ul>
-                    </div>
+                    <button type="button" className="wz-certificate-button" onClick={() => setShowCertificate(true)}>
+                      Ver certificado
+                    </button>
                   </div>
 
                   <div className={`wz-check-row ${formData.aceptaTop?'on':''}`} onClick={() => setFormData({...formData, aceptaTop:!formData.aceptaTop})}>
@@ -1182,7 +1223,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                   <h2 className="wz-title">Declaración de Conformidad</h2>
                   <p className="wz-sub">Revisa tus datos y envía tu conformidad por WhatsApp a {marcaConfig[formData.marca]?.nombre}.</p>
                   <div className="wz-declaration">
-                    <p>"Confirmo que acepto el Manual Operativo del Docente. Comprendo la metodología práctica y los horarios de entrega innegociables. Acepto el sistema de penalidades y autorizo el uso de mi firma digital para certificados."</p>
+                    <p>"Confirmo que acepto el Manual Operativo del Docente. Comprendo la metodología práctica, los horarios de entrega innegociables y la Política de Asistencia y Compromiso Académico. Autorizo el uso de mi firma digital para certificados."</p>
                   </div>
                   <div className="wz-summary">
                     <div className="wz-sum-row"><span>Docente</span><strong>{formData.nombre}</strong></div>
@@ -1211,6 +1252,32 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           )}
         </div>
       </main>
+
+      {showCertificate && (
+        <div className="wz-certificate-overlay" role="dialog" aria-modal="true" aria-label="Certificado del Programa Docente TOP">
+          <div className="wz-certificate-modal">
+            <button
+              type="button"
+              className="wz-certificate-close"
+              onClick={() => setShowCertificate(false)}
+              aria-label="Cerrar certificado"
+            >
+              ×
+            </button>
+            <div className="wz-certificate-modal-head">
+              <span>Programa Docente TOP</span>
+              <h2>Modelo de certificado institucional</h2>
+            </div>
+            <div className="wz-certificate-image-wrap">
+              <img
+                src="/assets/certificado-docente-top.png"
+                alt="Modelo de certificado institucional CIIP Latam para docentes"
+                className="wz-certificate-image"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ═══ MODAL PENALIDAD (PASO 4) ═══ */}
       {showPenaltyAlert && (
@@ -1712,7 +1779,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         .wz-principle:hover { border-color:var(--bc); transform:translateX(3px); box-shadow:0 8px 16px -8px rgba(0,0,0,0.06); }
         .wz-principle:hover::before { background:var(--bc); }
-        .wz-principle.open { border-color:var(--bc); }
+        .wz-principle.open {
+          border-color:rgba(14,165,233,0.38);
+          background:linear-gradient(135deg, rgba(224,242,254,0.9) 0%, rgba(236,254,255,0.72) 48%, #ffffff 100%);
+          box-shadow:0 14px 30px -22px rgba(2,132,199,0.5);
+        }
         .wz-principle.open::before { background:var(--bc); }
         .wz-principle.viewed { border-color: rgba(34, 197, 94, 0.2); }
         .wz-principle.viewed.open { border-color:var(--bc); }
@@ -1826,6 +1897,60 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-alert.info strong { color:#075985; }
         .wz-alert.warn { background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); color:#92400e; }
         .wz-alert.warn strong { color:#78350f; }
+
+        /* ── POLÍTICA DE ASISTENCIA ── */
+        .wz-attendance-grid {
+          display:grid;
+          grid-template-columns:repeat(2, minmax(0, 1fr));
+          gap:0.8rem;
+          margin-bottom:1rem;
+        }
+        .wz-attendance-card {
+          min-width:0;
+          padding:1rem 1.05rem;
+          border:1px solid rgba(14,165,233,0.14);
+          border-radius:14px;
+          background:linear-gradient(145deg, #ffffff 0%, rgba(240,249,255,0.62) 100%);
+          box-shadow:0 12px 26px -24px rgba(2,132,199,0.65);
+        }
+        .wz-attendance-card-head {
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:0.65rem;
+          margin-bottom:0.55rem;
+        }
+        .wz-attendance-number {
+          font-family:'Outfit',sans-serif;
+          color:var(--bc);
+          font-size:0.82rem;
+          font-weight:900;
+        }
+        .wz-attendance-badge {
+          padding:0.24rem 0.48rem;
+          border-radius:6px;
+          background:rgba(14,165,233,0.09);
+          color:#075985;
+          font-size:0.64rem;
+          font-weight:800;
+          line-height:1.2;
+          text-align:right;
+        }
+        .wz-attendance-card h3 {
+          margin:0 0 0.38rem;
+          color:#0f172a;
+          font-family:'Outfit',sans-serif;
+          font-size:0.98rem;
+          font-weight:820;
+          line-height:1.25;
+        }
+        .wz-attendance-card p {
+          margin:0;
+          color:#526173;
+          font-size:0.8rem;
+          line-height:1.5;
+          font-weight:520;
+        }
 
         /* ── CUSTOM NOTIFICATION PREMIUM ── */
         .wz-notification {
@@ -2240,6 +2365,164 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           color:#0f172a;
           font-weight:760;
         }
+        .wz-top-benefits {
+          display:grid;
+          grid-template-columns:repeat(3, minmax(0, 1fr));
+          gap:0.65rem;
+          margin-bottom:0.85rem;
+        }
+        .wz-top-benefit {
+          min-width:0;
+          display:flex;
+          gap:0.7rem;
+          padding:0.85rem;
+          border:1px solid #e2e8f0;
+          border-radius:12px;
+          background:#fff;
+        }
+        .wz-top-benefit > span {
+          flex:0 0 auto;
+          color:var(--bc);
+          font-family:'Outfit',sans-serif;
+          font-size:0.75rem;
+          font-weight:900;
+        }
+        .wz-top-benefit h3 {
+          margin:0 0 0.24rem;
+          color:#0f172a;
+          font-family:'Outfit',sans-serif;
+          font-size:0.9rem;
+          font-weight:810;
+          line-height:1.25;
+        }
+        .wz-top-benefit p {
+          margin:0;
+          color:#526173;
+          font-size:0.76rem;
+          line-height:1.45;
+        }
+        .wz-certificate {
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:1rem;
+          padding:1rem 1.1rem;
+          margin-bottom:0.9rem;
+          border:1px solid rgba(212,161,49,0.32);
+          border-radius:14px;
+          background:linear-gradient(135deg, #071728 0%, #0d2d4b 66%, #124f65 100%);
+          box-shadow:0 16px 34px -26px rgba(7,23,40,0.9);
+        }
+        .wz-certificate-copy {
+          min-width:0;
+        }
+        .wz-certificate-kicker {
+          display:block;
+          margin-bottom:0.24rem;
+          color:#f4c968;
+          font-size:0.64rem;
+          font-weight:850;
+          letter-spacing:0.7px;
+          text-transform:uppercase;
+        }
+        .wz-certificate h3 {
+          margin:0 0 0.28rem;
+          color:#fff;
+          font-family:'Outfit',sans-serif;
+          font-size:1rem;
+          font-weight:820;
+        }
+        .wz-certificate p {
+          max-width:34rem;
+          margin:0;
+          color:#cbd5e1;
+          font-size:0.76rem;
+          line-height:1.45;
+        }
+        .wz-certificate-button {
+          flex:0 0 auto;
+          min-height:40px;
+          padding:0.55rem 0.82rem;
+          border:1px solid rgba(244,201,104,0.42);
+          border-radius:8px;
+          background:#f4c968;
+          color:#13263b;
+          font-family:inherit;
+          font-size:0.78rem;
+          font-weight:850;
+          cursor:pointer;
+        }
+        .wz-certificate-overlay {
+          position:fixed;
+          inset:0;
+          z-index:3600;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          padding:clamp(0.75rem, 2vw, 1.5rem);
+          background:rgba(5,15,27,0.88);
+          backdrop-filter:blur(10px);
+          overflow-y:auto;
+        }
+        .wz-certificate-modal {
+          position:relative;
+          width:min(1120px, 100%);
+          max-height:calc(100dvh - 1.5rem);
+          display:flex;
+          flex-direction:column;
+          padding:1rem;
+          border:1px solid rgba(244,201,104,0.3);
+          border-radius:14px;
+          background:linear-gradient(145deg, #071728 0%, #0c2945 100%);
+          box-shadow:0 30px 70px rgba(0,0,0,0.42);
+          overflow:hidden;
+        }
+        .wz-certificate-close {
+          position:absolute;
+          top:0.75rem;
+          right:0.75rem;
+          z-index:2;
+          width:38px;
+          height:38px;
+          border:1px solid rgba(255,255,255,0.16);
+          border-radius:50%;
+          background:rgba(5,15,27,0.76);
+          color:#fff;
+          font-size:1.45rem;
+          line-height:1;
+          cursor:pointer;
+        }
+        .wz-certificate-modal-head {
+          flex:0 0 auto;
+          padding:0.2rem 3.2rem 0.85rem 0.2rem;
+        }
+        .wz-certificate-modal-head span {
+          color:#f4c968;
+          font-size:0.68rem;
+          font-weight:850;
+          letter-spacing:0.8px;
+          text-transform:uppercase;
+        }
+        .wz-certificate-modal-head h2 {
+          margin:0.18rem 0 0;
+          color:#fff;
+          font-family:'Outfit',sans-serif;
+          font-size:clamp(1.05rem, 2vw, 1.45rem);
+        }
+        .wz-certificate-image-wrap {
+          min-height:0;
+          overflow:auto;
+          border-radius:8px;
+          background:#fff;
+          overscroll-behavior:contain;
+          -webkit-overflow-scrolling:touch;
+        }
+        .wz-certificate-image {
+          display:block;
+          width:100%;
+          height:auto;
+          max-width:none;
+        }
 
         /* ── RESPONSIVE ── */
         @media (max-width:860px) {
@@ -2275,6 +2558,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-metric-box.danger { grid-column:span 2; }
           .wz-top-kpis { grid-template-columns:repeat(3, minmax(0, 1fr)); }
           .wz-top-grid { grid-template-columns:1fr; }
+          .wz-top-benefits { grid-template-columns:1fr; }
         }
         @media (max-width:680px) {
           .wz {
@@ -2408,6 +2692,33 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-top-kpi strong { font-size:0.9rem; }
           .wz-top-card { padding:1rem; }
           .wz-top-card-title { font-size:0.92rem; }
+          .wz-attendance-grid { grid-template-columns:1fr; }
+          .wz-attendance-card { padding:0.9rem; }
+          .wz-certificate {
+            align-items:stretch;
+            flex-direction:column;
+          }
+          .wz-certificate-button {
+            width:100%;
+          }
+          .wz-certificate-overlay {
+            align-items:flex-start;
+            padding:0.5rem;
+          }
+          .wz-certificate-modal {
+            max-height:calc(100dvh - 1rem);
+            padding:0.65rem;
+            border-radius:10px;
+          }
+          .wz-certificate-modal-head {
+            padding:0.25rem 2.8rem 0.65rem 0.1rem;
+          }
+          .wz-certificate-close {
+            top:0.5rem;
+            right:0.5rem;
+            width:34px;
+            height:34px;
+          }
 
           .wz-nav { flex-direction:column-reverse; gap:0.5rem; margin-top:1.5rem; }
           .wz-btn-main, .wz-btn-ghost, .wz-btn-wa {
@@ -2461,6 +2772,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-sum-row strong {
             max-width:none;
             text-align:left;
+          }
+          .wz-attendance-card-head {
+            align-items:flex-start;
+            flex-direction:column;
+            gap:0.35rem;
+          }
+          .wz-top-kpis {
+            grid-template-columns:1fr;
           }
         }
 
@@ -2553,6 +2872,60 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             margin-top: 0.85rem !important;
             gap: 0.5rem !important;
           }
+          .wz-attendance-grid {
+            gap:0.55rem !important;
+            margin-bottom:0.7rem !important;
+          }
+          .wz-attendance-card {
+            padding:0.72rem 0.8rem !important;
+          }
+          .wz-attendance-card-head {
+            margin-bottom:0.35rem !important;
+          }
+          .wz-attendance-card h3 {
+            font-size:0.88rem !important;
+            margin-bottom:0.22rem !important;
+          }
+          .wz-attendance-card p {
+            font-size:0.72rem !important;
+            line-height:1.38 !important;
+          }
+          .wz-top-overview {
+            padding:0.75rem 0.85rem !important;
+            margin-bottom:0.65rem !important;
+          }
+          .wz-top-overview-text {
+            font-size:0.76rem !important;
+            line-height:1.4 !important;
+          }
+          .wz-top-kpis {
+            margin-top:0.6rem !important;
+          }
+          .wz-top-benefits {
+            gap:0.45rem !important;
+            margin-bottom:0.6rem !important;
+          }
+          .wz-top-benefit {
+            padding:0.62rem !important;
+            gap:0.5rem !important;
+          }
+          .wz-top-benefit h3 {
+            font-size:0.8rem !important;
+          }
+          .wz-top-benefit p {
+            font-size:0.68rem !important;
+            line-height:1.35 !important;
+          }
+          .wz-certificate {
+            padding:0.72rem 0.85rem !important;
+            margin-bottom:0.65rem !important;
+          }
+          .wz-certificate h3 {
+            font-size:0.9rem !important;
+          }
+          .wz-certificate p {
+            font-size:0.68rem !important;
+          }
           .wz-btn-main, .wz-btn-ghost, .wz-btn-wa {
             padding: 0.6rem 1.4rem !important;
             font-size: 0.82rem !important;
@@ -2606,6 +2979,31 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           }
           .wz-success-copy p.wz-sub {
             text-align: center !important;
+          }
+          .wz-attendance-grid {
+            grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+          }
+          .wz-attendance-card {
+            padding:0.55rem 0.65rem !important;
+          }
+          .wz-attendance-badge {
+            font-size:0.58rem !important;
+          }
+          .wz-attendance-card p {
+            font-size:0.66rem !important;
+            line-height:1.3 !important;
+          }
+          .wz-top-benefits {
+            grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+          }
+          .wz-top-benefit {
+            padding:0.5rem !important;
+          }
+          .wz-top-benefit p {
+            display:none !important;
+          }
+          .wz-certificate p {
+            display:none !important;
           }
         }
 
