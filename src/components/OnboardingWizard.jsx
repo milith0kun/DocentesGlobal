@@ -1027,10 +1027,19 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     <div className="wz-certificate-copy">
                       <span className="wz-certificate-kicker">Reconocimiento institucional</span>
                       <h3>Certificado del Programa Docente TOP</h3>
-                      <p>Conoce el modelo de certificado que reconoce la participación, el compromiso y la excelencia académica del docente.</p>
+                      <p>Haz clic sobre el certificado para verlo ampliado y revisar el modelo institucional completo.</p>
                     </div>
-                    <button type="button" className="wz-certificate-button" onClick={() => setShowCertificate(true)}>
-                      Ver certificado
+                    <button
+                      type="button"
+                      className="wz-certificate-preview"
+                      onClick={() => setShowCertificate(true)}
+                      aria-label="Ver certificado ampliado"
+                    >
+                      <img
+                        src="/assets/certificado-docente-top.png"
+                        alt="Vista previa del certificado institucional"
+                      />
+                      <span>Click para ampliar</span>
                     </button>
                   </div>
 
@@ -2558,9 +2567,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           line-height:1.45;
         }
         .wz-certificate {
-          display:flex;
+          display:grid;
+          grid-template-columns:minmax(0, 0.9fr) minmax(260px, 1.1fr);
           align-items:center;
-          justify-content:space-between;
           gap:1rem;
           padding:1rem 1.1rem;
           margin-bottom:0.9rem;
@@ -2595,18 +2604,40 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           font-size:0.76rem;
           line-height:1.45;
         }
-        .wz-certificate-button {
-          flex:0 0 auto;
-          min-height:40px;
-          padding:0.55rem 0.82rem;
-          border:1px solid rgba(244,201,104,0.42);
-          border-radius:8px;
-          background:#f4c968;
-          color:#13263b;
-          font-family:inherit;
-          font-size:0.78rem;
-          font-weight:850;
+        .wz-certificate-preview {
+          position:relative;
+          min-width:0;
+          display:block;
+          padding:0;
+          border:1px solid rgba(244,201,104,0.38);
+          border-radius:10px;
+          background:#fff;
+          box-shadow:0 18px 36px -24px rgba(0,0,0,0.5);
           cursor:pointer;
+          overflow:hidden;
+        }
+        .wz-certificate-preview img {
+          display:block;
+          width:100%;
+          aspect-ratio:1448 / 1086;
+          object-fit:cover;
+          object-position:center;
+          transition:transform 0.22s ease;
+        }
+        .wz-certificate-preview:hover img {
+          transform:scale(1.025);
+        }
+        .wz-certificate-preview span {
+          position:absolute;
+          right:0.6rem;
+          bottom:0.55rem;
+          padding:0.28rem 0.52rem;
+          border-radius:6px;
+          background:rgba(7,23,40,0.82);
+          color:#fff;
+          font-size:0.66rem;
+          font-weight:850;
+          line-height:1;
         }
         .wz-certificate-overlay {
           position:fixed;
@@ -2854,10 +2885,10 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-attendance-grid { grid-template-columns:1fr; }
           .wz-attendance-card { padding:0.9rem; }
           .wz-certificate {
+            grid-template-columns:1fr;
             align-items:stretch;
-            flex-direction:column;
           }
-          .wz-certificate-button {
+          .wz-certificate-preview {
             width:100%;
           }
           .wz-certificate-overlay {
