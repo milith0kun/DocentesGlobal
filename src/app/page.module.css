@@ -30,6 +30,140 @@
   flex: 0 0 auto;
 }
 
+.contactsSection {
+  position: fixed;
+  top: clamp(6.6rem, 7.5vw, 7.25rem);
+  right: clamp(1rem, 4vw, 2rem);
+  z-index: 900;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+}
+
+.contactsSection :global(.contactDisclosure) {
+  width: fit-content;
+  margin-left: auto;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+  position: relative;
+}
+
+.contactsSection :global(.contactSummaryAction) {
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.52rem 0.92rem;
+  border-radius: 8px;
+  background: #0f2f52;
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-align: center;
+  white-space: nowrap;
+  box-shadow: 0 10px 22px rgba(15, 47, 82, 0.16);
+  cursor: pointer;
+  line-height: 1.15;
+}
+
+.contactsSection :global(.contactSummaryAction[aria-expanded="true"]) {
+  background: #144068;
+  color: #ffffff;
+}
+
+.contactsSection :global(.contactsPanel) {
+  width: min(92vw, 340px);
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  right: 0;
+  transform: none;
+  margin-top: 0;
+  padding: 0.72rem;
+  border: 1px solid rgba(15, 47, 82, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 12px 28px rgba(15, 47, 82, 0.1);
+  max-height: min(56dvh, 420px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.contactsSection :global(.contactsHint) {
+  margin: 0.64rem 0 0.55rem;
+  color: #526173;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.contactsSection :global(.contactsGrid) {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.45rem;
+}
+
+.contactsSection :global(.contactItem) {
+  min-height: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.62rem;
+  padding: 0.62rem;
+  border: 1px solid rgba(15, 47, 82, 0.12);
+  border-radius: 8px;
+  background: #ffffff;
+  min-width: 0;
+}
+
+.contactsSection :global(.contactInstitution) {
+  display: block;
+  margin-bottom: 0.18rem;
+  color: #124a74;
+  font-size: 0.72rem;
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+
+.contactsSection :global(.contactItem strong) {
+  color: #0f172a;
+  font-size: 0.82rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.contactsSection :global(.contactPhone) {
+  display: block;
+  margin-top: 0.2rem;
+  color: #0f2f52;
+  font-size: 0.78rem;
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+
+.contactsSection :global(.contactWhatsApp) {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.42rem 0.58rem;
+  border-radius: 8px;
+  background: #0f2f52;
+  color: #ffffff;
+  font-size: 0.76rem;
+  font-weight: 850;
+  text-align: center;
+  white-space: nowrap;
+  line-height: 1.15;
+}
+
+.contactsSection :global(.contactWhatsApp:hover) {
+  background: #144068;
+}
+
 @media (min-width: 1024px) {
   .homeShell {
     height: 100svh;
@@ -53,7 +187,6 @@
 
   .homeMain {
     flex: 0 0 auto;
-    display: block;
     min-height: auto;
   }
 
@@ -61,5 +194,78 @@
     flex: 0 0 auto;
     min-height: auto;
     display: block;
+  }
+
+  .contactsSection {
+    top: 4.9rem;
+    left: 0;
+    right: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .contactsSection :global(.contactsGrid) {
+    grid-template-columns: 1fr;
+  }
+
+  .contactsSection :global(.container) {
+    width: 100%;
+    max-width: none;
+    padding: 0 0.85rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .contactsSection :global(.contactDisclosure) {
+    max-width: none;
+    margin-left: 0;
+  }
+
+  .contactsSection :global(.contactsPanel) {
+    position: absolute;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: min(calc(100vw - 1.7rem), 340px);
+    max-height: calc(100dvh - 8.7rem);
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .contactsSection :global(.contactSummaryAction) {
+    width: auto;
+    text-align: center;
+  }
+
+  .contactsSection :global(.contactsGrid) {
+    grid-template-columns: 1fr;
+  }
+
+  .contactsSection :global(.contactItem) {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    padding: 0.62rem;
+  }
+
+  .contactsSection :global(.contactWhatsApp) {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .contactsSection {
+    right: 0;
+  }
+
+  .contactsSection :global(.contactSummaryAction) {
+    max-width: calc(100vw - 1.2rem);
+    white-space: normal;
+  }
+
+  .contactsSection :global(.contactsPanel) {
+    width: calc(100vw - 1.2rem);
   }
 }

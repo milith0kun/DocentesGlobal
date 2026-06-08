@@ -29,6 +29,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const [submissionWarning, setSubmissionWarning] = useState('');
   const [whatsappUrl, setWhatsappUrl] = useState('');
   const [loadingDni, setLoadingDni] = useState(false);
+  const [dniLookupMessage, setDniLookupMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activePrinciple, setActivePrinciple] = useState(null);
   const [viewedPrinciples, setViewedPrinciples] = useState([false, false, false]);
@@ -36,6 +37,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const consultarDNI = async (dniVal) => {
     if (!/^\d{8}$/.test(dniVal)) return;
     setLoadingDni(true);
+    setDniLookupMessage('');
     try {
       const response = await fetch('/api/reniec', {
         method: 'POST',
@@ -45,17 +47,18 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
       const resData = await parseJsonResponse(response);
       if (!response.ok || !resData) {
-        console.error('Error al consultar DNI. Status:', response.status, 'Data:', resData);
+        setDniLookupMessage('No se pudo autocompletar el nombre. Escríbelo manualmente.');
         return;
       }
 
       if (resData.success && resData.nombre) {
         setFormData(prev => ({ ...prev, nombre: resData.nombre }));
+        setDniLookupMessage('');
       } else {
-        console.warn('No se obtuvo un resultado exitoso de RENIEC:', resData);
+        setDniLookupMessage('No se encontraron datos para este documento. Escríbelo manualmente.');
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
+      setDniLookupMessage('No se pudo conectar con la consulta DNI. Escríbelo manualmente.');
     } finally {
       setLoadingDni(false);
     }
@@ -145,12 +148,12 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   };
 
   const marcaConfig = {
-    ciip: { nombre: 'CIIP Latam', color: '#0284c7', telefono: '51956006498', coordinador: 'Nicol', bgGlow: 'rgba(2,132,199,0.12)' },
-    geomina: { nombre: 'Geomina', color: '#0ea5e9', telefono: '51925084564', coordinador: 'Fiorella', bgGlow: 'rgba(14,165,233,0.12)' },
-    biomedic: { nombre: 'Biomedic', color: '#06b6d4', telefono: '51956006498', coordinador: 'Nicol', bgGlow: 'rgba(6,182,212,0.1)' },
-    ambos: { nombre: 'CIIP Latam & Geomina', color: '#38bdf8', telefono: '51956006498', coordinador: 'Nicol y Fiorella', bgGlow: 'rgba(56,189,248,0.12)' },
-    'ciip,geomina': { nombre: 'CIIP Latam & Geomina', color: '#38bdf8', telefono: '51956006498', coordinador: 'Nicol y Fiorella', bgGlow: 'rgba(56,189,248,0.12)' },
-    'geomina,ciip': { nombre: 'CIIP Latam & Geomina', color: '#38bdf8', telefono: '51956006498', coordinador: 'Nicol y Fiorella', bgGlow: 'rgba(56,189,248,0.12)' },
+    ciip: { nombre: 'CIIP Latam', color: '#0284c7', telefono: '51956006498', coordinador: 'Coordinacion Academica', bgGlow: 'rgba(2,132,199,0.12)' },
+    geomina: { nombre: 'Geomina', color: '#0ea5e9', telefono: '51925084564', coordinador: 'Coordinacion Academica', bgGlow: 'rgba(14,165,233,0.12)' },
+    biomedic: { nombre: 'Biomedic', color: '#06b6d4', telefono: '51956006498', coordinador: 'Coordinacion Academica', bgGlow: 'rgba(6,182,212,0.1)' },
+    ambos: { nombre: 'CIIP Latam & Geomina', color: '#38bdf8', telefono: '51956006498', coordinador: 'Coordinacion Academica', bgGlow: 'rgba(56,189,248,0.12)' },
+    'ciip,geomina': { nombre: 'CIIP Latam & Geomina', color: '#38bdf8', telefono: '51956006498', coordinador: 'Coordinacion Academica', bgGlow: 'rgba(56,189,248,0.12)' },
+    'geomina,ciip': { nombre: 'CIIP Latam & Geomina', color: '#38bdf8', telefono: '51956006498', coordinador: 'Coordinacion Academica', bgGlow: 'rgba(56,189,248,0.12)' },
     'ciip,biomedic': { nombre: 'CIIP Latam & Biomedic', color: '#0ea5e9', telefono: '51956006498', coordinador: 'Coordinación Académica', bgGlow: 'rgba(14,165,233,0.12)' },
     'biomedic,ciip': { nombre: 'CIIP Latam & Biomedic', color: '#0ea5e9', telefono: '51956006498', coordinador: 'Coordinación Académica', bgGlow: 'rgba(14,165,233,0.12)' },
     'geomina,biomedic': { nombre: 'Geomina & Biomedic', color: '#06b6d4', telefono: '51925084564', coordinador: 'Coordinación Académica', bgGlow: 'rgba(6,182,212,0.1)' },
@@ -462,6 +465,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                         onChange={e => {
                           const val = e.target.value;
                           setFormData({...formData, documento: val});
+                          setDniLookupMessage('');
                           if (/^\d{8}$/.test(val)) {
                             consultarDNI(val);
                           }
@@ -482,6 +486,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                           <span className="wz-input-spinner" />
                         )}
                       </div>
+                      {dniLookupMessage && <span className="wz-field-note">{dniLookupMessage}</span>}
                     </div>
                     <div className="wz-field">
                       <span className="wz-label">Correo Electrónico</span>
@@ -1254,6 +1259,22 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           color:#1e293b; display:flex; flex-direction:column;
           overflow:hidden;
         }
+        .wz,
+        .wz * {
+          min-width: 0;
+        }
+        .wz p,
+        .wz span,
+        .wz strong,
+        .wz h1,
+        .wz h2,
+        .wz h3,
+        .wz h4,
+        .wz button,
+        .wz a,
+        .wz label {
+          overflow-wrap: anywhere;
+        }
 
         /* ── HEADER ── */
         .wz-header {
@@ -1294,6 +1315,10 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         .wz-stepper-step-name {
           font-size:0.85rem; font-weight:750; color:#1e293b;
+          max-width:min(52vw, 32rem);
+          overflow:hidden;
+          text-overflow:ellipsis;
+          white-space:nowrap;
         }
         .wz-stepper-segments {
           display:flex; align-items:center; gap:0.35rem; width:100%; max-width:680px;
@@ -1319,12 +1344,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-content {
           width:100%; transition:max-width 0.35s ease;
           margin-top:auto; margin-bottom:auto;
+          max-width:min(100%, var(--wz-content-max, 100%));
         }
 
         /* ── TYPOGRAPHY ── */
         .wz-title {
           font-family:'Outfit',sans-serif; font-size:1.65rem; font-weight:850;
           letter-spacing:-0.8px; color:#0f172a; margin:0 0 0.35rem;
+          line-height:1.16;
         }
         .wz-sub { font-size:0.9rem; color:#64748b; line-height:1.55; margin:0 0 1.5rem; font-weight:500; }
         .wz-tag {
@@ -1345,6 +1372,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           width:100%; padding:0.75rem 1rem; border:1.5px solid #e8ecf1;
           border-radius:10px; font-size:0.9rem; font-family:inherit;
           color:#0f172a; outline:none; background:#fff; transition:all 0.2s;
+          min-width:0;
         }
         .wz-input::placeholder { color:#b0b8c4; }
         .wz-input:focus { border-color:var(--bc); box-shadow:0 0 0 3px var(--bg); }
@@ -1352,6 +1380,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-input.invalid { border-color:#ef4444; background:#fff7f7; }
         .wz-input.invalid:focus { border-color:#ef4444; box-shadow:0 0 0 3px rgba(239,68,68,0.1); }
         .wz-field-error { font-size:0.76rem; color:#dc2626; font-weight:700; line-height:1.35; }
+        .wz-field-note { font-size:0.76rem; color:#64748b; font-weight:650; line-height:1.38; }
         
         .wz-input-spinner {
           position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
@@ -2002,11 +2031,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           text-align:left;
         }
         .wz-sum-row {
-          display:flex; justify-content:space-between; align-items:center;
+          display:flex; justify-content:space-between; align-items:center; gap:0.85rem;
           padding:0.55rem 0; border-bottom:1px solid #f1f5f9; font-size:0.85rem;
         }
-        .wz-sum-row span { color:#94a3b8; font-weight:500; }
-        .wz-sum-row strong { color:#0f172a; font-weight:700; }
+        .wz-sum-row span { color:#94a3b8; font-weight:500; flex:0 0 auto; }
+        .wz-sum-row strong { color:#0f172a; font-weight:700; min-width:0; text-align:right; }
 
         .wz-footer {
           text-align:center; font-size:0.65rem; font-weight:700; color:#b0b8c4;
@@ -2019,6 +2048,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           padding:0.7rem 1.8rem; font-size:0.88rem; font-weight:750; color:#fff;
           background:var(--bc); border:none; border-radius:10px; cursor:pointer;
           transition:all 0.2s; font-family:inherit;
+          line-height:1.2;
         }
         .wz-btn-main:hover:not(:disabled) { filter:brightness(1.08); transform:translateY(-1px); }
         .wz-btn-main:disabled { background:#e2e8f0 !important; color:#94a3b8 !important; cursor:not-allowed; }
@@ -2026,6 +2056,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           padding:0.7rem 1.8rem; font-size:0.88rem; font-weight:700; color:#64748b;
           background:#f1f5f9; border:none; border-radius:10px; cursor:pointer;
           transition:all 0.2s; font-family:inherit;
+          line-height:1.2;
         }
         .wz-btn-ghost:hover { background:#e2e8f0; color:#1e293b; }
         .wz-btn-wa {
@@ -2033,6 +2064,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           background:linear-gradient(135deg,#25d366,#128c7e); border:none; border-radius:10px;
           cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:0.5rem;
           font-family:inherit;
+          line-height:1.2;
         }
         .wz-btn-wa:hover { filter:brightness(1.08); transform:translateY(-1px); }
 
@@ -2311,6 +2343,17 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             padding:0.65rem 1.25rem; gap:0.45rem;
           }
           .wz-stepper-step-name { font-size:0.78rem; }
+          .wz-stepper-info {
+            width:100%;
+            justify-content:center;
+            overflow:hidden;
+          }
+          .wz-stepper-step-name {
+            max-width:58vw;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            white-space:nowrap;
+          }
           .wz-stepper-segments { gap:0.25rem; }
           .wz-stepper-segment { height:3px; }
           .wz-main {
@@ -2334,8 +2377,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             max-width: 390px !important;
           }
           
-          .wz-title { font-size:1.5rem !important; margin-bottom:0.5rem; }
-          .wz-sub { font-size:0.85rem !important; margin-bottom:1.25rem !important; }
+          .wz-title { font-size:1.5rem !important; margin-bottom:0.5rem; line-height:1.16 !important; }
+          .wz-sub { font-size:0.85rem !important; margin-bottom:1.25rem !important; line-height:1.48 !important; }
           .wz-grid-2 { grid-template-columns:1fr !important; gap:1rem !important; }
           
           .wz-principles-list { gap:0.75rem; }
@@ -2367,7 +2410,22 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-top-card-title { font-size:0.92rem; }
 
           .wz-nav { flex-direction:column-reverse; gap:0.5rem; margin-top:1.5rem; }
-          .wz-btn-main, .wz-btn-ghost, .wz-btn-wa { width:100%; text-align:center; justify-content:center; padding:0.75rem; }
+          .wz-btn-main, .wz-btn-ghost, .wz-btn-wa {
+            width:100%;
+            min-height:44px;
+            text-align:center;
+            justify-content:center;
+            padding:0.75rem;
+            white-space:normal;
+          }
+          .wz-sum-row {
+            align-items:flex-start;
+            gap:0.4rem;
+          }
+          .wz-sum-row strong {
+            text-align:right;
+            max-width:62%;
+          }
           .wz-modal-content { width:92%; padding:2rem 1.5rem; border-radius:20px; }
           .wz-modal-title { font-size:1.6rem; margin-bottom:0.85rem; letter-spacing:-0.5px; }
           .wz-modal-desc { font-size:0.9rem; margin-bottom:1.5rem; }
@@ -2392,6 +2450,17 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-brand-card img {
             max-height: 34px;
             max-width: 68%;
+          }
+          .wz-stepper-step-name {
+            max-width:50vw;
+          }
+          .wz-sum-row {
+            flex-direction:column;
+            align-items:stretch;
+          }
+          .wz-sum-row strong {
+            max-width:none;
+            text-align:left;
           }
         }
 
@@ -2511,6 +2580,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           }
           .wz-title {
             font-size: 1.25rem !important;
+            line-height: 1.14 !important;
           }
           .wz-sub {
             font-size: 0.78rem !important;

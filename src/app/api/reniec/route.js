@@ -25,8 +25,8 @@ export async function POST(request) {
 
     if (!process.env.RENIEC_API_TOKEN) {
       return NextResponse.json(
-        { success: false, error: 'Falta configurar RENIEC_API_TOKEN' },
-        { status: 500 }
+        { success: false, error: 'Consulta DNI no configurada' },
+        { status: 200 }
       );
     }
 

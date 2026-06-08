@@ -115,20 +115,21 @@ export default function Hero({ onStartWizard }) {
         <div className="home-hero-grid">
           <div className="hero-copy">
             <span className="hero-badge">2026</span>
+            <p className="hero-kicker">Bienvenido Docente</p>
 
             <h1 className="hero-title">
-              Manual Digital
+              Este es el Manual y Registro
               <br />
-              <span className="hero-title-accent">Docente de Excelencia</span>
+              <span className="hero-title-accent">para la Excelencia Academica</span>
             </h1>
 
             <p className="hero-subtitle">
-              Guía oficial de estándares metodológicos, de imagen y calidad para el ecosistema educativo de CIIP
-              Latam, Geomina y Biomedic.
+              Guia oficial y registro integrado de estandares metodologicos, de imagen y calidad
+              para el ecosistema educativo de CIIP Latam, Geomina y Biomedic.
             </p>
 
             <button type="button" onClick={onStartWizard} className="hero-cta">
-              <span>Comenzar Manual</span>
+              <span>Comenzar Registro</span>
             </button>
           </div>
 
@@ -247,6 +248,15 @@ export default function Hero({ onStartWizard }) {
           margin-bottom: 0.88rem;
         }
 
+        .clean-hero .hero-kicker {
+          margin: -0.38rem 0 0.42rem;
+          color: #0f172a;
+          font-family: var(--font-heading);
+          font-size: clamp(1.58rem, 2.3vw, 2.25rem);
+          line-height: 1.12;
+          font-weight: 760;
+        }
+
         .clean-hero .hero-title {
           margin: 0 0 0.95rem;
           color: #0f172a;
@@ -271,6 +281,7 @@ export default function Hero({ onStartWizard }) {
         }
 
         .clean-hero .hero-badge,
+        .clean-hero .hero-kicker,
         .clean-hero .hero-title,
         .clean-hero .hero-subtitle,
         .clean-hero .hero-cta {
@@ -285,6 +296,10 @@ export default function Hero({ onStartWizard }) {
 
         .clean-hero .hero-title {
           animation-delay: 130ms;
+        }
+
+        .clean-hero .hero-kicker {
+          animation-delay: 100ms;
         }
 
         .clean-hero .hero-subtitle {
@@ -347,7 +362,7 @@ export default function Hero({ onStartWizard }) {
           height: auto;
           object-fit: contain;
           opacity: 0;
-          transform: scale(1.35); /* Zoom to remove transparent padding */
+          transform: scale(1.35);
           transform-origin: center center;
           filter: drop-shadow(0 24px 40px rgba(14, 116, 144, 0.12));
           /* Hardware acceleration to prevent any sub-pixel jitter */
@@ -382,6 +397,7 @@ export default function Hero({ onStartWizard }) {
 
         @media (prefers-reduced-motion: reduce) {
           .clean-hero .hero-badge,
+          .clean-hero .hero-kicker,
           .clean-hero .hero-title,
           .clean-hero .hero-subtitle,
           .clean-hero .hero-cta {
@@ -414,6 +430,7 @@ export default function Hero({ onStartWizard }) {
             margin: 0 auto 1.2rem;
             max-width: 620px;
           }
+
         }
 
         @media (max-width: 640px) {
@@ -442,6 +459,11 @@ export default function Hero({ onStartWizard }) {
             overflow-wrap: break-word;
           }
 
+          .clean-hero .hero-kicker {
+            margin: -0.22rem 0 0.42rem;
+            font-size: clamp(1.32rem, 7vw, 1.68rem);
+          }
+
           .clean-hero .hero-subtitle {
             max-width: 21rem;
             margin: 0 auto 1.02rem;
@@ -464,7 +486,7 @@ export default function Hero({ onStartWizard }) {
 
           .clean-hero .hero-mascot {
             max-width: 320px;
-            transform: scale(1.15); /* Slightly less zoom on mobile to prevent overflow */
+            transform: scale(1.15);
           }
 
           .clean-hero .hero-mascot + .hero-mascot {

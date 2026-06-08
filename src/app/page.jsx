@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
+import AcademicContacts from '@/components/AcademicContacts';
 import Footer from '@/components/Footer';
 import OnboardingWizard from '@/components/OnboardingWizard';
 import styles from './page.module.css';
@@ -20,6 +21,7 @@ export default function Home() {
     <div className={styles.homeShell}>
       <div className={isWizardOpen ? styles.homeContentHidden : styles.homeContent}>
         <Navbar />
+        <AcademicContacts className={styles.contactsSection} />
 
         <main className={styles.homeMain}>
           <header className={styles.heroHost}>

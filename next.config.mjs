@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
+  allowedDevOrigins: ["72.60.114.137"],
   // @react-pdf/renderer needs to be external for server components
   serverExternalPackages: ["@react-pdf/renderer"],
   async headers() {
@@ -21,7 +22,7 @@ const nextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob:",
               "frame-src 'self' blob:",
-              "connect-src 'self' https://apiperu.dev",
+              `connect-src 'self' https://apiperu.dev ${process.env.NODE_ENV !== 'production' ? "ws: wss:" : ""}`,
               "form-action 'self'",
               "base-uri 'self'",
               "frame-ancestors 'none'",
