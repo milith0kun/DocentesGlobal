@@ -11,7 +11,7 @@ export default function Filosofia() {
       title: '100% Práctico',
       desc: 'Prohibido el relleno teórico. Cada concepto debe ser demostrado resolviendo casos reales directamente en software.',
       detail: 'La clase debe sentirse como una experiencia de trabajo real: menos exposición pasiva, más demostración guiada y práctica aplicada.',
-      image: '/assets/filosofia-practica.webp',
+      image: '/assets/pilar-01.webp',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="4 17 10 11 4 5" />
@@ -24,7 +24,7 @@ export default function Filosofia() {
       title: 'Cero Relleno',
       desc: 'Nada de videos extensos ni PPTs saturados de texto. Acción pura sobre las herramientas digitales.',
       detail: 'El estudiante debe percibir avance en cada sesión. Priorizamos ejemplos concretos, ejercicios visibles y recursos claros.',
-      image: '/assets/filosofia-herramientas.webp',
+      image: '/assets/pilar-02.webp',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
           <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
@@ -36,7 +36,7 @@ export default function Filosofia() {
       title: 'Control de Ritmo',
       desc: 'El docente domina el tiempo en aula. Los incidentes técnicos individuales no detienen el avance grupal.',
       detail: 'El liderazgo docente mantiene la energía del grupo, ordena las consultas y evita que la sesión pierda foco.',
-      image: '/assets/filosofia-ritmo.webp',
+      image: '/assets/pilar-03.webp',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10" />
@@ -86,12 +86,12 @@ export default function Filosofia() {
           </div>
 
           <aside className="filosofia-preview" aria-live="polite">
-            <img src={active.image} alt={`Vista del pilar ${active.title}`} loading="lazy" />
             <div className="filosofia-preview-copy">
               <span>{active.num}</span>
               <h3>{active.title}</h3>
               <p>{active.detail}</p>
             </div>
+            <img src={active.image} alt={`Vista del pilar ${active.title}`} loading="lazy" />
           </aside>
         </div>
       </div>
@@ -213,8 +213,9 @@ export default function Filosofia() {
         }
         .filosofia-preview {
           min-height: 100%;
-          display: grid;
-          grid-template-rows: minmax(260px, 1fr) auto;
+          display: flex;
+          flex-direction: row;
+          position: relative;
           overflow: hidden;
           border: 1px solid rgba(224, 242, 254, 0.85);
           border-radius: 24px;
@@ -222,15 +223,25 @@ export default function Filosofia() {
           box-shadow: 0 24px 54px -34px rgba(15, 23, 42, 0.42);
         }
         .filosofia-preview img {
-          width: 100%;
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 50%;
           height: 100%;
-          min-height: 260px;
-          object-fit: cover;
+          object-fit: contain;
           object-position: center;
           display: block;
+          border-left: 1px solid rgba(255, 255, 255, 0.05);
+          padding: 1.5rem;
+          background: rgba(255, 255, 255, 0.02);
         }
         .filosofia-preview-copy {
-          padding: 1.2rem 1.35rem;
+          width: 50%;
+          flex: 0 0 50%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding: 1.5rem 1.75rem;
           background: linear-gradient(135deg, #071728 0%, #0d2c4c 100%);
           color: #fff;
         }
@@ -261,7 +272,20 @@ export default function Filosofia() {
             grid-template-columns: 1fr;
           }
           .filosofia-preview {
-            grid-template-rows: minmax(220px, 320px) auto;
+            min-height: auto;
+            flex-direction: column-reverse;
+          }
+          .filosofia-preview img {
+            position: relative;
+            width: 100%;
+            height: auto;
+            max-height: 280px;
+            border-left: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          }
+          .filosofia-preview-copy {
+            width: 100%;
+            flex: auto;
           }
         }
         @media (max-width: 640px) {
@@ -281,8 +305,17 @@ export default function Filosofia() {
             display: none;
           }
           .filosofia-preview {
-            grid-template-rows: minmax(190px, 240px) auto;
             border-radius: 18px;
+            flex-direction: column-reverse;
+          }
+          .filosofia-preview img {
+            position: relative;
+            width: 100%;
+            height: auto;
+            max-height: 220px;
+            border-left: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem;
           }
         }
       `}</style>

@@ -289,7 +289,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const brandColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
   const brandGlow = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14,165,233,0.12)';
 
-  const stepWidths = { 1: '380px', 2: '460px', 3: '600px', 4: '620px', 5: '520px', 6: '760px', 7: '860px', 8: '980px', 9: '680px', 10: '600px', 11: '640px', 12: '640px' };
+  const stepWidths = { 1: '380px', 2: '460px', 3: '980px', 4: '620px', 5: '520px', 6: '760px', 7: '860px', 8: '980px', 9: '680px', 10: '600px', 11: '640px', 12: '640px' };
 
   if (!isOpen) return null;
 
@@ -756,9 +756,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               {step === 3 && (() => {
                 const allPrinciplesViewed = viewedPrinciples.every(v => v);
                 const principles = [
-                  { n:'01', t:'Enfoque 100% Práctico y Aplicado', d:'Creemos firmemente en el poder de aprender haciendo. Por ello, transformamos la teoría en experiencia directa: cada nuevo concepto cobra vida al resolver casos reales de la industria en vivo. El software es nuestro gran escenario para que los estudiantes comprueben la aplicación inmediata de su conocimiento.' },
-                  { n:'02', t:'Inmersión Total en las Herramientas', d:'Evolucionamos la educación dejando atrás la exposición tradicional. Les invitamos a sustituir las extensas presentaciones por una inmersión directa en el entorno de trabajo digital. Queremos que sus sesiones sean espacios dinámicos y de acción pura, donde el estudiante alcance el dominio técnico interactuando con la herramienta desde el primer minuto.' },
-                  { n:'03', t:'Liderazgo y Fluidez del Aprendizaje', d:'Usted es el guía que marca el ritmo del éxito grupal. Confiamos en su liderazgo para mantener un avance constante y motivador, gestionando con agilidad las consultas o incidencias técnicas individuales. De esta manera, garantizamos que la energía de la clase fluya sin interrupciones y todo el equipo alcance su meta de aprendizaje.' },
+                  { n:'01', t:'Enfoque 100% Práctico y Aplicado', d:'Creemos firmemente en el poder de aprender haciendo. Por ello, transformamos la teoría en experiencia directa: cada nuevo concepto cobra vida al resolver casos reales de la industria en vivo. El software es nuestro gran escenario para que los estudiantes comprueben la aplicación inmediata de su conocimiento.', img:'/assets/pilar-01.webp' },
+                  { n:'02', t:'Inmersión Total en las Herramientas', d:'Evolucionamos la educación dejando atrás la exposición tradicional. Les invitamos a sustituir las extensas presentaciones por una inmersión directa en el entorno de trabajo digital. Queremos que sus sesiones sean espacios dinámicos y de acción pura, donde el estudiante alcance el dominio técnico interactuando con la herramienta desde el primer minuto.', img:'/assets/pilar-02.webp' },
+                  { n:'03', t:'Liderazgo y Fluidez del Aprendizaje', d:'Usted es el guía que marca el ritmo del éxito grupal. Confiamos en su liderazgo para mantener un avance constante y motivador, gestionando con agilidad las consultas o incidencias técnicas individuales. De esta manera, garantizamos que la energía de la clase fluya sin interrupciones y todo el equipo alcance su meta de aprendizaje.', img:'/assets/pilar-03.webp' },
                 ];
                 const selectedPrinciple = principles[activePrinciple ?? 0];
                 return (
@@ -808,26 +808,31 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                         <h3>{selectedPrinciple.t}</h3>
                         <p>{selectedPrinciple.d}</p>
                       </aside>
-                    </div>
-
-                    <div className={`wz-check-row ${formData.aceptaMetodologia?'on':''} ${!allPrinciplesViewed?'disabled':''}`} style={{ marginTop: '1.5rem' }} onClick={() => {
-                      if (allPrinciplesViewed) {
-                        setFormData({...formData, aceptaMetodologia:!formData.aceptaMetodologia});
-                      }
-                    }}>
-                      <div className={`wz-checkbox ${formData.aceptaMetodologia?'on':''}`} />
-                      <span>He leído y comprendo firmemente la metodología Doing by Learning.</span>
+                      <div className="wz-principle-image-container">
+                        <img src={selectedPrinciple.img} alt={selectedPrinciple.t} />
+                      </div>
                     </div>
 
                     {!allPrinciplesViewed && (
-                      <p style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <span style={{ color: 'var(--bc)', fontWeight: 'bold' }}>ℹ</span> Por favor, haz clic y lee los 3 pilares de nuestra metodología para poder aceptar.
-                      </p>
+                      <div style={{ marginTop: '1.5rem', padding: '1rem 1.25rem', background: 'rgba(14,165,233,0.08)', borderRadius: '12px', border: '1px solid rgba(14,165,233,0.15)' }}>
+                        <p style={{ margin: 0, fontSize: '0.9rem', color: '#334155', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '500' }}>
+                          <span style={{ color: 'var(--bc)', fontWeight: 'bold', fontSize: '1.2rem' }}>ℹ</span> Por favor, visualiza los 3 pilares para poder aceptar la metodología.
+                        </p>
+                      </div>
                     )}
 
-                    <div className="wz-nav">
+                    <div className="wz-nav" style={{ marginTop: '1.5rem' }}>
                       <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
-                      <button onClick={handleNext} disabled={!formData.aceptaMetodologia || !allPrinciplesViewed} className="wz-btn-main">Confirmar</button>
+                      <button 
+                        onClick={() => {
+                          setFormData({...formData, aceptaMetodologia: true});
+                          handleNext();
+                        }} 
+                        disabled={!allPrinciplesViewed} 
+                        className="wz-btn-main"
+                      >
+                        Aceptar Metodología
+                      </button>
                     </div>
                   </div>
                 );
@@ -1933,9 +1938,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         /* ── PILARES (PASO 2 - MANIFIESTO TIPOGRÁFICO / ACORDEÓN) ── */
         .wz-principles-stage {
           display:grid;
-          grid-template-columns:minmax(0, 0.92fr) minmax(280px, 1fr);
-          gap:1rem;
-          align-items:stretch;
+          grid-template-columns: 240px minmax(260px, 1fr) minmax(300px, 1.2fr);
+          gap:1.5rem;
+          align-items:center;
         }
         .wz-principles-list { display:flex; flex-direction:column; gap:0.8rem; }
         .wz-principle {
@@ -1980,8 +1985,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           transform:translateX(2px);
         }
         .wz-principle-detail {
-          min-height:calc(84px * 3 + 1.6rem);
-          padding:1.35rem 1.45rem;
+          padding:1.45rem;
           border:1px solid rgba(14,165,233,0.2);
           border-radius:16px;
           background:linear-gradient(135deg, rgba(240,249,255,0.92) 0%, #ffffff 70%);
@@ -1989,6 +1993,20 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           display:flex;
           flex-direction:column;
           justify-content:center;
+        }
+        .wz-principle-image-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+        }
+        .wz-principle-image-container img {
+          width: 100%;
+          height: auto;
+          max-height: 380px;
+          object-fit: contain;
+          border-radius: 12px;
+          box-shadow: 0 8px 24px -12px rgba(0,0,0,0.15);
         }
         .wz-principle-detail span {
           display:inline-flex;
@@ -2721,6 +2739,15 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
         /* ── RESPONSIVE ── */
         @media (max-width:860px) {
+          .wz-principles-stage { display:flex; flex-direction:column; gap:1.25rem; }
+          .wz-principles-list { order:1; gap:0.65rem; }
+          .wz-principle { flex-direction:column; align-items:stretch; padding:1rem 1.15rem; }
+          .wz-principle-num { font-size:1.6rem; }
+          .wz-principle-text h4 { font-size:1rem; }
+          .wz-principle-image-container { order:2; }
+          .wz-principle-image-container img { width: 100%; height: auto; max-height: 260px; object-fit: contain; }
+          .wz-principle-detail { order:3; min-height:auto; padding:1.25rem; }
+
           .wz-success-layout {
             gap:0.8rem;
           }
@@ -2864,15 +2891,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             grid-template-columns:1fr;
           }
           
-          .wz-principles-stage { grid-template-columns:1fr; gap:0.75rem; }
-          .wz-principles-list { gap:0.65rem; }
-          .wz-principle { flex-direction:column; align-items:stretch; padding:1rem 1.15rem; }
-          .wz-principle-num { font-size:1.6rem; }
-          .wz-principle-text h4 { font-size:1rem; }
-          .wz-principle-detail {
-            min-height:auto;
-            padding:1rem 1.05rem;
-          }
           .wz-principle-detail h3 { font-size:1rem; }
           .wz-principle-detail p { font-size:0.82rem; line-height:1.55; }
           
