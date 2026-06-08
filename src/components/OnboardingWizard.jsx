@@ -300,7 +300,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         <div className="wz-h-left">
           {/* El botón de ir atrás se movió a la parte inferior del flujo */}
         </div>
-        <div className={`wz-h-center ${step > 1 ? 'is-selected' : 'is-overview'}`}>
+        <div className="wz-h-center">
           {(() => {
             const mkLogo = (key, src, cls, extraStyle) => {
             const isSelected = formData.marca ? formData.marca.split(',').includes(key) : false;
@@ -1436,9 +1436,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-logo.lg-ciip { height:52px; }
         .wz-logo.lg-geo { height:34px; transform:translateY(4px); }
         .wz-logo.lg-bio { height:48px; }
-        .wz-h-center.is-selected .wz-logo.lg-ciip { height:52px; }
-        .wz-h-center.is-selected .wz-logo.lg-geo { height:34px; transform:translateY(4px); }
-        .wz-h-center.is-selected .wz-logo.lg-bio { height:48px; }
         .wz-sep { width:1px; height:24px; background:linear-gradient(to bottom,transparent,rgba(56,189,248,0.2),transparent); }
         .wz-back {
           background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
@@ -2976,30 +2973,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
         /* ── OPTIMIZACIONES DE ALTURA (EVITAR SCROLL EN LAPTOPS Y VIEWPORTS BAJOS) ── */
         @media (max-height: 800px) and (min-width: 681px) {
-          .wz-header {
-            height: 64px !important;
-          }
-          .wz-logo {
-            height: 42px !important;
-          }
-          .wz-logo.lg-ciip {
-            height: 52px !important;
-          }
-          .wz-logo.lg-geo {
-            height: 34px !important;
-          }
-          .wz-logo.lg-bio {
-            height: 48px !important;
-          }
-          .wz-h-center.is-selected .wz-logo.lg-ciip {
-            height: 52px !important;
-          }
-          .wz-h-center.is-selected .wz-logo.lg-geo {
-            height: 34px !important;
-          }
-          .wz-h-center.is-selected .wz-logo.lg-bio {
-            height: 48px !important;
-          }
           .wz-stepper-premium {
             padding: 0.5rem 1.5rem !important;
             gap: 0.25rem !important;
@@ -3114,9 +3087,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             font-size:0.68rem !important;
             line-height:1.35 !important;
           }
-          .wz-certificate {
-            margin-bottom:0.65rem !important;
-          }
           .wz-btn-main, .wz-btn-ghost, .wz-btn-wa {
             padding: 0.6rem 1.4rem !important;
             font-size: 0.82rem !important;
@@ -3124,30 +3094,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
 
         @media (max-height: 680px) and (min-width: 681px) {
-          .wz-header {
-            height: 52px !important;
-          }
-          .wz-logo {
-            height: 42px !important;
-          }
-          .wz-logo.lg-ciip {
-            height: 52px !important;
-          }
-          .wz-logo.lg-geo {
-            height: 34px !important;
-          }
-          .wz-logo.lg-bio {
-            height: 48px !important;
-          }
-          .wz-h-center.is-selected .wz-logo.lg-ciip {
-            height: 52px !important;
-          }
-          .wz-h-center.is-selected .wz-logo.lg-geo {
-            height: 34px !important;
-          }
-          .wz-h-center.is-selected .wz-logo.lg-bio {
-            height: 48px !important;
-          }
           .wz-stepper-premium {
             padding: 0.35rem 1rem !important;
           }
