@@ -1021,20 +1021,19 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                         </div>
                       </article>
                     ))}
-                  </div>
-
-                  <div className="wz-certificate" aria-label="Certificado del Programa Docente TOP">
-                    <button
-                      type="button"
-                      className="wz-certificate-preview"
-                      onClick={() => setShowCertificate(true)}
-                      aria-label="Ver certificado ampliado"
-                    >
-                      <img
-                        src="/assets/certificado-docente-top.png"
-                        alt="Vista previa del certificado institucional"
-                      />
-                    </button>
+                    <div className="wz-certificate" aria-label="Certificado del Programa Docente TOP">
+                      <button
+                        type="button"
+                        className="wz-certificate-preview"
+                        onClick={() => setShowCertificate(true)}
+                        aria-label="Ver certificado ampliado"
+                      >
+                        <img
+                          src="/assets/certificado-docente-top.png"
+                          alt="Vista previa del certificado institucional"
+                        />
+                      </button>
+                    </div>
                   </div>
 
                   <div className={`wz-check-row ${formData.aceptaTop?'on':''}`} onClick={() => setFormData({...formData, aceptaTop:!formData.aceptaTop})}>
@@ -2569,13 +2568,13 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           align-items:center;
           justify-content:flex-end;
           padding:0;
-          margin:-0.1rem 0 0.55rem;
+          margin:0;
           min-height:0;
         }
         .wz-certificate-preview {
           position:relative;
           display:block;
-          width:min(240px, 42vw);
+          width:min(250px, 100%);
           padding:0;
           border:1px solid rgba(244,201,104,0.38);
           border-radius:10px;
@@ -2849,7 +2848,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-attendance-card { padding:0.9rem; }
           .wz-certificate {
             justify-content:center;
-            margin-bottom:0.55rem;
+            margin-bottom:0;
           }
           .wz-certificate-preview {
             width:min(230px, 72vw);
