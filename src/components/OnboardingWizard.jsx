@@ -289,7 +289,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const brandColor = formData.marca ? marcaConfig[formData.marca].color : '#0284c7';
   const brandGlow = formData.marca ? marcaConfig[formData.marca].bgGlow : 'rgba(14,165,233,0.12)';
 
-  const stepWidths = { 1: '380px', 2: '460px', 3: '600px', 4: '620px', 5: '520px', 6: '760px', 7: '860px', 8: '980px', 9: '680px', 10: '600px', 11: '640px' };
+  const stepWidths = { 1: '380px', 2: '460px', 3: '600px', 4: '620px', 5: '520px', 6: '760px', 7: '860px', 8: '980px', 9: '680px', 10: '600px', 11: '640px', 12: '640px' };
 
   if (!isOpen) return null;
 
@@ -300,7 +300,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         <div className="wz-h-left">
           {/* El botón de ir atrás se movió a la parte inferior del flujo */}
         </div>
-        <div className="wz-h-center">
+        <div className={`wz-h-center ${step > 1 ? 'is-selected' : 'is-overview'}`}>
           {(() => {
             const mkLogo = (key, src, cls, extraStyle) => {
             const isSelected = formData.marca ? formData.marca.split(',').includes(key) : false;
@@ -1441,6 +1441,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-logo.lg-ciip { height:56px; }
         .wz-logo.lg-geo { height:35px; transform:translateY(5px); }
         .wz-logo.lg-bio { height:50px; }
+        .wz-h-center.is-selected .wz-logo.lg-ciip { height:66px; }
+        .wz-h-center.is-selected .wz-logo.lg-geo { height:44px; transform:translateY(4px); }
+        .wz-h-center.is-selected .wz-logo.lg-bio { height:60px; }
         .wz-sep { width:1px; height:24px; background:linear-gradient(to bottom,transparent,rgba(56,189,248,0.2),transparent); }
         .wz-back {
           background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
@@ -2325,7 +2328,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           padding:0.55rem 0; border-bottom:1px solid #f1f5f9; font-size:0.85rem;
         }
         .wz-sum-row span { color:#94a3b8; font-weight:500; flex:0 0 auto; }
-        .wz-sum-row strong { color:#0f172a; font-weight:700; min-width:0; text-align:right; }
+        .wz-sum-row strong { color:#0f172a; font-weight:700; min-width:0; text-align:right; overflow-wrap:anywhere; }
 
         .wz-footer {
           text-align:center; font-size:0.65rem; font-weight:700; color:#b0b8c4;
@@ -2356,6 +2359,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           font-family:inherit;
           line-height:1.2;
         }
+        .wz-btn-wa svg { flex:0 0 auto; }
         .wz-btn-wa:hover { filter:brightness(1.08); transform:translateY(-1px); }
 
         /* ── MODAL OVERLAY ── */
@@ -2763,7 +2767,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             top: 0;
             z-index: 100;
             padding:0 3.15rem 0 0.75rem;
-            height: 64px;
+            height: 72px;
             justify-content:center;
           }
           .wz-h-left {
@@ -2782,11 +2786,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             height:34px;
             font-size:0.78rem !important;
           }
-          .wz-h-center { gap:0.5rem; max-width:calc(100vw - 100px); overflow:hidden; }
-          .wz-logo { max-width:30vw; }
-          .wz-logo.lg-ciip { height:26px !important; max-width:60px; transform:translateY(0); }
-          .wz-logo.lg-geo { height:18px !important; max-width:64px; transform:translateY(1px); }
-          .wz-logo.lg-bio { height:24px !important; max-width:56px; transform:translateY(0); }
+          .wz-h-center { gap:0.55rem; max-width:calc(100vw - 108px); overflow:hidden; }
+          .wz-logo { max-width:32vw; }
+          .wz-logo.lg-ciip { height:38px !important; max-width:82px; transform:translateY(0); }
+          .wz-logo.lg-geo { height:25px !important; max-width:88px; transform:translateY(1px); }
+          .wz-logo.lg-bio { height:32px !important; max-width:76px; transform:translateY(0); }
           .wz-sep { height:16px; background:linear-gradient(to bottom,transparent,rgba(56,189,248,0.32),transparent); }
           .wz-brand-card {
             min-height: 58px;
@@ -2809,7 +2813,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           }
           .wz-stepper-premium {
             position: sticky;
-            top: 64px;
+            top: 72px;
             z-index: 90;
             padding:0.65rem 1.25rem; gap:0.45rem;
           }
@@ -2903,6 +2907,17 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-certificate-modal-head {
             padding:0.25rem 2.8rem 0.65rem 0.1rem;
           }
+          .wz-declaration {
+            padding:1rem 1.05rem;
+            margin-bottom:0.75rem;
+          }
+          .wz-declaration p {
+            font-size:0.82rem;
+            line-height:1.56;
+          }
+          .wz-summary {
+            padding:0.6rem 0.85rem;
+          }
           .wz-certificate-close {
             top:0.5rem;
             right:0.5rem;
@@ -2925,7 +2940,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           }
           .wz-sum-row strong {
             text-align:right;
-            max-width:62%;
+            max-width:58%;
           }
           .wz-modal-content { width:92%; padding:2rem 1.5rem; border-radius:20px; }
           .wz-modal-title { font-size:1.6rem; margin-bottom:0.85rem; letter-spacing:-0.5px; }
@@ -2939,14 +2954,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-upload-zone { padding:1.5rem 1rem; }
         }
 
-        @media (max-width:380px) {
+        @media (max-width:420px) {
           .wz-header { padding:0 2.9rem 0 0.6rem; }
           .wz-h-right { right:0.55rem; width:32px; }
           .wz-back { width:31px; height:31px; }
-          .wz-h-center { gap:0.42rem; max-width:calc(100vw - 88px); }
-          .wz-logo.lg-ciip { height:31px !important; max-width:64px; }
-          .wz-logo.lg-geo { height:20px !important; max-width:66px; }
-          .wz-logo.lg-bio { height:26px !important; max-width:58px; }
+          .wz-h-center { gap:0.42rem; max-width:calc(100vw - 92px); }
+          .wz-logo.lg-ciip { height:35px !important; max-width:74px; }
+          .wz-logo.lg-geo { height:23px !important; max-width:80px; }
+          .wz-logo.lg-bio { height:30px !important; max-width:68px; }
           .wz-sep { height:17px; }
           .wz-brand-card img {
             max-height: 34px;
@@ -2976,10 +2991,13 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         @media (max-width:340px) {
           .wz-sep { display:none; }
           .wz-h-center { gap:0.5rem; }
+          .wz-logo.lg-ciip { height:32px !important; max-width:68px; }
+          .wz-logo.lg-geo { height:21px !important; max-width:72px; }
+          .wz-logo.lg-bio { height:27px !important; max-width:62px; }
         }
 
         /* ── OPTIMIZACIONES DE ALTURA (EVITAR SCROLL EN LAPTOPS Y VIEWPORTS BAJOS) ── */
-        @media (max-height: 800px) {
+        @media (max-height: 800px) and (min-width: 681px) {
           .wz-header {
             height: 64px !important;
           }
@@ -2991,6 +3009,15 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           }
           .wz-logo.lg-geo {
             height: 26px !important;
+          }
+          .wz-h-center.is-selected .wz-logo.lg-ciip {
+            height: 54px !important;
+          }
+          .wz-h-center.is-selected .wz-logo.lg-geo {
+            height: 34px !important;
+          }
+          .wz-h-center.is-selected .wz-logo.lg-bio {
+            height: 50px !important;
           }
           .wz-stepper-premium {
             padding: 0.5rem 1.5rem !important;
@@ -3122,7 +3149,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           }
         }
 
-        @media (max-height: 680px) {
+        @media (max-height: 680px) and (min-width: 681px) {
           .wz-header {
             height: 52px !important;
           }
@@ -3134,6 +3161,15 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           }
           .wz-logo.lg-geo {
             height: 22px !important;
+          }
+          .wz-h-center.is-selected .wz-logo.lg-ciip {
+            height: 46px !important;
+          }
+          .wz-h-center.is-selected .wz-logo.lg-geo {
+            height: 30px !important;
+          }
+          .wz-h-center.is-selected .wz-logo.lg-bio {
+            height: 42px !important;
           }
           .wz-stepper-premium {
             padding: 0.35rem 1rem !important;
