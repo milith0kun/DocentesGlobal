@@ -2532,10 +2532,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-top-benefit-stage {
           position:relative;
           margin-bottom:0.85rem;
+          padding-right:calc((100% - 1.3rem) / 3 + 0.65rem);
         }
         .wz-top-benefits {
           display:grid;
-          grid-template-columns:repeat(3, minmax(0, 1fr));
+          grid-template-columns:repeat(2, minmax(0, 1fr));
           gap:0.65rem;
           margin-bottom:0;
         }
@@ -2584,7 +2585,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-certificate-preview {
           position:relative;
           display:block;
-          width:min(170px, 100%);
+          width:min(230px, 100%);
           padding:0;
           border:1px solid rgba(244,201,104,0.38);
           border-radius:10px;
@@ -2718,6 +2719,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-top-kpis { grid-template-columns:repeat(3, minmax(0, 1fr)); }
           .wz-top-grid { grid-template-columns:1fr; }
           .wz-top-benefits { grid-template-columns:1fr; }
+          .wz-top-benefit-stage { padding-right:0; }
         }
         @media (max-width:680px) {
           .wz {
