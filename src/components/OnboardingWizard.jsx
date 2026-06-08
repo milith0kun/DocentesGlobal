@@ -2980,25 +2980,25 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             height: 64px !important;
           }
           .wz-logo {
-            height: 32px !important;
+            height: 42px !important;
           }
           .wz-logo.lg-ciip {
-            height: 50px !important;
+            height: 52px !important;
           }
           .wz-logo.lg-geo {
-            height: 32px !important;
+            height: 34px !important;
           }
           .wz-logo.lg-bio {
-            height: 46px !important;
+            height: 48px !important;
           }
           .wz-h-center.is-selected .wz-logo.lg-ciip {
-            height: 50px !important;
+            height: 52px !important;
           }
           .wz-h-center.is-selected .wz-logo.lg-geo {
-            height: 32px !important;
+            height: 34px !important;
           }
           .wz-h-center.is-selected .wz-logo.lg-bio {
-            height: 46px !important;
+            height: 48px !important;
           }
           .wz-stepper-premium {
             padding: 0.5rem 1.5rem !important;
@@ -3128,25 +3128,25 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             height: 52px !important;
           }
           .wz-logo {
-            height: 26px !important;
+            height: 42px !important;
           }
           .wz-logo.lg-ciip {
-            height: 44px !important;
+            height: 52px !important;
           }
           .wz-logo.lg-geo {
-            height: 29px !important;
+            height: 34px !important;
           }
           .wz-logo.lg-bio {
-            height: 40px !important;
+            height: 48px !important;
           }
           .wz-h-center.is-selected .wz-logo.lg-ciip {
-            height: 44px !important;
+            height: 52px !important;
           }
           .wz-h-center.is-selected .wz-logo.lg-geo {
-            height: 29px !important;
+            height: 34px !important;
           }
           .wz-h-center.is-selected .wz-logo.lg-bio {
-            height: 40px !important;
+            height: 48px !important;
           }
           .wz-stepper-premium {
             padding: 0.35rem 1rem !important;
