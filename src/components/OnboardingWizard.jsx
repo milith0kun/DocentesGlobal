@@ -9,6 +9,17 @@ const biomedicWhite = '/assets/biomedic-white.png';
 const camaraFondoVirtual = '/assets/camara_fondo_virtual.png';
 const identidadVisualPpts = '/assets/identidad_visual_ppts.png';
 const canalesExternosProhibidos = '/assets/canales_externos_prohibidos.png';
+const phoneCountries = [
+  { code: 'PE', name: 'Perú', dial: '+51', min: 9, max: 9 },
+  { code: 'BO', name: 'Bolivia', dial: '+591', min: 8, max: 8 },
+  { code: 'CO', name: 'Colombia', dial: '+57', min: 10, max: 10 },
+  { code: 'EC', name: 'Ecuador', dial: '+593', min: 9, max: 9 },
+  { code: 'CL', name: 'Chile', dial: '+56', min: 9, max: 9 },
+  { code: 'AR', name: 'Argentina', dial: '+54', min: 10, max: 11 },
+  { code: 'MX', name: 'México', dial: '+52', min: 10, max: 10 },
+  { code: 'ES', name: 'España', dial: '+34', min: 9, max: 9 },
+  { code: 'US', name: 'Estados Unidos', dial: '+1', min: 10, max: 10 },
+];
 const parseJsonResponse = async (response) => {
   const contentType = response.headers.get('content-type') || '';
   if (!contentType.includes('application/json')) return null;
@@ -30,6 +41,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   const [whatsappUrl, setWhatsappUrl] = useState('');
   const [loadingDni, setLoadingDni] = useState(false);
   const [dniLookupMessage, setDniLookupMessage] = useState('');
+  const [phoneCountryCode, setPhoneCountryCode] = useState('PE');
+  const [phoneNational, setPhoneNational] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCertificate, setShowCertificate] = useState(false);
   const [activePrinciple, setActivePrinciple] = useState(null);
@@ -92,6 +105,11 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   });
   const correoValido = isValidEmail(formData.correo);
   const mostrarErrorCorreo = formData.correo.trim().length > 0 && !correoValido;
+  const phoneCountry = phoneCountries.find((country) => country.code === phoneCountryCode) || phoneCountries[0];
+  const phoneDigitsValid =
+    phoneNational.length >= phoneCountry.min &&
+    phoneNational.length <= phoneCountry.max;
+  const telefonoValido = phoneDigitsValid && /^\+[1-9]\d{7,14}$/.test(formData.telefono);
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [viewYear, setViewYear] = useState(new Date().getFullYear() - 25);
@@ -170,7 +188,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     if (step === 6 && !formData.aceptaProtocolo) return;
     if (step === 7 && !formData.aceptaAsistencia) return;
     if (step === 8 && !formData.aceptaTop) return;
-    if (step === 9 && (!formData.telefono.trim() || !formData.metodoPago || !formData.numeroCuenta.trim() || !formData.direccion.trim())) return;
+    if (step === 9 && (!telefonoValido || !formData.metodoPago || !formData.numeroCuenta.trim() || !formData.direccion.trim())) return;
     if (step === 9 && formData.metodoPago === 'otro' && !formData.metodoPagoOtro.trim()) return;
     if (step === 10 && (!formData.cvFile || !formData.fotoFile)) return;
     if (step === 10) { setShowDriveAlert(true); return; } // Muestra Modal de Drive
@@ -261,6 +279,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
   };
   const handleReset = () => {
     setFormData({ nombre:'',correo:'',marca:'',documento:'',fechaNacimiento:'',aceptaMetodologia:false,aceptaSabado:false,aceptaDomingo:false,aceptaLunes:false,aceptaProtocolo:false,aceptaAsistencia:false,aceptaTop:false,telefono:'',metodoPago:'',metodoPagoOtro:'',numeroCuenta:'',direccion:'',cvFile:null,fotoFile:null,profesion:'',softwares:'',cursoSonado:'',mejoraAdmin:'',comentarios:'' });
+    setPhoneCountryCode('PE');
+    setPhoneNational('');
     setActivePrinciple(null);
     setShowCertificate(false);
     setViewedPrinciples([false, false, false]);
@@ -1032,9 +1052,66 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                   <p className="wz-sub">Datos necesarios para la gestión de honorarios y comunicación directa.</p>
                   
                   <div className="wz-field" style={{ marginBottom:'1.25rem' }}>
-                    <span className="wz-label">Número de WhatsApp (con código de país)</span>
-                    <input type="tel" placeholder="+51 999 999 999" value={formData.telefono}
-                      onChange={e => setFormData({...formData, telefono:e.target.value})} className="wz-input" />
+                    <span className="wz-label">Número de WhatsApp</span>
+                    <div className="wz-phone-field">
+                      <label className="wz-phone-country">
+                        <span className="wz-phone-country-label">País</span>
+                        <select
+                          value={phoneCountryCode}
+                          onChange={(event) => {
+                            const nextCode = event.target.value;
+                            const nextCountry = phoneCountries.find((country) => country.code === nextCode) || phoneCountries[0];
+                            const nextNational = phoneNational.slice(0, nextCountry.max);
+                            setPhoneCountryCode(nextCode);
+                            setPhoneNational(nextNational);
+                            setFormData((current) => ({
+                              ...current,
+                              telefono: nextNational ? `${nextCountry.dial}${nextNational}` : '',
+                            }));
+                          }}
+                          className="wz-phone-select"
+                        >
+                          {phoneCountries.map((country) => (
+                            <option key={country.code} value={country.code}>
+                              {country.name} ({country.dial})
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="wz-phone-number">
+                        <span className="wz-phone-country-label">Número</span>
+                        <div className={`wz-phone-input-wrap ${phoneNational && !phoneDigitsValid ? 'invalid' : ''}`}>
+                          <span className="wz-phone-prefix">{phoneCountry.dial}</span>
+                          <input
+                            type="tel"
+                            inputMode="numeric"
+                            autoComplete="tel-national"
+                            placeholder={phoneCountry.code === 'PE' ? '999 999 999' : 'Número de WhatsApp'}
+                            value={phoneNational}
+                            maxLength={phoneCountry.max}
+                            onChange={(event) => {
+                              const digits = event.target.value.replace(/\D/g, '').slice(0, phoneCountry.max);
+                              setPhoneNational(digits);
+                              setFormData((current) => ({
+                                ...current,
+                                telefono: digits ? `${phoneCountry.dial}${digits}` : '',
+                              }));
+                            }}
+                            className="wz-phone-input"
+                          />
+                        </div>
+                      </label>
+                    </div>
+                    {phoneNational && !phoneDigitsValid && (
+                      <span className="wz-field-error">
+                        Ingresa {phoneCountry.min === phoneCountry.max
+                          ? `${phoneCountry.min} dígitos`
+                          : `entre ${phoneCountry.min} y ${phoneCountry.max} dígitos`} para {phoneCountry.name}.
+                      </span>
+                    )}
+                    {telefonoValido && (
+                      <span className="wz-field-note">Se guardará como {formData.telefono}.</span>
+                    )}
                   </div>
 
                   <span className="wz-label" style={{ display:'block', marginBottom:'0.75rem' }}>Cuenta de abono preferente</span>
@@ -1079,7 +1156,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
                   <div className="wz-nav">
                     <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
-                    <button onClick={handleNext} disabled={!formData.telefono.trim()||!formData.metodoPago||!formData.numeroCuenta.trim()||!formData.direccion.trim()||(formData.metodoPago==='otro'&&!formData.metodoPagoOtro.trim())} className="wz-btn-main">Siguiente</button>
+                    <button onClick={handleNext} disabled={!telefonoValido||!formData.metodoPago||!formData.numeroCuenta.trim()||!formData.direccion.trim()||(formData.metodoPago==='otro'&&!formData.metodoPagoOtro.trim())} className="wz-btn-main">Siguiente</button>
                   </div>
                 </div>
               )}
@@ -1448,6 +1525,85 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-input.invalid:focus { border-color:#ef4444; box-shadow:0 0 0 3px rgba(239,68,68,0.1); }
         .wz-field-error { font-size:0.76rem; color:#dc2626; font-weight:700; line-height:1.35; }
         .wz-field-note { font-size:0.76rem; color:#64748b; font-weight:650; line-height:1.38; }
+        .wz-phone-field {
+          display:grid;
+          grid-template-columns:minmax(180px, 0.9fr) minmax(0, 1.1fr);
+          gap:0.75rem;
+          align-items:end;
+        }
+        .wz-phone-country,
+        .wz-phone-number {
+          display:flex;
+          flex-direction:column;
+          gap:0.35rem;
+          min-width:0;
+        }
+        .wz-phone-country-label {
+          color:#94a3b8;
+          font-size:0.66rem;
+          font-weight:800;
+          letter-spacing:1px;
+          text-transform:uppercase;
+        }
+        .wz-phone-select {
+          width:100%;
+          min-height:43px;
+          padding:0.68rem 0.78rem;
+          border:1.5px solid #e8ecf1;
+          border-radius:10px;
+          background:#fff;
+          color:#0f172a;
+          font-family:inherit;
+          font-size:0.86rem;
+          font-weight:700;
+          outline:none;
+        }
+        .wz-phone-select:focus {
+          border-color:var(--bc);
+          box-shadow:0 0 0 3px var(--bg);
+        }
+        .wz-phone-input-wrap {
+          display:flex;
+          align-items:center;
+          min-height:43px;
+          border:1.5px solid #e8ecf1;
+          border-radius:10px;
+          background:#fff;
+          overflow:hidden;
+          transition:all 0.2s;
+        }
+        .wz-phone-input-wrap:focus-within {
+          border-color:var(--bc);
+          box-shadow:0 0 0 3px var(--bg);
+        }
+        .wz-phone-input-wrap.invalid {
+          border-color:#ef4444;
+          background:#fff7f7;
+        }
+        .wz-phone-prefix {
+          flex:0 0 auto;
+          padding:0 0.78rem;
+          color:#0f2f52;
+          font-size:0.86rem;
+          font-weight:850;
+          border-right:1px solid #eef2f7;
+        }
+        .wz-phone-input {
+          min-width:0;
+          width:100%;
+          border:0;
+          outline:0;
+          padding:0.68rem 0.78rem;
+          background:transparent;
+          color:#0f172a;
+          font-family:inherit;
+          font-size:0.9rem;
+          font-weight:650;
+        }
+        .wz-phone-input::placeholder {
+          color:#b0b8c4;
+          font-weight:500;
+        }
         
         .wz-input-spinner {
           position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
@@ -2664,6 +2820,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-title { font-size:1.5rem !important; margin-bottom:0.5rem; line-height:1.16 !important; }
           .wz-sub { font-size:0.85rem !important; margin-bottom:1.25rem !important; line-height:1.48 !important; }
           .wz-grid-2 { grid-template-columns:1fr !important; gap:1rem !important; }
+          .wz-phone-field {
+            grid-template-columns:1fr;
+          }
           
           .wz-principles-list { gap:0.75rem; }
           .wz-principle { flex-direction:column; align-items:stretch; padding:1rem 1.15rem; }

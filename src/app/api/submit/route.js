@@ -193,6 +193,10 @@ function validateRequiredFields(fields) {
     missing.push('fechaNacimiento valida');
   }
 
+  if (!/^\+[1-9]\d{7,14}$/.test(String(fields.telefono || ''))) {
+    missing.push('telefono valido');
+  }
+
   if (!isValidMarca(fields.marca)) {
     missing.push('marca valida');
   }
