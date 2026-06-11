@@ -27,6 +27,12 @@ const contacts = [
     phone: '+51 956 370 155',
     wa: '51956370155',
   },
+  {
+    institution: 'Soporte',
+    role: 'Soporte académico',
+    phone: '+51 913 484 877',
+    wa: '51913484877',
+  },
 ];
 
 export default function AcademicContacts({ className = '' }) {
