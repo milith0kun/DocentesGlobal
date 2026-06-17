@@ -1510,7 +1510,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           letter-spacing:-0.8px; color:#0f172a; margin:0 0 0.35rem;
           line-height:1.16;
         }
-        .wz-sub { font-size:0.9rem; color:#64748b; line-height:1.55; margin:0 0 1.5rem; font-weight:500; }
+        .wz-sub { font-size:0.95rem; color:#475569; line-height:1.55; margin:0 0 1.5rem; font-weight:500; }
         .wz-tag {
           display:inline-block; font-size:0.65rem; font-weight:800; text-transform:uppercase;
           letter-spacing:2px; color:var(--bc); background:var(--bg);
@@ -1521,17 +1521,17 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
         /* ── LABELS & INPUTS ── */
         .wz-label {
-          font-size:0.68rem; font-weight:800; color:#94a3b8;
+          font-size:0.75rem; font-weight:800; color:#334155;
           text-transform:uppercase; letter-spacing:1.5px;
         }
-        .wz-field { display:flex; flex-direction:column; gap:0.4rem; }
+        .wz-field { display:flex; flex-direction:column; gap:0.5rem; }
         .wz-input {
-          width:100%; padding:0.75rem 1rem; border:1.5px solid #e8ecf1;
-          border-radius:10px; font-size:0.9rem; font-family:inherit;
+          width:100%; padding:0.85rem 1.1rem; border:2px solid #cbd5e1;
+          border-radius:10px; font-size:1rem; font-family:inherit; font-weight:500;
           color:#0f172a; outline:none; background:#fff; transition:all 0.2s;
           min-width:0;
         }
-        .wz-input::placeholder { color:#b0b8c4; }
+        .wz-input::placeholder { color:#64748b; }
         .wz-input:focus { border-color:var(--bc); box-shadow:0 0 0 3px var(--bg); }
         .wz-input:disabled { background:#f8fafc; color:#64748b; cursor:not-allowed; }
         .wz-input.invalid { border-color:#ef4444; background:#fff7f7; }
