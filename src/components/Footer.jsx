@@ -1,8 +1,8 @@
 'use client';
 
-const ciipLogo = '/assets/biomedic-white.png';
+const ciipLogo = '/assets/ciip-white.png';
 const geominaLogo = '/assets/geomina-new.png';
-const biomedicLogo = '/assets/logobiomedic.png';
+const biomedicLogo = '/assets/biomedic-logo-white.png';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -127,7 +127,6 @@ export default function Footer() {
 
         .footer-logo-biomedic {
           height: 38px;
-          filter: invert(1) hue-rotate(180deg) brightness(1.18) contrast(1.12) url(#remove-black-footer);
         }
 
         .footer-logo-sep {
@@ -154,11 +153,7 @@ export default function Footer() {
           }
 
           .footer-partners {
-            border-left: 0;
-            border-top: 1px solid rgba(186, 230, 253, 0.16);
-            padding: 1rem 0 0;
-            width: min(100%, 24rem);
-            justify-content: center;
+            display: none;
           }
         }
 
@@ -171,28 +166,7 @@ export default function Footer() {
             font-size: 0.74rem;
           }
 
-          .footer-partners {
-            gap: 0.72rem;
-          }
 
-          .footer-logo-ciip {
-            height: 31px;
-            max-width: 88px;
-          }
-
-          .footer-logo-geomina {
-            height: 19px;
-            max-width: 82px;
-          }
-
-          .footer-logo-biomedic {
-            height: 27px;
-            max-width: 78px;
-          }
-
-          .footer-logo-sep {
-            height: 18px;
-          }
         }
       `}</style>
 

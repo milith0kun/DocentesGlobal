@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 const geominaWhite = '/assets/geomina-new.png';
-const biomedicWhite = '/assets/biomedic-white.png';
+const biomedicWhite = '/assets/biomedic-logo-white.png';
 
 export default function DocenteTop() {
   const [animatedOffset, setAnimatedOffset] = useState(157.08);

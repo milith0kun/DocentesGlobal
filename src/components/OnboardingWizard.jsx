@@ -5,7 +5,8 @@ import { isValidEmail } from '../utils/emailValidation.js';
 
 const logobiomedic = '/assets/logobiomedic.png';
 const geominaWhite = '/assets/geomina-new.png';
-const biomedicWhite = '/assets/biomedic-white.png';
+const ciipWhite = '/assets/ciip-white.png';
+const biomedicLogoWhite = '/assets/biomedic-logo-white.png';
 const cgbLogo = '/assets/cgb-logo-light.png';
 const camaraFondoVirtual = '/assets/camara_fondo_virtual.webp';
 const identidadVisualPpts = '/assets/identidad_visual_ppts.webp';
@@ -311,9 +312,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                 style={{ opacity, ...extraStyle, transition:'all 0.4s ease', display: isAmbosMode ? 'inline-block' : 'inline-block' }} />
             );
           };
-          const ciip = mkLogo('ciip', biomedicWhite, 'lg-ciip');
+          const ciip = mkLogo('ciip', ciipWhite, 'lg-ciip');
           const geo = mkLogo('geomina', geominaWhite, 'lg-geo');
-          const bio = mkLogo('biomedic', logobiomedic, 'lg-bio', { filter:'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' });
+          const bio = mkLogo('biomedic', biomedicLogoWhite, 'lg-bio');
           const sep = (k) => <div key={k} className="wz-sep" />;
           if (step > 1) {
             const arr = formData.marca ? formData.marca.split(',') : [];
@@ -450,9 +451,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                   
                   <div className="custom-brand-list" style={{ maxWidth:'100%', margin:'0 auto' }}>
                     {[
-                      { key:'ciip', logo:biomedicWhite },
+                      { key:'ciip', logo:ciipWhite },
                       { key:'geomina', logo:geominaWhite },
-                      { key:'biomedic', logo:logobiomedic },
+                      { key:'biomedic', logo:biomedicLogoWhite },
                     ].map(b => {
                       const on = formData.marca && formData.marca.split(',').includes(b.key);
                       return (
@@ -460,7 +461,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                           className={`custom-brand-card ${on ? 'on' : ''}`}
                           style={{ '--bc': marcaConfig[b.key]?.color }}>
                           <img src={b.logo} alt={b.key} className={`lg-${b.key}-btn`} style={{
-                            filter: b.key==='biomedic' ? 'invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black)' : 'none'
+                            filter: 'none'
                           }} />
                         </div>
                       );
@@ -844,7 +845,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                   <h2 className="wz-title">Límites de Entrega Innegociables</h2>
                   <p className="wz-sub">
                     Estos horarios representan el <strong>límite estricto y máximo</strong> para la entrega de materiales. 
-                    Debes subir tus presentaciones y recursos al Drive institucional con anticipación. 
+                    Debes subir tus recursos a la Carpeta Drive asignada por tu directora académica. 
                     No esperes recordatorios; el incumplimiento de estos plazos afecta directamente la ejecución de la clase.
                   </p>
                   
@@ -852,7 +853,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     {[
                       { key:'aceptaSabado', day:'Sábado', time:'Hasta 1:00 PM', label:'Material Sesión 1', desc:'Diapositivas (PPTs), guías (PDFs), datasets y recursos para la clase del sábado.', color:'#0ea5e9' },
                       { key:'aceptaDomingo', day:'Domingo', time:'Hasta 1:00 PM', label:'Material Sesión 2', desc:'Diapositivas, casos prácticos y guías de la clase dominical. Sin excepciones.', color:'#0284c7' },
-                      { key:'aceptaLunes', day:'Lunes', time:'Hasta 9:00 AM', label:'Examen Final', desc:'10 preguntas de opción múltiple, caso práctico y resolución exacta.', color:'#7c3aed' },
+                      { key:'aceptaLunes', day:'Lunes', time:'Hasta 9:00 AM', label:'Examen Final', desc:'Confirmar entrega de 3 archivos: 10 Preguntas de opción aleatoria, Caso práctico (sin resolver) y Caso práctico resuelto.', color:'#7c3aed' },
                     ].map((item,i) => {
                       const on = formData[item.key];
                       return (

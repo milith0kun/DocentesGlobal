@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   /* Color Palette (Ocean Premium) */
   --primary-hue: 201;
   --primary-sat: 96%;
@@ -63,7 +63,7 @@ html {
 
 body {
   font-family: var(--font-body);
-  background: var(--bg-gradient);
+  background: #06101d; /* Dark color matching footer to prevent white strip below */
   color: var(--text-main);
   min-height: 100vh;
   line-height: 1.55;

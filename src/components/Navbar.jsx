@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 
-const logobiomedic = '/assets/logobiomedic.png';
+const logobiomedic = '/assets/biomedic-logo-white.png';
 const geominaWhite = '/assets/geomina-new.png';
-const biomedicWhite = '/assets/biomedic-white.png';
+const ciipWhite = '/assets/ciip-white.png';
 const cgbLogo = '/assets/cgb-logo-light.png';
 
 export default function Navbar() {
@@ -150,7 +150,6 @@ export default function Navbar() {
 
         .nav-partner-logo.logo-biomedic {
           height: 40px;
-          filter: invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.1) url(#remove-black);
         }
 
         .nav-partner-logo.logo-geomina {
@@ -219,7 +218,7 @@ export default function Navbar() {
             gap: 0.4rem;
           }
 
-          .nav-logo-sep { display: none; }
+          .nav-logo-sep, .nav-brands-label { display: none; }
 
           .nav-partner-logo.logo-ciip { height: 34px; }
           .nav-partner-logo.logo-geomina { height: 22px; }
@@ -235,32 +234,35 @@ export default function Navbar() {
         @media (max-width: 480px) {
           .premium-navbar { padding: 0.6rem 0; }
           .premium-navbar.scrolled { padding: 0.45rem 0; }
-          .nav-container { padding: 0 0.6rem; overflow: hidden; }
+          .nav-container { padding: 0 0.4rem; overflow: hidden; }
 
           .nav-cgb-logo {
-            height: 32px;
+            height: 24px;
           }
 
           .nav-main-sep {
-            height: 22px;
-            margin: 0 0.4rem;
+            height: 20px;
+            margin: 0 0.3rem;
           }
 
-          .nav-partner-logo.logo-ciip { height: 28px; }
-          .nav-partner-logo.logo-geomina { height: 18px; }
-          .nav-partner-logo.logo-biomedic { height: 24px; }
+          .nav-partner-logo.logo-ciip { height: 22px; max-width: 20vw; }
+          .nav-partner-logo.logo-geomina { height: 14px; max-width: 18vw; }
+          .nav-partner-logo.logo-biomedic { height: 18px; max-width: 20vw; }
 
           .nav-cgb-tagline {
-            font-size: 0.45rem;
-            letter-spacing: 1.2px;
+            font-size: 0.4rem;
+            letter-spacing: 0.8px;
           }
+          
+          .nav-logos-group { gap: 0.25rem; }
         }
 
-        @media (max-width: 360px) {
-          .nav-cgb-logo { height: 26px; }
-          .nav-partner-logo.logo-ciip { height: 24px; }
-          .nav-partner-logo.logo-geomina { height: 16px; }
-          .nav-partner-logo.logo-biomedic { height: 20px; }
+        @media (max-width: 380px) {
+          .nav-cgb-logo { height: 20px; }
+          .nav-partner-logo.logo-ciip { height: 18px; }
+          .nav-partner-logo.logo-geomina { height: 12px; }
+          .nav-partner-logo.logo-biomedic { height: 15px; }
+          .nav-main-sep { margin: 0 0.2rem; }
         }
       `}</style>
 
@@ -279,7 +281,7 @@ export default function Navbar() {
           <div className="nav-brands-wrapper">
             <span className="nav-brands-label">Nuestras Instituciones</span>
             <div className="nav-logos-group" aria-label="CIIP, Geomina, Biomedic">
-              <img src={biomedicWhite} alt="CIIP LATAM" className="nav-partner-logo logo-ciip" width="80" height="24" />
+              <img src={ciipWhite} alt="CIIP LATAM" className="nav-partner-logo logo-ciip" width="80" height="24" />
               <div className="nav-logo-sep" aria-hidden="true"></div>
               <img src={geominaWhite} alt="Geomina" className="nav-partner-logo logo-geomina" width="80" height="24" />
               <div className="nav-logo-sep" aria-hidden="true"></div>

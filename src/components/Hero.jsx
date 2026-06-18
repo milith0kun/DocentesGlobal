@@ -494,7 +494,7 @@ export default function Hero({ onStartWizard }) {
 
         @media (max-width: 992px) {
           .clean-hero {
-            padding: 6.35rem 0 2rem !important;
+            padding: 7.2rem 0 2rem !important;
           }
 
           .clean-hero .home-hero-grid {
@@ -525,7 +525,7 @@ export default function Hero({ onStartWizard }) {
 
         @media (max-width: 640px) {
           .clean-hero {
-            padding: 6.15rem 0 1.55rem !important;
+            padding: 6.8rem 0 1.55rem !important;
             max-width: 100vw;
             overflow-x: clip;
           }
@@ -546,6 +546,7 @@ export default function Hero({ onStartWizard }) {
             max-width: 20rem;
             margin: 0 auto 0.78rem;
             font-size: clamp(1.85rem, 9.4vw, 2.3rem);
+            line-height: 1.18;
             overflow-wrap: break-word;
           }
 

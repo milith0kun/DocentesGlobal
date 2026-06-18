@@ -1,7 +1,8 @@
 .homeShell {
-  min-height: 100svh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: var(--bg-gradient);
 }
 
 .homeContent {
@@ -181,7 +182,7 @@
 
 @media (max-width: 768px) {
   .homeShell {
-    min-height: 100dvh;
+    min-height: 100vh; /* changed from 100dvh to 100vh */
     overflow: visible;
   }
 
@@ -197,12 +198,13 @@
   }
 
   .contactsSection {
-    top: 5.8rem;
-    left: 0;
-    right: 0;
-    width: 100%;
+    top: auto;
+    bottom: 1.5rem;
+    left: auto;
+    right: 1rem;
+    width: auto;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
   }
 
   .contactsSection :global(.contactsGrid) {
@@ -224,11 +226,13 @@
 
   .contactsSection :global(.contactsPanel) {
     position: absolute;
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-    width: min(calc(100vw - 1.7rem), 340px);
-    max-height: calc(100dvh - 8.7rem);
+    left: auto;
+    right: 0;
+    top: auto;
+    bottom: calc(100% + 0.6rem);
+    transform: none;
+    width: min(calc(100vw - 2rem), 340px);
+    max-height: calc(100dvh - 6rem);
     overflow-y: auto;
   }
 }
@@ -261,11 +265,11 @@
   }
 
   .contactsSection :global(.contactSummaryAction) {
-    max-width: calc(100vw - 1.2rem);
+    max-width: calc(100vw - 2rem);
     white-space: normal;
   }
 
   .contactsSection :global(.contactsPanel) {
-    width: calc(100vw - 1.2rem);
+    width: calc(100vw - 2rem);
   }
 }
