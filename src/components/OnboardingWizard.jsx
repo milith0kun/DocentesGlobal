@@ -1419,7 +1419,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             </span>
             <h3 className="wz-modal-title" style={{ marginTop: '0.8rem' }}>Habilitación de Carpetas</h3>
             <p className="wz-modal-desc" style={{ marginBottom: '1.5rem' }}>
-              No es necesario que crees ninguna carpeta por tu cuenta. La Dirección Académica configurará automáticamente tu espacio institucional y <strong>recibirás un correo</strong> cuando tus carpetas de subida estén listas para que cargues todos tus materiales en los plazos acordados.
+              No es necesario que crees ninguna carpeta por tu cuenta. La directiva académica encargada le hará llegar los enlaces correspondientes a su correo o WhatsApp.
+              <br /><br />
+              <strong style={{ color: '#0ea5e9' }}>No olvide:</strong> Esta carpeta no puede ser compartida con otros estudiantes.
             </p>
             <div style={{ display: 'flex', gap: '0.8rem' }}>
               <button onClick={() => { setShowDriveAlert(false); setStep(6); }} className="wz-btn-firm" style={{ flex: 1, background: 'var(--bc)', boxShadow: '0 8px 24px -8px rgba(14,165,233,0.5)' }}>
