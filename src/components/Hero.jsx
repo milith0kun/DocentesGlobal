@@ -307,7 +307,91 @@ export default function Hero({ onStartWizard }) {
         }
 
         .clean-hero .hero-cta {
-          animation-delay: 270ms;
+          animation-delay: 370ms;
+        }
+
+        /* ── BCG Academy – Brands Hierarchy ── */
+        .hero-brands-block {
+          margin: 0.6rem 0 1.4rem;
+          opacity: 0;
+          transform: translateY(8px);
+          animation: heroFadeUp 520ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation-delay: 280ms;
+        }
+
+        .hero-brands-parent {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(15, 47, 82, 0.06);
+          border: 1px solid rgba(15, 47, 82, 0.10);
+          border-radius: 14px;
+          padding: 0.8rem 1.6rem;
+          margin-bottom: 0;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+        }
+
+        .hero-cgb-logo {
+          height: clamp(36px, 4.5vw, 52px);
+          width: auto;
+          object-fit: contain;
+        }
+
+        .hero-brands-divider {
+          display: flex;
+          align-items: center;
+          gap: 0.7rem;
+          margin: 0.55rem 0;
+        }
+
+        .hero-brands-divider-line {
+          flex: 1;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(15, 47, 82, 0.18), transparent);
+        }
+
+        .hero-brands-divider-label {
+          font-size: 0.62rem;
+          font-weight: 700;
+          letter-spacing: 1.6px;
+          text-transform: uppercase;
+          color: #64748b;
+          white-space: nowrap;
+        }
+
+        .hero-brands-children {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 0.55rem;
+        }
+
+        .hero-brand-child {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(15, 47, 82, 0.04);
+          border: 1px solid rgba(15, 47, 82, 0.08);
+          border-radius: 10px;
+          padding: 0.55rem 0.6rem;
+          transition: all 0.25s ease;
+        }
+
+        .hero-brand-child:hover {
+          background: rgba(15, 47, 82, 0.08);
+          border-color: rgba(15, 47, 82, 0.16);
+          transform: translateY(-1px);
+        }
+
+        .hero-brand-child img {
+          height: clamp(22px, 3vw, 32px);
+          width: auto;
+          max-width: 100%;
+          object-fit: contain;
+        }
+
+        .hero-brand-child img.hero-brand-biomedic {
+          height: clamp(26px, 3.5vw, 38px);
         }
 
         .clean-hero .hero-cta {
@@ -400,7 +484,8 @@ export default function Hero({ onStartWizard }) {
           .clean-hero .hero-kicker,
           .clean-hero .hero-title,
           .clean-hero .hero-subtitle,
-          .clean-hero .hero-cta {
+          .clean-hero .hero-cta,
+          .hero-brands-block {
             animation: none !important;
             opacity: 1 !important;
             transform: none !important;
@@ -429,6 +514,11 @@ export default function Hero({ onStartWizard }) {
           .clean-hero .hero-subtitle {
             margin: 0 auto 1.2rem;
             max-width: 620px;
+          }
+
+          .hero-brands-block {
+            max-width: 440px;
+            margin: 0.6rem auto 1.4rem;
           }
 
         }
@@ -477,6 +567,36 @@ export default function Hero({ onStartWizard }) {
             max-width: 316px;
             min-width: 0;
             margin: 0 auto;
+          }
+
+          .hero-brands-block {
+            max-width: 100%;
+            margin: 0.5rem auto 1rem;
+          }
+
+          .hero-brands-parent {
+            padding: 0.6rem 1rem;
+          }
+
+          .hero-cgb-logo {
+            height: 30px;
+          }
+
+          .hero-brands-children {
+            gap: 0.35rem;
+          }
+
+          .hero-brand-child {
+            padding: 0.4rem 0.35rem;
+            border-radius: 8px;
+          }
+
+          .hero-brand-child img {
+            height: 18px;
+          }
+
+          .hero-brand-child img.hero-brand-biomedic {
+            height: 22px;
           }
 
           .clean-hero .hero-visual {
