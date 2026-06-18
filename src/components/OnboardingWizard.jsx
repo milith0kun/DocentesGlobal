@@ -1560,14 +1560,14 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         }
         .wz-phone-select {
           width:100%;
-          min-height:43px;
-          padding:0.68rem 0.78rem;
-          border:1.5px solid #e8ecf1;
+          min-height:45px;
+          padding:0.75rem 0.85rem;
+          border:2px solid #cbd5e1;
           border-radius:10px;
           background:#fff;
           color:#0f172a;
           font-family:inherit;
-          font-size:0.86rem;
+          font-size:1rem;
           font-weight:700;
           outline:none;
         }
@@ -1578,8 +1578,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         .wz-phone-input-wrap {
           display:flex;
           align-items:center;
-          min-height:43px;
-          border:1.5px solid #e8ecf1;
+          min-height:45px;
+          border:2px solid #cbd5e1;
           border-radius:10px;
           background:#fff;
           overflow:hidden;
@@ -2474,13 +2474,13 @@ export default function OnboardingWizard({ isOpen, onClose }) {
 
         /* ── TEXTAREA (PASO 9) ── */
         .wz-textarea {
-          width:100%; padding:0.85rem 1rem; border:1px solid #e2e8f0; border-radius:12px;
-          background:#fff; font-family:inherit; font-size:0.88rem; color:#1e293b;
+          width:100%; padding:0.85rem 1.1rem; border:2px solid #cbd5e1; border-radius:12px;
+          background:#fff; font-family:inherit; font-size:1rem; color:#0f172a;
           resize:vertical; outline:none; transition:all 0.2s; font-weight:500; line-height:1.5;
           box-sizing:border-box;
         }
         .wz-textarea:focus { border-color:var(--bc); box-shadow:0 0 0 3px var(--bg); }
-        .wz-textarea::placeholder { color:#94a3b8; font-weight:400; }
+        .wz-textarea::placeholder { color:#64748b; font-weight:400; }
 
         /* ── GRID HELPER ── */
         .wz-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:0.5rem; }
