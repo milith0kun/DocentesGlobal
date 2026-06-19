@@ -261,6 +261,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           '- Politica de asistencia',
           '- Programa Docente TOP',
           '',
+          `*PDF Declaración:* ${resData.pdfUrl || 'Pendiente'}`,
           `*Fecha:* ${resData.fecha}`,
           `*Carpeta Drive:* ${resData.driveFolder || 'Pendiente'}`,
           resData.warning ? `*Aviso:* ${resData.warning}` : '',

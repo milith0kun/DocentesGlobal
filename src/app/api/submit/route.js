@@ -4,6 +4,7 @@ import { createDocenteFolder, getFormResponseFolders, uploadFileToDrive } from '
 import { appendDocenteRow } from '@/lib/google-sheets.js';
 import { validateGoogleAuthConfig } from '@/lib/google-auth.js';
 import { rateLimit } from '@/lib/request-security.js';
+import { generateDocentePdfBuffer } from '@/lib/pdf-generator.jsx';
 
 const marcaConfig = {
   ciip: { nombre: 'CIIP Latam' },
@@ -461,6 +462,22 @@ export async function POST(request) {
           formFolders?.fotoFolderId || folderId
         );
         links.fotoUrl = fotoResult.fileUrl;
+      }
+
+      // Generar y subir PDF
+      try {
+        const pdfBuffer = await generateDocentePdfBuffer(fields, institucion, fecha);
+        const pdfName = `Declaracion_Compromiso_${baseName}.pdf`;
+        const pdfResult = await uploadFileToDrive(
+          pdfBuffer,
+          pdfName,
+          'application/pdf',
+          formFolders?.cvFolderId || folderId
+        );
+        links.pdfUrl = pdfResult.fileUrl;
+      } catch (pdfError) {
+        console.error('Error generando o subiendo PDF:', pdfError);
+        warnings.push('Error al procesar PDF de compromiso.');
       }
     } catch (driveError) {
       console.error('Error subiendo archivos a Drive:', driveError);
