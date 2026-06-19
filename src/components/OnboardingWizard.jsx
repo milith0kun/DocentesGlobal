@@ -7,7 +7,7 @@ const logobiomedic = '/assets/logobiomedic.png';
 const geominaWhite = '/assets/geomina-new.png';
 const ciipWhite = '/assets/ciip-white.png';
 const biomedicLogoWhite = '/assets/biomedic-logo-white.png';
-const cgbLogo = '/assets/cgb-logo-new.jpeg';
+const cgbLogo = '/assets/cgb-logo-clean.png';
 const camaraFondoVirtual = '/assets/camara_fondo_virtual.webp';
 const identidadVisualPpts = '/assets/identidad_visual_ppts.webp';
 const canalesExternosProhibidos = '/assets/canales_externos_prohibidos.webp';
@@ -299,7 +299,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
       {/* ── HEADER ── */}
       <header className="wz-header">
         <div className="wz-h-left">
-          <img src={cgbLogo} alt="CGB Academy" style={{ height: '40px', opacity: 0.95, filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.3))' }} />
+          <img src={cgbLogo} alt="CGB Academy" style={{ height: '48px', width: 'auto', aspectRatio: '1341 / 473', flexShrink: 0, opacity: 0.95, filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.3))' }} />
         </div>
         <div className="wz-h-center">
           {(() => {
@@ -885,7 +885,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               {step === 6 && (
                 <div className="wz-fade">
                   <h2 className="wz-title">Protocolo de Imagen & Comunicación</h2>
-                  <p className="wz-sub">Eres el rostro de nuestra marca para toda Latinoamérica. El profesionalismo digital no es opcional.</p>
+                  <p className="wz-sub">Eres el rostro de nuestra marca para toda Latinoamérica. Confiamos en su profesionalismo.</p>
                   
                   <div className="wz-protocol-split">
                     {/* LADO IZQUIERDO: REGLAS */}
@@ -949,7 +949,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                         badge: 'Mínimo 4 días',
                         text: 'El docente debe solicitar este permiso con mínimo de 4 días de anticipación, para evitar inconvenientes en la ejecución de los cursos',
                         bullets: [
-                          'IMPORTANTE: Esto es en caso excepcional, si en caso ocurren los permisos de forma reiterada y sin justificación, se observará en su evaluación docente.'
+                          'IMPORTANTE: Esto es en caso excepcional, si en caso ocurren los permisos de forma reiterada y sin justificación, se observará en su evaluación docente. Los docentes no pueden solicitar permiso el mismo día, sábado o domingo'
                         ]
                       },
                       {
@@ -1008,22 +1008,22 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               {/* ═══ PASO 8: PROGRAMA TOP ═══ */}
               {step === 8 && (
                 <div className="wz-fade wz-top-stage">
-                  <h2 className="wz-title" style={{ textAlign: 'center', marginBottom: '0.5rem' }}>Programa Docente</h2>
+                  <h2 className="wz-title" style={{ textAlign: 'center', marginBottom: '0.5rem' }}>Programa Docente TOP</h2>
                   <p className="wz-sub" style={{ textAlign: 'center', maxWidth: '540px', margin: '0 auto 1.5rem auto' }}>
                     Buscamos talentos que inspiren. Si cumple los criterios de calidad, asistencia y puntualidad
-                    en materiales, accederá a la categoría Élite con beneficios exclusivos.
+                    en materiales, accederá a la categoría TOP con beneficios exclusivos.
                   </p>
 
                   {/* ── KPIs Docentes ── */}
                   <h3 className="wz-top-section-title">Indicadores de Evaluación</h3>
                   <div className="wz-top-kpi-grid">
                     {[
-                      { id: 'ICP', title: 'Calidad Percibida', text: 'Encuestas de satisfacción estudiantil.' },
+                      { id: 'ICP', title: 'Calidad Percibida', text: 'Encuestas de satisfacción estudiantil por estrellas del 1 al 5, 5 siendo la mejor puntuación.' },
                       { id: 'TAP', title: 'Asistencia y Puntualidad', text: 'Inicio y fin exacto de cada sesión.' },
                       { id: 'CMD', title: 'Envío de Materiales', text: 'Diapositivas y lecturas a tiempo (Sáb/Dom 1pm).' },
                       { id: 'EOE', title: 'Envío de Exámenes', text: 'Evaluaciones según calendario (Lunes 9am).' },
                       { id: 'IIA', title: 'Aporte Institucional', text: 'Materiales exclusivos como patrimonio.' },
-                      { id: 'TRD', title: 'Retención de Alumnos', text: 'Estudiantes que completan el curso.' },
+                      { id: 'TRD', title: 'Retención de Alumnos', text: 'Participantes en las sesiones de aprendizaje que completan el curso.' },
                     ].map((item) => (
                       <div className="wz-top-kpi-item" key={item.id}>
                         <span className="wz-top-kpi-id">{item.id}</span>
@@ -1035,8 +1035,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     ))}
                   </div>
 
-                  {/* ── Beneficios Élite + Certificado ── */}
-                  <h3 className="wz-top-section-title" style={{ marginTop: '1.5rem' }}>Beneficios Categoría Élite</h3>
+                  {/* ── Beneficios TOP + Certificado ── */}
+                  <h3 className="wz-top-section-title" style={{ marginTop: '1.5rem' }}>Beneficios Categoría TOP</h3>
                   <div className="wz-top-elite-wrap">
                     <ul className="wz-top-elite-list">
                       <li><strong>Capacitación gratuita</strong> — Becas y descuentos en programas avanzados.</li>
@@ -1397,10 +1397,10 @@ export default function OnboardingWizard({ isOpen, onClose }) {
       {showPenaltyAlert && (
         <div className="wz-modal-overlay fade-in">
           <div className="wz-modal-content condition-modal">
-            <span className="wz-modal-tag">Término Innegociable</span>
+            <span className="wz-modal-tag">Importante</span>
             <h3 className="wz-modal-title">Penalidad por Incumplimiento</h3>
             <p className="wz-modal-desc">
-              Si la Dirección Académica se ve en la necesidad de <strong>solicitarte el material</strong> por falta de entrega a tiempo en los plazos que acabas de aceptar, se contabilizará automáticamente como una <strong>penalidad de desempeño</strong> en tu perfil. No existen recordatorios previos.
+              Si la Dirección Académica se ve en la necesidad de <strong>solicitarte el material</strong> por falta de entrega a tiempo en los plazos que acabas de aceptar, se contabilizará automáticamente como una <strong>penalidad de desempeño</strong> en tu perfil. Confiamos en su compromiso.
             </p>
             <button onClick={() => { setShowPenaltyAlert(false); setShowDriveAlert(true); }} className="wz-btn-firm">
               Comprendo y Acepto la Condición
@@ -1419,9 +1419,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
             </span>
             <h3 className="wz-modal-title" style={{ marginTop: '0.8rem' }}>Habilitación de Carpetas</h3>
             <p className="wz-modal-desc" style={{ marginBottom: '1.5rem' }}>
-              No es necesario que crees ninguna carpeta por tu cuenta. La directiva académica encargada le hará llegar los enlaces correspondientes a su correo o WhatsApp.
+              No es necesario que crees ninguna carpeta por tu cuenta. LA DIRECCIÓN ACADÉMICA encargada le hará llegar los enlaces correspondientes a su correo o WhatsApp.
               <br /><br />
-              <strong style={{ color: '#0ea5e9' }}>No olvide:</strong> Esta carpeta no puede ser compartida con otros estudiantes.
+              <strong style={{ color: '#0ea5e9' }}>No olvide:</strong> <u>Esta carpeta no puede ser compartida con otros estudiantes.</u>
             </p>
             <div style={{ display: 'flex', gap: '0.8rem' }}>
               <button onClick={() => { setShowDriveAlert(false); setStep(6); }} className="wz-btn-firm" style={{ flex: 1, background: 'var(--bc)', boxShadow: '0 8px 24px -8px rgba(14,165,233,0.5)' }}>
@@ -1466,13 +1466,13 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           height:92px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between;
           padding:0 2rem; background:linear-gradient(135deg,#060e1a 0%,#0a1e35 100%); position:relative;
         }
-        .wz-h-left, .wz-h-right { width:80px; display:flex; align-items:center; }
+        .wz-h-left, .wz-h-right { width:150px; display:flex; align-items:center; flex-shrink:0; }
         .wz-h-right { justify-content:flex-end; }
         .wz-h-center { display:flex; align-items:center; justify-content:center; gap:clamp(0.55rem, 2.4vw, 1rem); min-width:0; }
-        .wz-logo { height:42px; width:auto; max-width:28vw; object-fit:contain; flex:0 1 auto; transition:all 0.4s ease; }
-        .wz-logo.lg-ciip { height:52px; }
-        .wz-logo.lg-geo { height:34px; transform:translateY(4px); }
-        .wz-logo.lg-bio { height:48px; }
+        .wz-logo { height:48px; width:auto; max-width:28vw; object-fit:contain; flex-shrink:0; transition:all 0.4s ease; }
+        .wz-logo.lg-ciip { height:60px; aspect-ratio: 1896 / 708; }
+        .wz-logo.lg-geo { height:40px; transform:translateY(4px); aspect-ratio: 2560 / 752; }
+        .wz-logo.lg-bio { height:56px; aspect-ratio: 891 / 713; }
         .wz-sep { width:1px; height:24px; background:linear-gradient(to bottom,transparent,rgba(56,189,248,0.2),transparent); }
         .wz-back {
           background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
@@ -2891,9 +2891,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           }
           .wz-h-center { gap:0.55rem; max-width:calc(100vw - 108px); overflow:hidden; }
           .wz-logo { max-width:32vw; }
-          .wz-logo.lg-ciip { height:38px !important; max-width:82px; transform:translateY(0); }
-          .wz-logo.lg-geo { height:25px !important; max-width:88px; transform:translateY(1px); }
-          .wz-logo.lg-bio { height:32px !important; max-width:76px; transform:translateY(0); }
+          .wz-logo.lg-ciip { height:44px !important; max-width:120px; transform:translateY(0); }
+          .wz-logo.lg-geo { height:29px !important; max-width:100px; transform:translateY(1px); }
+          .wz-logo.lg-bio { height:36px !important; max-width:85px; transform:translateY(0); }
           .wz-sep { height:16px; background:linear-gradient(to bottom,transparent,rgba(56,189,248,0.32),transparent); }
           .wz-brand-card {
             min-height: 58px;
@@ -3050,9 +3050,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
           .wz-h-right { right:0.55rem; width:32px; }
           .wz-back { width:31px; height:31px; }
           .wz-h-center { gap:0.42rem; max-width:calc(100vw - 92px); }
-          .wz-logo.lg-ciip { height:35px !important; max-width:74px; }
-          .wz-logo.lg-geo { height:23px !important; max-width:80px; }
-          .wz-logo.lg-bio { height:30px !important; max-width:68px; }
+          .wz-logo.lg-ciip { height:38px !important; max-width:105px; }
+          .wz-logo.lg-geo { height:26px !important; max-width:90px; }
+          .wz-logo.lg-bio { height:33px !important; max-width:75px; }
           .wz-sep { height:17px; }
           .wz-brand-card img {
             max-height: 34px;
@@ -3082,9 +3082,9 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         @media (max-width:340px) {
           .wz-sep { display:none; }
           .wz-h-center { gap:0.5rem; }
-          .wz-logo.lg-ciip { height:32px !important; max-width:68px; }
-          .wz-logo.lg-geo { height:21px !important; max-width:72px; }
-          .wz-logo.lg-bio { height:27px !important; max-width:62px; }
+          .wz-logo.lg-ciip { height:34px !important; max-width:92px; }
+          .wz-logo.lg-geo { height:23px !important; max-width:80px; }
+          .wz-logo.lg-bio { height:29px !important; max-width:66px; }
         }
 
         /* ── OPTIMIZACIONES DE ALTURA (EVITAR SCROLL EN LAPTOPS Y VIEWPORTS BAJOS) ── */

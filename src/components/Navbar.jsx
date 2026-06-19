@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 const logobiomedic = '/assets/biomedic-logo-white.png';
 const geominaWhite = '/assets/geomina-new.png';
 const ciipWhite = '/assets/ciip-white.png';
-const cgbLogo = '/assets/cgb-logo-new.jpeg';
+const cgbLogo = '/assets/cgb-logo-clean.png';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -66,6 +66,8 @@ export default function Navbar() {
         .nav-cgb-logo {
           height: clamp(44px, 5.5vw, 62px);
           width: auto;
+          aspect-ratio: 1341 / 473;
+          flex-shrink: 0;
           object-fit: contain;
           filter: drop-shadow(0 2px 8px rgba(0,0,0,0.25));
           opacity: 0.97;
