@@ -497,27 +497,27 @@ const COMPROMISOS = [
   {
     letra: 'A',
     titulo: 'Metodología Doing by Learning',
-    cuerpo: 'Ejecución rigurosa del pilar académico enfocado en aprendizaje práctico y orientado a resultados reales y medibles.',
+    cuerpo: 'Se estipula la ejecución rigurosa de la metodología de aprendizaje práctico como pilar académico fundamental. El docente se compromete a diseñar y ejecutar cada sesión enfocada en experiencias prácticas directas, proyectos aplicados, y ejercicios que generen resultados medibles y demostrables. Se requiere que el 70% del tiempo de clase esté dedicado a actividades prácticas hands-on, no meramente teóricas. El docente debe documentar avances mediante entregas de trabajos y proyectos que demuestren dominio de competencias.',
   },
   {
     letra: 'B',
     titulo: 'Fechas de corte innegociables',
-    cuerpo: 'Cumplimiento estricto de los plazos para la entrega de material académico, actas de calificaciones y grabaciones de sesiones.',
+    cuerpo: 'El docente se compromete a cumplir estrictamente con los plazos institucionales establecidos para: (1) Entrega de material académico (syllabus, guías, recursos) 5 días antes de cada módulo. (2) Actas de calificaciones completas dentro de 48 horas de finalizada cada evaluación. (3) Grabaciones y retroalimentaciones de sesiones dentro de 24 horas. (4) Disponibilidad para reporte de asistencia semanal. El incumplimiento de estas fechas afecta directamente la operatividad institucional y conlleva sanciones progresivas.',
   },
   {
     letra: 'C',
     titulo: 'Protocolo de Imagen y Comunicación',
-    cuerpo: 'Adhesión obligatoria a los estándares visuales y verbales institucionales en toda interacción con estudiantes y equipo interno.',
+    cuerpo: 'El docente se adhiere incondicionalmente a los estándares de identidad institucional. Esto incluye: uso obligatorio de logos y tipografía aprobada en materiales, mantener un tono profesional y coherente en toda comunicación escrita, utilizar únicamente canales oficiales de la institución para contactar estudiantes (no redes sociales personales), mantener lenguaje formal y académico en interacciones, respetar protocolos de confidencialidad en datos de estudiantes, y alinearse con la filosofía institucional en todos los mensajes públicos.',
   },
   {
     letra: 'D',
     titulo: 'Política de Asistencia y Puntualidad',
-    cuerpo: 'Conexión puntual a las sesiones garantizando uso de fondo institucional, equipo de audio adecuado y cámara activa en todo momento.',
+    cuerpo: 'El docente se compromete a: (1) Conectarse 10 minutos antes de cada sesión para verificar equipos y conexión. (2) Iniciar la clase exactamente a la hora programada, sin retrasos. (3) Mantener cámara activa y visible durante toda la sesión (excepto emergencias justificadas). (4) Usar fondo institucional (virtual o físico) aprobado, sin ambientes privados. (5) Contar con micrófono de calidad profesional y conectividad de mínimo 10 Mbps. (6) Asistencia mínima del 95% en todas las sesiones programadas.',
   },
   {
     letra: 'E',
     titulo: 'Programa Docente TOP',
-    cuerpo: 'Aceptación voluntaria de los niveles de exigencia superior y compromiso de mantener los estándares de calidad del programa de excelencia.',
+    cuerpo: 'Al aceptar este programa, el docente se compromete a estándares de excelencia superior incluyendo: (1) Participación en capacitaciones mensuales de actualización pedagógica. (2) Mentoría a docentes nuevos. (3) Innovación permanente en diseño de contenidos y metodología. (4) Evaluaciones de desempeño trimestral con retroalimentación institucional. (5) Compromiso de mantener una puntuación de satisfacción de estudiantes mayor a 4.5/5. (6) Disponibilidad para proyectos estratégicos institucionales. Los beneficios incluyen compensación adicional, reconocimiento público, y prioridad en nuevas oportunidades.',
   },
 ];
 
@@ -566,7 +566,7 @@ const DocentePDF = ({ data, institucion, dateStr, logoBase64, cgbLogoBase64, bra
             {cgbLogoBase64 ? <Image src={cgbLogoBase64} style={S.cgbLogo} /> : null}
             <View style={S.headerDivider} />
             <View style={S.headerTitles}>
-              <Text style={S.headerTitle}>Declaración Jurada de Compromisos</Text>
+              <Text style={S.headerTitle}>Declaración de Conformidad de Compromisos</Text>
               <Text style={S.headerSub}>{institucion} · Registro Docente Oficial</Text>
             </View>
           </View>
@@ -601,9 +601,7 @@ const DocentePDF = ({ data, institucion, dateStr, logoBase64, cgbLogoBase64, bra
           {/* Texto de apertura */}
           <View style={S.introBox}>
             <Text style={S.introText}>
-              El presente instrumento constituye una declaración jurada de compromisos institucionales,
-              suscrita de forma voluntaria y electrónica por el docente identificado a continuación,
-              con pleno conocimiento de sus alcances y efectos jurídicos ante {institucion}.
+              El presente documento constituye una DECLARACIÓN JURADA DE CONFORMIDAD, suscrita de forma voluntaria y electrónica por el docente identificado a continuación. Esta declaración formaliza la aceptación incondicional e irrevocable de los TÉRMINOS INNEGOCIABLES DE COLABORACIÓN establecidos por {institucion}. El docente declara bajo juramento que ha leído, comprendido y acepta en su totalidad cada uno de estos compromisos, con pleno conocimiento de sus alcances legales y consecuencias institucionales.
             </Text>
           </View>
 
@@ -636,10 +634,7 @@ const DocentePDF = ({ data, institucion, dateStr, logoBase64, cgbLogoBase64, bra
             <View style={S.commitBox}>
               <View style={S.commitIntro}>
                 <Text style={S.commitIntroText}>
-                  Yo, <Text style={S.commitIntroTextBold}>{data.nombre}</Text>, declaro bajo juramento
-                  que la información consignada es veraz y exacta. Manifiesto haber leído, comprendido
-                  y aceptado de manera incondicional e irrevocable las siguientes normativas
-                  institucionales de <Text style={S.commitIntroTextBold}>{institucion}</Text>:
+                  Yo, <Text style={S.commitIntroTextBold}>{data.nombre}</Text>, identificado(a) con documento <Text style={S.commitIntroTextBold}>{data.documento}</Text>, declaro bajo juramento y con pleno conocimiento de mis responsabilidades legales que: (1) la información personal y profesional consignada es veraz, exacta y completa; (2) he leído y comprendido íntegramente los cinco términos innegociables de colaboración que se detallan; (3) acepto de manera incondicional e irrevocable cada compromiso y sus implicaciones; (4) autorizo a <Text style={S.commitIntroTextBold}>{institucion}</Text> a aplicar políticas institucionales en caso de incumplimiento. Los siguientes términos son requisitos obligatorios:
                 </Text>
               </View>
               <View style={S.commitList}>
