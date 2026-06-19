@@ -327,10 +327,10 @@ const S = StyleSheet.create({
   },
   signatureCursive: {
     fontFamily: 'Times-Italic',
-    fontSize:   14,
+    fontSize:   11,
     color:      T.nearBlack,
     textAlign:  'center',
-    lineHeight: 1.35,
+    lineHeight: 1.4,
   },
   signatureLine: {
     width:           '85%',
