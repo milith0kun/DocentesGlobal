@@ -4,6 +4,12 @@ import { useState } from 'react';
 
 const contacts = [
   {
+    institution: 'Direccion academica',
+    role: 'Ger. del Dep. academico',
+    phone: '+51 956 370 155',
+    wa: '51956370155',
+  },
+  {
     institution: 'CIIP Latam',
     role: 'Coordinacion academica',
     phone: '+51 956 006 498',
@@ -20,12 +26,6 @@ const contacts = [
     role: 'Coordinacion academica',
     phone: '+51 956 006 498',
     wa: '51956006498',
-  },
-  {
-    institution: 'Direccion academica',
-    role: 'Ger. del Dep. academico',
-    phone: '+51 956 370 155',
-    wa: '51956370155',
   },
   {
     institution: 'Soporte',

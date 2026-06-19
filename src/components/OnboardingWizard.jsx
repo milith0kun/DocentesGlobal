@@ -1283,6 +1283,50 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     </div>
                   </div>
 
+                  {/* Panel de políticas y requerimientos */}
+                  <div style={{
+                    marginTop: '1.5rem',
+                    padding: '1rem 1.25rem',
+                    background: 'rgba(56, 189, 248, 0.04)',
+                    border: '1px solid rgba(56, 189, 248, 0.15)',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.75rem'
+                  }}>
+                    <h4 style={{
+                      margin: 0,
+                      fontSize: '0.9rem',
+                      color: 'var(--bc)',
+                      fontWeight: 800,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem'
+                    }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                      Políticas de Uso y Requisitos
+                    </h4>
+                    
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                      gap: '1rem',
+                      fontSize: '0.78rem',
+                      color: '#475569',
+                      lineHeight: '1.45',
+                      textAlign: 'left'
+                    }}>
+                      <div>
+                        <strong style={{ color: '#0f172a', display: 'block', marginBottom: '0.2rem' }}>Requisitos del CV:</strong>
+                        Debe ser su CV actualizado (preferiblemente en formato PDF) y detallar su formación, especialización técnica e historial docente pertinente.
+                      </div>
+                      <div>
+                        <strong style={{ color: '#0f172a', display: 'block', marginBottom: '0.2rem' }}>Política de la Fotografía:</strong>
+                        La fotografía será utilizada para sus accesos, portales institucionales y aulas virtuales. Debe ser formal (tipo pasaporte/profesional), con fondo neutro y buena iluminación. Evitar selfies o imágenes casuales.
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="wz-nav">
                     <button onClick={handleBack} className="wz-btn-ghost">Atrás</button>
                     <button onClick={handleNext} disabled={!formData.cvFile||!formData.fotoFile} className="wz-btn-main">Siguiente</button>

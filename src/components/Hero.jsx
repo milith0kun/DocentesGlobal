@@ -2,91 +2,17 @@ import { useRef, useEffect } from 'react';
 
 export default function Hero({ onStartWizard }) {
   const heroRef = useRef(null);
-  const primaryVideoRef = useRef(null);
-  const secondaryVideoRef = useRef(null);
+  const videoRef = useRef(null);
 
   useEffect(() => {
-    const videos = [primaryVideoRef.current, secondaryVideoRef.current].filter(Boolean);
-    if (videos.length < 2) return;
-
-    const crossfadeSeconds = 0.85;
-    const restartOffsetSeconds = 0.08;
-    let activeIndex = 0;
-    let isCrossfading = false;
-    let frameId = 0;
-    let transitionTimer = 0;
-
-    const setActiveVideo = (nextIndex) => {
-      videos.forEach((item, index) => {
-        item.classList.toggle('is-active', index === nextIndex);
+    const video = videoRef.current;
+    if (video) {
+      video.muted = true;
+      video.defaultMuted = true;
+      video.play().catch(() => {
+        // Autoplay catch
       });
-    };
-
-    const playVideo = async (video, startTime) => {
-      if (Number.isFinite(startTime)) {
-        video.currentTime = startTime;
-      }
-
-      try {
-        await video.play();
-      } catch {
-        // Autoplay can be delayed by the browser until the media is ready.
-      }
-    };
-
-    const completeCrossfade = () => {
-      const previousIndex = activeIndex;
-      activeIndex = activeIndex === 0 ? 1 : 0;
-      videos[previousIndex].pause();
-      videos[previousIndex].currentTime = 0;
-      isCrossfading = false;
-    };
-
-    const startCrossfade = () => {
-      if (isCrossfading) return;
-      const activeVideo = videos[activeIndex];
-      if (!activeVideo.duration) return;
-
-      isCrossfading = true;
-      const nextIndex = activeIndex === 0 ? 1 : 0;
-      const nextVideo = videos[nextIndex];
-      setActiveVideo(nextIndex);
-      playVideo(nextVideo, restartOffsetSeconds);
-      transitionTimer = window.setTimeout(completeCrossfade, crossfadeSeconds * 1000);
-    };
-
-    const tick = () => {
-      const activeVideo = videos[activeIndex];
-      if (
-        !isCrossfading &&
-        activeVideo.duration &&
-        activeVideo.currentTime >= activeVideo.duration - crossfadeSeconds
-      ) {
-        startCrossfade();
-      }
-
-      frameId = requestAnimationFrame(checkLoop);
-    };
-
-    const checkLoop = () => {
-      tick();
-    };
-
-    const start = () => {
-      videos.forEach((item) => {
-        item.loop = false;
-      });
-      setActiveVideo(0);
-      playVideo(videos[0], restartOffsetSeconds);
-      frameId = requestAnimationFrame(checkLoop);
-    };
-
-    start();
-
-    return () => {
-      cancelAnimationFrame(frameId);
-      window.clearTimeout(transitionTimer);
-    };
+    }
   }, []);
 
   const handleMouseMove = (e) => {
@@ -136,20 +62,12 @@ export default function Hero({ onStartWizard }) {
           {/* Video a la derecha sin marco ni animaciones de CSS */}
           <div className="hero-visual" aria-hidden="true">
             <video 
-              ref={primaryVideoRef}
+              ref={videoRef}
               src="/videos/hero-docente-alpha.webm" 
               className="hero-mascot is-active"
               autoPlay 
               muted 
-              playsInline 
-              preload="auto"
-              disableRemotePlayback
-            />
-            <video 
-              ref={secondaryVideoRef}
-              src="/videos/hero-docente-alpha.webm" 
-              className="hero-mascot"
-              muted 
+              loop
               playsInline 
               preload="auto"
               disableRemotePlayback
