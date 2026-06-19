@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 const logobiomedic = '/assets/biomedic-logo-white.png';
 const geominaWhite = '/assets/geomina-new.png';
 const ciipWhite = '/assets/ciip-white.png';
-const cgbLogo = '/assets/cgb-logo-light.png';
+const cgbLogo = '/assets/cgb-logo-new.jpeg';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
