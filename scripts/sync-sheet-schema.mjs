@@ -21,16 +21,19 @@ if (!target) throw new Error(`No se encontró la pestaña con gid ${sheetGid}`);
 
 const title = target.properties.title;
 const quotedTitle = `'${title.replaceAll("'", "''")}'`;
-const currentRows = (await sheets.spreadsheets.values.get({
+const currentValues = (await sheets.spreadsheets.values.get({
   spreadsheetId,
-  range: `${quotedTitle}!A2:ZZ`,
+  range: `${quotedTitle}!A:ZZ`,
 })).data.values || [];
 
-if (currentRows.some((row) => row.some((cell) => String(cell || '').trim()))) {
-  throw new Error('La hoja contiene registros. Migra los datos antes de sincronizar el esquema.');
-}
-
 const headers = SHEET_COLUMNS.map(([, header]) => header);
+const currentHeaders = currentValues[0] || [];
+const migratedRows = currentValues.slice(1)
+  .filter((row) => row.some((cell) => String(cell || '').trim()))
+  .map((row) => headers.map((header) => {
+    const currentIndex = currentHeaders.indexOf(header);
+    return currentIndex >= 0 ? row[currentIndex] ?? '' : '';
+  }));
 const currentColumnCount = target.properties.gridProperties.columnCount;
 const currentRowCount = target.properties.gridProperties.rowCount;
 const requests = [];
@@ -112,8 +115,8 @@ await sheets.spreadsheets.batchUpdate({ spreadsheetId, requestBody: { requests }
 await sheets.spreadsheets.values.clear({ spreadsheetId, range: `${quotedTitle}!A:ZZ` });
 await sheets.spreadsheets.values.update({
   spreadsheetId,
-  range: `${quotedTitle}!A1:U1`,
+  range: `${quotedTitle}!A1:U${migratedRows.length + 1}`,
   valueInputOption: 'RAW',
-  requestBody: { values: [headers] },
+  requestBody: { values: [headers, ...migratedRows] },
 });
-console.log(`Esquema sincronizado: ${headers.length} columnas en "${title}".`);
+console.log(`Esquema sincronizado: ${headers.length} columnas y ${migratedRows.length} filas en "${title}".`);

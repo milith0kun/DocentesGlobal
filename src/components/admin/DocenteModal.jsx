@@ -95,10 +95,11 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
           <section>
             <h3 className="adm-modal-section-title">Datos Personales</h3>
             <div className="adm-modal-grid">
-              <Field label="DNI / Doc." value={docente.documento} />
               <Field label="Email" value={docente.email} link={docente.email ? `mailto:${docente.email}` : null} />
               <Field label="Teléfono" value={docente.telefono} />
               <Field label="F. Nacimiento" value={docente.fechaNacimiento} />
+              <Field label="Dirección de vivienda" value={docente.direccion} />
+              <Field label="DNI / Doc." value={docente.documento} />
               <Field label="Profesión" value={docente.profesion} />
               <Field label="Marcas" value={brandTag(docente.marcas)} />
             </div>

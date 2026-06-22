@@ -304,6 +304,7 @@ img {
 .adm-code-cell { font-family: monospace; font-size: 0.7rem; color: rgba(148,163,184,0.45); white-space: nowrap; }
 .adm-name-cell { font-weight: 600; color: #f0f9ff; white-space: nowrap; }
 .adm-email-cell { max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adm-address-cell { max-width: 210px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .adm-empty-row { text-align: center; padding: 3rem !important; color: rgba(148,163,184,0.4); font-size: 0.875rem; }
 
 /* ── Chips & badges ── */

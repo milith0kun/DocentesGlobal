@@ -22,9 +22,10 @@ export default function DocentesTable({
             <tr>
               <th>Código</th>
               <th>Nombre</th>
-              <th>DNI / Doc.</th>
               <th>Email</th>
               <th>Teléfono</th>
+              <th>Dirección de vivienda</th>
+              <th>DNI / Doc.</th>
               <th>Marca</th>
               <th>Monto / hora</th>
               <th>Pago</th>
@@ -34,17 +35,18 @@ export default function DocentesTable({
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={10} className="adm-empty-row">Cargando…</td></tr>
+              <tr><td colSpan={11} className="adm-empty-row">Cargando…</td></tr>
             ) : docentes.length === 0 ? (
-              <tr><td colSpan={10} className="adm-empty-row">Sin registros encontrados.</td></tr>
+              <tr><td colSpan={11} className="adm-empty-row">Sin registros encontrados.</td></tr>
             ) : (
               docentes.map((d) => (
                 <tr key={d.id} className="adm-row" onClick={() => onRowClick(d)}>
                   <td className="adm-code-cell">{d.codigo || '—'}</td>
                   <td className="adm-name-cell">{d.nombre || '—'}</td>
-                  <td>{d.documento || '—'}</td>
                   <td className="adm-email-cell">{d.email || '—'}</td>
                   <td>{d.telefono || '—'}</td>
+                  <td className="adm-address-cell" title={d.direccion || ''}>{d.direccion || '—'}</td>
+                  <td>{d.documento || '—'}</td>
                   <td>
                     {brandTag(d.marcas)
                       ? <span className="adm-brand-chip">{brandTag(d.marcas)}</span>
