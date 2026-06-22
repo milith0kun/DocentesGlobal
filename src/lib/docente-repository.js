@@ -57,12 +57,10 @@ function buildDocenteUpdate(data, links = {}, source) {
     comentarios: cleanText(data.comentarios),
     marcas: selectedMarcas(data.marca),
     institucion: cleanText(data.institucion),
-    datosPago: {
-      metodoPago: cleanText(data.metodoPago),
-      metodoPagoDetalle: cleanText(paymentMethod(data)),
-      metodoPagoOtro: cleanText(data.metodoPagoOtro),
-      cuentaAbono: cleanText(data.numeroCuenta),
-    },
+    'datosPago.metodoPago': cleanText(data.metodoPago),
+    'datosPago.metodoPagoDetalle': cleanText(paymentMethod(data)),
+    'datosPago.metodoPagoOtro': cleanText(data.metodoPagoOtro),
+    'datosPago.cuentaAbono': cleanText(data.numeroCuenta),
     documentos: {
       cvUrl: cleanText(links.cvUrl || data.cv),
       fotoUrl: cleanText(links.fotoUrl || data.foto),
@@ -140,4 +138,3 @@ export async function upsertDocente(data, links = {}, { source = 'manual-docente
     upsertedId: result.upsertedId,
   };
 }
-

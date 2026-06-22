@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
+import { ObjectId } from 'mongodb';
 import { verifyAdminToken, ADMIN_COOKIE } from '@/lib/admin-auth.js';
 import { getMongoDb, hasMongoConfig } from '@/lib/mongodb.js';
+import { updateDocenteHonorarios } from '@/lib/google-sheets.js';
 
 const CSV_COLUMNS = [
   ['codigo', 'Código'],
@@ -13,6 +15,7 @@ const CSV_COLUMNS = [
   ['institucion', 'Institución'],
   ['metodoPago', 'Método de pago'],
   ['numeroCuenta', 'Número de cuenta'],
+  ['honorariosHora', 'Honorarios por hora'],
   ['conformidadCompleta', 'Conformidad completa'],
   ['createdAt', 'Fecha de registro'],
   ['estado', 'Estado'],
@@ -58,6 +61,7 @@ function normalizeMongoDocente(doc) {
     comentarios: doc.comentarios || '',
     metodoPago: doc.datosPago?.metodoPagoDetalle || doc.datosPago?.metodoPago || '',
     numeroCuenta: doc.datosPago?.cuentaAbono || '',
+    honorariosHora: doc.datosPago?.honorariosHora ?? null,
     cvUrl: doc.documentos?.cvUrl || '',
     fotoUrl: doc.documentos?.fotoUrl || '',
     pdfUrl: doc.documentos?.conformidadPdfUrl || '',
@@ -69,6 +73,66 @@ function normalizeMongoDocente(doc) {
     estado: doc.estado || 'activo',
     lastSource: doc.lastSource || '',
   };
+}
+
+export async function PATCH(request) {
+  const token = request.cookies.get(ADMIN_COOKIE)?.value;
+  const session = await verifyAdminToken(token);
+  if (!session) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+
+  if (!hasMongoConfig()) {
+    return NextResponse.json({ error: 'MongoDB no está configurado.' }, { status: 503 });
+  }
+
+  try {
+    const body = await request.json();
+    const id = String(body.id || '');
+    const amount = Number(body.honorariosHora);
+
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Docente inválido.' }, { status: 400 });
+    }
+    if (!Number.isFinite(amount) || amount <= 0 || amount > 1_000_000 || Math.round(amount * 100) !== amount * 100) {
+      return NextResponse.json({ error: 'Ingresa un monto válido con máximo dos decimales.' }, { status: 400 });
+    }
+
+    const honorariosHora = Number(amount.toFixed(2));
+    const db = await getMongoDb();
+    const collection = db.collection('docentes');
+    const objectId = new ObjectId(id);
+    const current = await collection.findOne({ _id: objectId });
+
+    if (!current) {
+      return NextResponse.json({ error: 'Docente no encontrado.' }, { status: 404 });
+    }
+
+    const identity = {
+      codigo: current.conformidad?.codigo,
+      documento: current.documentoNumero,
+      email: current.email,
+    };
+    const sheetUpdate = await updateDocenteHonorarios(identity, honorariosHora);
+
+    try {
+      await collection.updateOne(
+        { _id: objectId },
+        {
+          $set: { 'datosPago.honorariosHora': honorariosHora, updatedAt: new Date() },
+          $push: { eventos: { tipo: 'actualiza_honorarios', honorariosHora, at: new Date(), admin: session.sub } },
+        }
+      );
+    } catch (mongoError) {
+      await updateDocenteHonorarios(identity, sheetUpdate.previousValue);
+      throw mongoError;
+    }
+
+    const updated = await collection.findOne({ _id: objectId });
+    return NextResponse.json({ docente: normalizeMongoDocente(updated) });
+  } catch (error) {
+    return NextResponse.json({ error: `No se pudo guardar el monto: ${error.message}` }, { status: 500 });
+  }
 }
 
 export async function GET(request) {

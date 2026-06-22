@@ -251,6 +251,17 @@ function buildDefaultRow(values) {
   return SHEET_COLUMNS.map(([key]) => values[key] ?? '');
 }
 
+function columnLetter(index) {
+  let value = index + 1;
+  let result = '';
+  while (value > 0) {
+    value -= 1;
+    result = String.fromCharCode(65 + (value % 26)) + result;
+    value = Math.floor(value / 26);
+  }
+  return result;
+}
+
 async function resolveSheetName(sheets) {
   if (!SHEET_GID) return SHEET_NAME;
 
@@ -412,6 +423,52 @@ export async function appendDocenteRow(data, links = {}) {
   throw new Error('No se pudo encontrar una fila segura para guardar la respuesta.');
 }
 
+export async function updateDocenteHonorarios(identity, honorariosHora) {
+  assertSheetsConfig();
+  const sheets = getSheetsClient();
+  const sheetName = await resolveSheetName(sheets);
+  const rows = await getSheetValues(sheets, sheetName);
+  const headerIndex = findHeaderIndex(rows);
+  const headers = rows[headerIndex] || [];
+  const honorariosColumn = columnIndex(headers, 'honorarios', -1);
+
+  if (honorariosColumn < 0) {
+    throw new Error('La columna de honorarios no existe en Google Sheets.');
+  }
+
+  const identityColumns = [
+    ['code', identity.codigo],
+    ['documento', identity.documento],
+    ['correo', identity.email],
+  ].map(([key, value]) => ({
+    column: columnIndex(headers, key, -1),
+    value: String(value || '').trim().toLowerCase(),
+  })).filter(({ column, value }) => column >= 0 && value);
+
+  const rowIndex = rows.findIndex((row, index) =>
+    index > headerIndex && identityColumns.some(({ column, value }) =>
+      String(row[column] || '').trim().toLowerCase() === value
+    )
+  );
+
+  if (rowIndex < 0) {
+    throw new Error('No se encontró al docente en Google Sheets.');
+  }
+
+  const previousValue = rows[rowIndex]?.[honorariosColumn] ?? '';
+  const rowNumber = rowIndex + 1;
+  const cell = `${columnLetter(honorariosColumn)}${rowNumber}`;
+
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${quoteSheetName(sheetName)}!${cell}`,
+    valueInputOption: 'RAW',
+    requestBody: { values: [[honorariosHora]] },
+  });
+
+  return { cell, previousValue };
+}
+
 export async function readAllDocentes() {
   assertSheetsConfig();
   const sheets = getSheetsClient();
@@ -450,6 +507,7 @@ export async function readAllDocentes() {
       comentarios: data.comentarios || '',
       metodoPago: data.metodoPago || '',
       numeroCuenta: data.numeroCuenta || '',
+      honorariosHora: data.honorarios ? Number(data.honorarios) : null,
       cvUrl: data.cv || '',
       fotoUrl: data.foto || '',
       pdfUrl: data.pdf || '',

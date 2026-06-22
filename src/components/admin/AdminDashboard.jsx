@@ -73,6 +73,11 @@ export default function AdminDashboard() {
     window.location.assign(`/api/admin/docentes?${q}`);
   }
 
+  function handleDocenteUpdated(updated) {
+    setDocentes((current) => current.map((docente) => docente.id === updated.id ? updated : docente));
+    setSelected(updated);
+  }
+
   return (
     <div className="adm-shell">
       <AdminTopbar onLogout={handleLogout} />
@@ -111,7 +116,13 @@ export default function AdminDashboard() {
         />
       </main>
 
-      {selected && <DocenteModal docente={selected} onClose={() => setSelected(null)} />}
+      {selected && (
+        <DocenteModal
+          docente={selected}
+          onClose={() => setSelected(null)}
+          onUpdated={handleDocenteUpdated}
+        />
+      )}
     </div>
   );
 }

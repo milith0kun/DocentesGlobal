@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { brandTag, formatDate } from '@/lib/admin-utils';
 
 function ConformidadBadge({ ok }) {
@@ -44,14 +44,43 @@ const CONFORM_FIELDS = [
   { key: 'aceptaTop', label: 'Docente TOP' },
 ];
 
-export default function DocenteModal({ docente, onClose }) {
+export default function DocenteModal({ docente, onClose, onUpdated }) {
   const conf = docente.conformidad || {};
+  const [honorariosHora, setHonorariosHora] = useState(docente.honorariosHora ?? '');
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
+
+  async function saveHonorarios(event) {
+    event.preventDefault();
+    setSaving(true);
+    setSaveError('');
+    setSaved(false);
+
+    try {
+      const response = await fetch('/api/admin/docentes', {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: docente.id, honorariosHora }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'No se pudo guardar el monto.');
+      setHonorariosHora(data.docente.honorariosHora);
+      onUpdated(data.docente);
+      setSaved(true);
+    } catch (error) {
+      setSaveError(error.message);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <div className="adm-modal-overlay" onClick={onClose}>
@@ -84,6 +113,30 @@ export default function DocenteModal({ docente, onClose }) {
               <Field label="Método de Pago" value={docente.metodoPago} />
               <Field label="N.° Cuenta / Celular" value={docente.numeroCuenta} />
             </div>
+            <form className="adm-rate-editor" onSubmit={saveHonorarios}>
+              <div>
+                <label className="adm-rate-label" htmlFor="honorarios-hora">Monto por hora</label>
+                <p>Dato interno. No se solicita en el formulario del docente.</p>
+              </div>
+              <div className="adm-rate-control">
+                <input
+                  id="honorarios-hora"
+                  type="number"
+                  inputMode="decimal"
+                  min="0.01"
+                  max="1000000"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={honorariosHora}
+                  onChange={(event) => { setHonorariosHora(event.target.value); setSaved(false); }}
+                  disabled={saving}
+                  required
+                />
+                <button type="submit" disabled={saving}>{saving ? 'Guardando…' : 'Guardar monto'}</button>
+              </div>
+              {saveError && <p className="adm-rate-message adm-rate-error">{saveError}</p>}
+              {saved && <p className="adm-rate-message adm-rate-success">Guardado en el panel, MongoDB y Google Sheets.</p>}
+            </form>
           </section>
 
           <section>

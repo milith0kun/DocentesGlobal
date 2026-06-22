@@ -25,3 +25,11 @@ export function formatDate(iso) {
     return iso;
   }
 }
+
+export function formatAmount(value) {
+  if (value === null || value === undefined || value === '') return '—';
+  return Number(value).toLocaleString('es-PE', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}

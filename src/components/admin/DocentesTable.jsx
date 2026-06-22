@@ -1,6 +1,6 @@
 'use client';
 
-import { brandTag, formatDate } from '@/lib/admin-utils';
+import { brandTag, formatAmount, formatDate } from '@/lib/admin-utils';
 
 function ConformidadBadge({ ok }) {
   return (
@@ -26,6 +26,7 @@ export default function DocentesTable({
               <th>Email</th>
               <th>Teléfono</th>
               <th>Institución</th>
+              <th>Monto / hora</th>
               <th>Pago</th>
               <th>Fecha</th>
               <th>Conformidad</th>
@@ -33,9 +34,9 @@ export default function DocentesTable({
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={9} className="adm-empty-row">Cargando…</td></tr>
+              <tr><td colSpan={10} className="adm-empty-row">Cargando…</td></tr>
             ) : docentes.length === 0 ? (
-              <tr><td colSpan={9} className="adm-empty-row">Sin registros encontrados.</td></tr>
+              <tr><td colSpan={10} className="adm-empty-row">Sin registros encontrados.</td></tr>
             ) : (
               docentes.map((d) => (
                 <tr key={d.id} className="adm-row" onClick={() => onRowClick(d)}>
@@ -49,6 +50,7 @@ export default function DocentesTable({
                       ? <span className="adm-brand-chip">{brandTag(d.marcas)}</span>
                       : '—'}
                   </td>
+                  <td className="adm-rate-cell">{formatAmount(d.honorariosHora)}</td>
                   <td>{d.metodoPago || '—'}</td>
                   <td>{formatDate(d.createdAt || d.timestamp)}</td>
                   <td><ConformidadBadge ok={d.conformidadCompleta} /></td>

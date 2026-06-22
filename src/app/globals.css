@@ -472,6 +472,7 @@ img {
 .adm-row { border-bottom-color: #edf0f3; }
 .adm-row:hover { background: #f7fafb; }
 .adm-table td { padding: 0.8rem 1rem; color: #586576; }
+.adm-rate-cell { color: #285f68 !important; font-variant-numeric: tabular-nums; font-weight: 700; }
 .adm-code-cell { color: #8994a1; }
 .adm-name-cell { color: var(--adm-ink); }
 .adm-empty-row { color: #7b8795; padding: 4rem 1rem !important; }
@@ -496,6 +497,28 @@ img {
 .adm-doc-link:hover { background: var(--adm-accent-soft); border-color: #7ca7ae; }
 .adm-check { color: #27724d; }
 .adm-cross { color: #a54b4b; }
+.adm-rate-editor {
+  display: grid; grid-template-columns: minmax(160px, 1fr) minmax(250px, 1.2fr);
+  gap: 0.75rem 1.25rem; align-items: end; margin-top: 1rem; padding: 1rem;
+  background: #f5f8f8; border: 1px solid #dce7e9; border-radius: 0.65rem;
+}
+.adm-rate-label { display: block; color: var(--adm-ink); font-size: 0.82rem; font-weight: 750; }
+.adm-rate-editor p { margin: 0.2rem 0 0; color: #748091; font-size: 0.7rem; line-height: 1.4; }
+.adm-rate-control { display: flex; gap: 0.5rem; }
+.adm-rate-control input {
+  width: 100%; min-width: 0; height: 38px; padding: 0.45rem 0.65rem;
+  color: var(--adm-ink); background: #fff; border: 1px solid #cbd6dc; border-radius: 0.45rem;
+  font: 650 0.85rem var(--font-body); outline: none; font-variant-numeric: tabular-nums;
+}
+.adm-rate-control input:focus { border-color: #6e9fa6; box-shadow: 0 0 0 3px rgba(23,111,124,0.1); }
+.adm-rate-control button {
+  flex: 0 0 auto; height: 38px; padding: 0 0.8rem; border: 0; border-radius: 0.45rem;
+  color: #fff; background: var(--adm-accent); font: 700 0.75rem var(--font-body); cursor: pointer;
+}
+.adm-rate-control button:disabled, .adm-rate-control input:disabled { opacity: 0.55; cursor: wait; }
+.adm-rate-message { grid-column: 1 / -1; font-weight: 650; }
+.adm-rate-error { color: #9d3535 !important; }
+.adm-rate-success { color: #27724d !important; }
 
 /* ── Responsive admin ── */
 @media (max-width: 640px) {
@@ -515,6 +538,9 @@ img {
   .adm-stat-card:last-child { grid-column: 1 / -1; border-bottom: 0; }
   .adm-controls-right { display: grid; grid-template-columns: 1fr 1fr; }
   .adm-drive-btn, .adm-export-btn { width: 100%; }
+  .adm-rate-editor { grid-template-columns: 1fr; }
+  .adm-rate-control { flex-direction: column; }
+  .adm-rate-control button { width: 100%; }
   .adm-modal-overlay { align-items: flex-end; padding: 0; }
   .adm-modal-box { margin: 0; border-radius: 1rem 1rem 0 0; }
 }
