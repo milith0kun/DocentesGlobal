@@ -3,23 +3,16 @@ const { loadEnvConfig } = nextEnv;
 loadEnvConfig(process.cwd());
 
 import { getSheetsClient } from '../src/lib/google-auth.js';
+import { SHEET_COLUMNS } from '../src/lib/google-sheets.js';
 
 async function init() {
   const sheets = getSheetsClient();
   const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID;
-  const headers = [
-    'Marca temporal', 'Direccion de correo electronico', 'Nombre Completo',
-    'Institucion a la que pertenece', 'Fecha de nacimiento', 'Numero de contacto preferente whatsapp',
-    'Metodo de pago', 'Numero de cuenta', 'Monto Honorarios', 'Profesion',
-    'Adjuntar Curriculum Vitae', 'Adjuntar Fotografia Profesional', 'Comentarios', 'Curso Sonado',
-    'Mejora Admin', 'Softwares', 'Documento Identidad',
-    'Direccion de vivienda', 'Codigo Sistema', 'Conformidad Completa',
-    'Link Carpeta Docente', 'PDF de Conformidad'
-  ];
+  const headers = SHEET_COLUMNS.map(([, header]) => header);
   
   await sheets.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
-    range: 'A1:V1',
+    range: 'A1:AE1',
     valueInputOption: 'USER_ENTERED',
     requestBody: { values: [headers] }
   });

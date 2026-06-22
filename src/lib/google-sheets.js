@@ -6,29 +6,38 @@ const SHEET_GID = process.env.GOOGLE_SHEET_GID;
 
 const MAX_WRITE_RETRIES = 3;
 
-const DEFAULT_COLUMN_KEYS = [
-  'timestamp',
-  'correo',
-  'nombre',
-  'institucion',
-  'fechaNacimiento',
-  'telefono',
-  'metodoPago',
-  'numeroCuenta',
-  'honorarios',
-  'profesion',
-  'cv',
-  'foto',
-  'comentarios',
-  'cursoSonado',
-  'mejoraAdmin',
-  'softwares',
-  'documento',
-  'direccion',
-  'code',
-  'conformidadCompleta',
-  'folderUrl',
-  'pdf',
+export const SHEET_COLUMNS = [
+  ['timestamp', 'Fecha de registro'],
+  ['code', 'Código docente'],
+  ['nombre', 'Nombre completo'],
+  ['documento', 'Documento de identidad'],
+  ['correo', 'Correo electrónico'],
+  ['telefono', 'Teléfono / WhatsApp'],
+  ['fechaNacimiento', 'Fecha de nacimiento'],
+  ['direccion', 'Dirección de vivienda'],
+  ['marca', 'Marca(s)'],
+  ['institucion', 'Institución'],
+  ['profesion', 'Profesión'],
+  ['softwares', 'Softwares especializados'],
+  ['metodoPago', 'Método de pago'],
+  ['numeroCuenta', 'Cuenta de abono'],
+  ['honorarios', 'Honorarios por hora (administrativo)'],
+  ['cv', 'Curriculum vitae'],
+  ['foto', 'Fotografía profesional'],
+  ['cursoSonado', 'Curso o especialización propuesta'],
+  ['mejoraAdmin', 'Mejora académica o administrativa'],
+  ['comentarios', 'Comentarios del docente'],
+  ['conformidadCompleta', 'Conformidad completa'],
+  ['aceptaMetodologia', 'Acepta metodología'],
+  ['aceptaProtocolo', 'Acepta protocolo'],
+  ['aceptaAsistencia', 'Acepta asistencia'],
+  ['aceptaTop', 'Acepta Docente TOP'],
+  ['aceptaSabado', 'Disponibilidad sábado'],
+  ['aceptaDomingo', 'Disponibilidad domingo'],
+  ['aceptaLunes', 'Disponibilidad lunes'],
+  ['folderUrl', 'Carpeta del docente en Drive'],
+  ['pdf', 'PDF de conformidad'],
+  ['observacionesAdmin', 'Observaciones administrativas'],
 ];
 
 function assertSheetsConfig() {
@@ -57,6 +66,15 @@ function booleanText(value) {
 
 function paymentMethod(data) {
   return data.metodoPago === 'otro' ? data.metodoPagoOtro : data.metodoPago;
+}
+
+function brandNames(value) {
+  const labels = { ciip: 'CIIP Latam', geomina: 'Geomina', biomedic: 'Biomedic' };
+  return String(value || '')
+    .split(',')
+    .map((brand) => labels[brand.trim()] || brand.trim())
+    .filter(Boolean)
+    .join(' & ');
 }
 
 function safeSheetText(value) {
@@ -92,6 +110,7 @@ function rowValues(data, links) {
     telefono: data.telefono || '',
     metodoPago: metodo || '',
     numeroCuenta: data.numeroCuenta || '',
+    marca: brandNames(data.marca),
     profesion: data.profesion || '',
     cv: links.cvUrl || '',
     foto: links.fotoUrl || '',
@@ -106,16 +125,25 @@ function rowValues(data, links) {
     conformidadCompleta: acceptances.every((value) => booleanText(value) === 'Si') ? 'Si' : 'No',
     folderUrl: links.folderUrl || '',
     pdf: links.pdfUrl || '',
+    aceptaMetodologia: booleanText(data.aceptaMetodologia),
+    aceptaProtocolo: booleanText(data.aceptaProtocolo),
+    aceptaAsistencia: booleanText(data.aceptaAsistencia),
+    aceptaTop: booleanText(data.aceptaTop),
+    aceptaSabado: booleanText(data.aceptaSabado),
+    aceptaDomingo: booleanText(data.aceptaDomingo),
+    aceptaLunes: booleanText(data.aceptaLunes),
+    observacionesAdmin: '',
   });
 }
 
 const HEADER_MATCHERS = [
-  { key: 'timestamp', aliases: ['marca temporal', 'timestamp', 'fecha de envio'] },
+  { key: 'timestamp', aliases: ['fecha de registro', 'marca temporal', 'timestamp', 'fecha de envio'] },
   {
     key: 'correo',
     aliases: ['direccion de correo electronico', 'correo electronico', 'email', 'correo'],
   },
   { key: 'nombre', aliases: ['1 nombre completo', 'nombre completo', 'nombres y apellidos'] },
+  { key: 'marca', aliases: ['marca s', 'marca', 'marcas'] },
   {
     key: 'institucion',
     aliases: ['3 institucion a la que pertenece', 'institucion a la que pertenece', 'institucion'],
@@ -182,9 +210,17 @@ const HEADER_MATCHERS = [
   },
   { key: 'honorarios', aliases: ['monto honorarios', 'monto', 'honorarios'] },
   { key: 'code', aliases: ['codigo sistema', 'codigo', 'id sistema'] },
+  { key: 'aceptaMetodologia', aliases: ['acepta metodologia'] },
+  { key: 'aceptaProtocolo', aliases: ['acepta protocolo'] },
+  { key: 'aceptaAsistencia', aliases: ['acepta asistencia'] },
+  { key: 'aceptaTop', aliases: ['acepta docente top', 'acepta top'] },
+  { key: 'aceptaSabado', aliases: ['disponibilidad sabado', 'acepta sabado'] },
+  { key: 'aceptaDomingo', aliases: ['disponibilidad domingo', 'acepta domingo'] },
+  { key: 'aceptaLunes', aliases: ['disponibilidad lunes', 'acepta lunes'] },
   { key: 'conformidadCompleta', aliases: ['conformidad completa', 'conformidad'] },
   { key: 'folderUrl', aliases: ['link carpeta docente', 'carpeta docente', 'carpeta drive'] },
-  { key: 'pdf', aliases: ['pdf', 'conformidad pdf', 'declaracion pdf'] },
+  { key: 'pdf', aliases: ['pdf de conformidad', 'pdf', 'conformidad pdf', 'declaracion pdf'] },
+  { key: 'observacionesAdmin', aliases: ['observaciones administrativas', 'observaciones admin'] },
 ];
 
 function resolveHeaderKey(header) {
@@ -212,7 +248,7 @@ function resolveValueForHeader(header, values) {
 }
 
 function buildDefaultRow(values) {
-  return DEFAULT_COLUMN_KEYS.map((key) => values[key] ?? '');
+  return SHEET_COLUMNS.map(([key]) => values[key] ?? '');
 }
 
 async function resolveSheetName(sheets) {
@@ -255,8 +291,8 @@ async function getRowValues(sheets, sheetName, rowNumber) {
 function isLikelyHeaderRow(row = []) {
   const normalized = row.map((cell) => normalizeHeader(cell));
   return (
-    normalized.includes('marca temporal') &&
-    normalized.some((cell) => cell.includes('direccion de correo electronico')) &&
+    (normalized.includes('marca temporal') || normalized.includes('fecha de registro')) &&
+    normalized.some((cell) => cell.includes('correo electronico')) &&
     normalized.some((cell) => cell.includes('nombre completo'))
   );
 }
@@ -297,7 +333,7 @@ function findNextResponseTarget(rows, headerIndex) {
 
   return {
     targetRow: lastDataRow + 1,
-    formatSourceRow: lastDataRow,
+    formatSourceRow: lastDataRow > headerIndex + 1 ? lastDataRow : null,
   };
 }
 
@@ -407,7 +443,7 @@ export async function readAllDocentes() {
       fechaNacimiento: data.fechaNacimiento || '',
       profesion: data.profesion || '',
       institucion: data.institucion || '',
-      marcas: data.institucion ? [data.institucion] : [],
+      marcas: data.marca ? data.marca.split('&').map((item) => item.trim()) : [],
       softwares: data.softwares || '',
       cursoInteres: data.cursoSonado || '',
       mejoraAdministrativa: data.mejoraAdmin || '',
