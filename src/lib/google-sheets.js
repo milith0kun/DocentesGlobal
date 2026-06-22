@@ -21,13 +21,12 @@ export const SHEET_COLUMNS = [
   ['metodoPago', 'Método de pago'],
   ['numeroCuenta', 'Cuenta de abono'],
   ['honorarios', 'Honorarios por hora (administrativo)'],
-  ['cv', 'Curriculum vitae'],
-  ['foto', 'Fotografía profesional'],
+  ['cv', 'Enlace al CV'],
+  ['foto', 'Enlace a la fotografía'],
   ['cursoSonado', 'Curso o especialización propuesta'],
   ['mejoraAdmin', 'Mejora académica o administrativa'],
   ['comentarios', 'Comentarios del docente'],
-  ['conformidadCompleta', 'Contrato aceptado'],
-  ['pdf', 'PDF de conformidad'],
+  ['pdf', 'Enlace al contrato PDF'],
   ['observacionesAdmin', 'Observaciones administrativas'],
 ];
 
@@ -49,10 +48,6 @@ function normalizeHeader(value) {
     .replace(/[^a-z0-9]+/g, ' ')
     .trim()
     .replace(/\s+/g, ' ');
-}
-
-function booleanText(value) {
-  return value === true || value === 'true' ? 'Si' : 'No';
 }
 
 function paymentMethod(data) {
@@ -82,16 +77,6 @@ function safeRowValues(values) {
 function rowValues(data, links) {
   const metodo = paymentMethod(data);
   const timestamp = new Date().toLocaleString('es-PE', { timeZone: 'America/Lima' });
-  const acceptances = [
-    data.aceptaMetodologia,
-    data.aceptaProtocolo,
-    data.aceptaAsistencia,
-    data.aceptaTop,
-    data.aceptaSabado,
-    data.aceptaDomingo,
-    data.aceptaLunes,
-  ];
-
   return safeRowValues({
     timestamp,
     correo: data.correo || '',
@@ -113,7 +98,6 @@ function rowValues(data, links) {
     direccion: data.direccion || '',
     honorarios: data.honorarios || '',
     code: data.code || '',
-    conformidadCompleta: acceptances.every((value) => booleanText(value) === 'Si') ? 'Si' : 'No',
     pdf: links.pdfUrl || '',
     observacionesAdmin: '',
   });
@@ -189,7 +173,6 @@ const HEADER_MATCHERS = [
   },
   { key: 'honorarios', aliases: ['monto honorarios', 'monto', 'honorarios'] },
   { key: 'code', aliases: ['codigo sistema', 'codigo', 'id sistema'] },
-  { key: 'conformidadCompleta', aliases: ['conformidad completa', 'conformidad'] },
   { key: 'pdf', aliases: ['pdf de conformidad', 'pdf', 'conformidad pdf', 'declaracion pdf'] },
   { key: 'observacionesAdmin', aliases: ['observaciones administrativas', 'observaciones admin'] },
 ];
@@ -400,7 +383,7 @@ export async function clearDocenteRow(rowNumber) {
   const sheetName = await resolveSheetName(sheets);
   await sheets.spreadsheets.values.clear({
     spreadsheetId: SPREADSHEET_ID,
-    range: `${quoteSheetName(sheetName)}!A${rowNumber}:V${rowNumber}`,
+    range: `${quoteSheetName(sheetName)}!A${rowNumber}:U${rowNumber}`,
   });
 }
 
@@ -491,7 +474,7 @@ export async function readAllDocentes() {
       cvUrl: data.cv || '',
       fotoUrl: data.foto || '',
       pdfUrl: data.pdf || '',
-      conformidadCompleta: data.conformidadCompleta === 'Si',
+      conformidadCompleta: Boolean(data.pdf),
       timestamp: data.timestamp || '',
       estado: 'activo',
     });

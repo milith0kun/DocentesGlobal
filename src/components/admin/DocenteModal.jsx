@@ -26,10 +26,19 @@ function Field({ label, value, link, full }) {
 }
 
 function DocLink({ href, label }) {
-  if (!href || href.startsWith('PENDIENTE')) return null;
+  const available = typeof href === 'string' && href.startsWith('https://');
+  if (!available) {
+    return (
+      <span className="adm-doc-link adm-doc-link-missing">
+        <span>{label}</span>
+        <small>No disponible</small>
+      </span>
+    );
+  }
   return (
     <a href={href} target="_blank" rel="noopener noreferrer" className="adm-doc-link">
-      {label} ↗
+      <span>{label}</span>
+      <small>Abrir ↗</small>
     </a>
   );
 }
@@ -138,15 +147,9 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
           <section>
             <h3 className="adm-modal-section-title">Documentos</h3>
             <div className="adm-modal-links">
-              <DocLink href={docente.cvUrl} label="CV" />
-              <DocLink href={docente.fotoUrl} label="Foto" />
-              <DocLink href={docente.pdfUrl} label="Declaración PDF" />
-              <DocLink href={docente.folderUrl} label="Carpeta Drive" />
-              {!docente.cvUrl && !docente.fotoUrl && !docente.pdfUrl && !docente.folderUrl && (
-                <span style={{ color: 'rgba(148,163,184,0.5)', fontSize: '0.875rem', fontStyle: 'italic' }}>
-                  Sin documentos registrados
-                </span>
-              )}
+              <DocLink href={docente.cvUrl} label="Curriculum vitae" />
+              <DocLink href={docente.fotoUrl} label="Fotografía" />
+              <DocLink href={docente.pdfUrl} label="Contrato PDF" />
             </div>
           </section>
 

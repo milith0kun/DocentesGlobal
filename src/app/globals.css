@@ -371,13 +371,14 @@ img {
 .adm-field-item, .adm-field-full { display: flex; flex-direction: column; gap: 0.125rem; }
 .adm-field-label { font-size: 0.63rem; font-weight: 700; color: rgba(148,163,184,0.45); text-transform: uppercase; letter-spacing: 0.05em; }
 .adm-field-value { font-size: 0.875rem; color: #cbd5e1; word-break: break-word; }
-.adm-modal-links { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.adm-modal-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
 .adm-doc-link {
-  display: inline-flex; align-items: center; padding: 0.375rem 0.75rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.625rem 0.75rem;
   border: 1.5px solid rgba(56,189,248,0.22); border-radius: 0.5rem;
   color: #38bdf8; font-size: 0.8rem; font-weight: 600; text-decoration: none;
   transition: background 0.2s, border-color 0.2s;
 }
+.adm-doc-link small { font-size: 0.65rem; font-weight: 700; white-space: nowrap; }
 .adm-doc-link:hover { background: rgba(56,189,248,0.08); border-color: rgba(56,189,248,0.4); }
 .adm-conform-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); gap: 0.5rem; }
 .adm-conform-item { display: flex; align-items: center; gap: 0.375rem; font-size: 0.8rem; color: #94a3b8; }
@@ -495,6 +496,8 @@ img {
 .adm-field-value, .adm-conform-item { color: #4e5b6b; }
 .adm-doc-link { color: var(--adm-accent); border-color: #b9d0d4; }
 .adm-doc-link:hover { background: var(--adm-accent-soft); border-color: #7ca7ae; }
+.adm-doc-link-missing { color: #7f8a97; background: #f7f8fa; border-color: #e1e6eb; }
+.adm-doc-link-missing small { color: #9ba4af; }
 .adm-check { color: #27724d; }
 .adm-cross { color: #a54b4b; }
 .adm-rate-editor {
@@ -542,6 +545,7 @@ img {
   .adm-rate-editor { grid-template-columns: 1fr; }
   .adm-rate-control { flex-direction: column; }
   .adm-rate-control button { width: 100%; }
+  .adm-modal-links { grid-template-columns: 1fr; }
   .adm-modal-overlay { align-items: flex-end; padding: 0; }
   .adm-modal-box { margin: 0; border-radius: 1rem 1rem 0 0; }
 }

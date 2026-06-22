@@ -92,14 +92,10 @@ requests.push(
         sheetId: target.properties.sheetId,
         startRowIndex: 1,
         endRowIndex: currentRowCount,
-        startColumnIndex: 19,
-        endColumnIndex: 20,
+        startColumnIndex: 0,
+        endColumnIndex: headers.length,
       },
-      rule: {
-        condition: { type: 'ONE_OF_LIST', values: [{ userEnteredValue: 'Si' }, { userEnteredValue: 'No' }] },
-        strict: true,
-        showCustomUi: true,
-      },
+      rule: null,
     },
   },
 );
@@ -116,7 +112,7 @@ await sheets.spreadsheets.batchUpdate({ spreadsheetId, requestBody: { requests }
 await sheets.spreadsheets.values.clear({ spreadsheetId, range: `${quotedTitle}!A:ZZ` });
 await sheets.spreadsheets.values.update({
   spreadsheetId,
-  range: `${quotedTitle}!A1:V1`,
+  range: `${quotedTitle}!A1:U1`,
   valueInputOption: 'RAW',
   requestBody: { values: [headers] },
 });
