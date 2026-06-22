@@ -4,8 +4,32 @@ const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID;
 const SHEET_NAME = process.env.GOOGLE_SHEET_NAME || 'Docentes';
 const SHEET_GID = process.env.GOOGLE_SHEET_GID;
 
-const LEGACY_COLUMN_COUNT = 32;
 const MAX_WRITE_RETRIES = 3;
+
+const DEFAULT_COLUMN_KEYS = [
+  'timestamp',
+  'correo',
+  'nombre',
+  'institucion',
+  'fechaNacimiento',
+  'telefono',
+  'metodoPago',
+  'numeroCuenta',
+  'honorarios',
+  'profesion',
+  'cv',
+  'foto',
+  'comentarios',
+  'cursoSonado',
+  'mejoraAdmin',
+  'softwares',
+  'documento',
+  'direccion',
+  'code',
+  'conformidadCompleta',
+  'folderUrl',
+  'pdf',
+];
 
 function assertSheetsConfig() {
   if (!SPREADSHEET_ID) {
@@ -49,23 +73,17 @@ function safeRowValues(values) {
 function rowValues(data, links) {
   const metodo = paymentMethod(data);
   const timestamp = new Date().toLocaleString('es-PE', { timeZone: 'America/Lima' });
-  const marcaLabel = String(data.marca || '')
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean)
-    .map((item) => {
-      const labels = {
-        ciip: 'CIIP LATAM',
-        geomina: 'GEOMINA',
-        biomedic: 'BIOMEDIC',
-        ambos: 'CIIP LATAM / GEOMINA',
-      };
-      return labels[item] || item.toUpperCase();
-    })
-    .join(' / ');
+  const acceptances = [
+    data.aceptaMetodologia,
+    data.aceptaProtocolo,
+    data.aceptaAsistencia,
+    data.aceptaTop,
+    data.aceptaSabado,
+    data.aceptaDomingo,
+    data.aceptaLunes,
+  ];
 
   return safeRowValues({
-    adminObservaciones: '',
     timestamp,
     correo: data.correo || '',
     nombre: data.nombre || '',
@@ -83,32 +101,15 @@ function rowValues(data, links) {
     softwares: data.softwares || '',
     documento: data.documento || '',
     direccion: data.direccion || '',
-    domicilio: data.domicilio || data.direccion || '',
-    resumenDocente: data.resumenDocente || [
-      data.nombre,
-      data.institucion,
-      data.profesion,
-      data.softwares ? `Softwares: ${data.softwares}` : '',
-      data.cursoSonado ? `Curso de interes: ${data.cursoSonado}` : '',
-    ].filter(Boolean).join(' | '),
     honorarios: data.honorarios || '',
-    columna1: marcaLabel ? `NUEVO DOCENTE ${marcaLabel}` : '',
     code: data.code || '',
-    aceptaMetodologia: booleanText(data.aceptaMetodologia),
-    aceptaProtocolo: booleanText(data.aceptaProtocolo),
-    aceptaAsistencia: booleanText(data.aceptaAsistencia),
-    aceptaTop: booleanText(data.aceptaTop),
-    aceptaSabado: booleanText(data.aceptaSabado),
-    aceptaDomingo: booleanText(data.aceptaDomingo),
-    aceptaLunes: booleanText(data.aceptaLunes),
+    conformidadCompleta: acceptances.every((value) => booleanText(value) === 'Si') ? 'Si' : 'No',
     folderUrl: links.folderUrl || '',
-    marca: data.marca || '',
     pdf: links.pdfUrl || '',
   });
 }
 
 const HEADER_MATCHERS = [
-  { key: 'adminObservaciones', aliases: ['observaciones'] },
   { key: 'timestamp', aliases: ['marca temporal', 'timestamp', 'fecha de envio'] },
   {
     key: 'correo',
@@ -179,80 +180,39 @@ const HEADER_MATCHERS = [
     key: 'direccion',
     aliases: ['7 direccion de vivienda', 'direccion de vivienda', 'direccion'],
   },
-  { key: 'domicilio', aliases: ['domicilio'] },
-  { key: 'resumenDocente', aliases: ['resumen docente'] },
-  { key: 'honorarios', aliases: ['honorarios'] },
-  { key: 'columna1', aliases: ['columna 1'] },
+  { key: 'honorarios', aliases: ['monto honorarios', 'monto', 'honorarios'] },
   { key: 'code', aliases: ['codigo sistema', 'codigo', 'id sistema'] },
-  { key: 'aceptaMetodologia', aliases: ['acepta metodologia', 'metodologia doing by learning'] },
-  { key: 'aceptaProtocolo', aliases: ['acepta protocolo', 'protocolo de imagen'] },
-  { key: 'aceptaAsistencia', aliases: ['acepta asistencia', 'politica de asistencia'] },
-  { key: 'aceptaTop', aliases: ['acepta top', 'programa docente top'] },
-  { key: 'aceptaSabado', aliases: ['disponibilidad sabado', 'acepta sabado', 'sabado'] },
-  { key: 'aceptaDomingo', aliases: ['disponibilidad domingo', 'acepta domingo', 'domingo'] },
-  { key: 'aceptaLunes', aliases: ['disponibilidad lunes', 'acepta lunes', 'lunes'] },
+  { key: 'conformidadCompleta', aliases: ['conformidad completa', 'conformidad'] },
   { key: 'folderUrl', aliases: ['link carpeta docente', 'carpeta docente', 'carpeta drive'] },
-  { key: 'marca', aliases: ['marca', 'ecosistema'] },
   { key: 'pdf', aliases: ['pdf', 'conformidad pdf', 'declaracion pdf'] },
 ];
 
-function resolveValueForHeader(header, values) {
+function resolveHeaderKey(header) {
   const normalized = normalizeHeader(header);
-  if (!normalized) return '';
+  if (!normalized) return null;
 
-  for (const matcher of HEADER_MATCHERS) {
-    if (matcher.aliases.some((alias) => normalized === alias)) {
-      return values[matcher.key] ?? '';
-    }
-  }
+  const exactMatch = HEADER_MATCHERS.find((matcher) => matcher.aliases.includes(normalized));
+  if (exactMatch) return exactMatch.key;
 
   let bestMatch = null;
   for (const matcher of HEADER_MATCHERS) {
     for (const alias of matcher.aliases) {
       if (normalized.includes(alias) && (!bestMatch || alias.length > bestMatch.alias.length)) {
-        bestMatch = { matcher, alias };
+        bestMatch = { key: matcher.key, alias };
       }
     }
   }
 
-  return bestMatch ? values[bestMatch.matcher.key] ?? '' : '';
+  return bestMatch?.key || null;
 }
 
-function buildLegacyRow(values) {
-  const row = Array.from({ length: LEGACY_COLUMN_COUNT }, () => '');
-  row[0] = values.adminObservaciones;
-  row[1] = values.timestamp;
-  row[2] = values.correo;
-  row[3] = values.nombre;
-  row[4] = values.institucion;
-  row[5] = values.fechaNacimiento;
-  row[6] = values.telefono;
-  row[7] = values.metodoPago;
-  row[8] = values.numeroCuenta;
-  row[9] = values.profesion;
-  row[10] = values.cv;
-  row[11] = values.foto;
-  row[12] = values.comentarios;
-  row[13] = values.cursoSonado;
-  row[14] = values.mejoraAdmin;
-  row[15] = values.softwares;
-  row[16] = values.documento;
-  row[17] = values.direccion;
-  row[18] = values.domicilio;
-  row[19] = values.resumenDocente;
-  row[20] = values.honorarios;
-  row[21] = values.columna1;
-  row[22] = values.code;
-  row[23] = values.aceptaMetodologia;
-  row[24] = values.aceptaProtocolo;
-  row[25] = values.aceptaAsistencia;
-  row[26] = values.aceptaTop;
-  row[27] = values.aceptaSabado;
-  row[28] = values.aceptaDomingo;
-  row[29] = values.aceptaLunes;
-  row[30] = values.folderUrl;
-  row[31] = values.marca;
-  return row;
+function resolveValueForHeader(header, values) {
+  const key = resolveHeaderKey(header);
+  return key ? values[key] ?? '' : '';
+}
+
+function buildDefaultRow(values) {
+  return DEFAULT_COLUMN_KEYS.map((key) => values[key] ?? '');
 }
 
 async function resolveSheetName(sheets) {
@@ -310,19 +270,27 @@ function isEmptyRow(row = []) {
   return row.every((cell) => !String(cell || '').trim());
 }
 
-function isLikelyResponseRow(row = []) {
-  const correo = String(row[2] || '').trim();
-  const nombre = String(row[3] || '').trim();
-  const hasFiles = Boolean(String(row[10] || '').trim() || String(row[11] || '').trim());
+function columnIndex(headers, key, fallback) {
+  const index = headers.findIndex((header) => resolveHeaderKey(header) === key);
+  return index >= 0 ? index : fallback;
+}
+
+function isLikelyResponseRow(row = [], headers = []) {
+  const correo = String(row[columnIndex(headers, 'correo', 2)] || '').trim();
+  const nombre = String(row[columnIndex(headers, 'nombre', 3)] || '').trim();
+  const cv = String(row[columnIndex(headers, 'cv', 10)] || '').trim();
+  const foto = String(row[columnIndex(headers, 'foto', 11)] || '').trim();
+  const hasFiles = Boolean(cv || foto);
 
   return (/^\S+@\S+\.\S{2,}$/.test(correo) && Boolean(nombre)) || (Boolean(nombre) && hasFiles);
 }
 
 function findNextResponseTarget(rows, headerIndex) {
   let lastDataRow = headerIndex + 1;
+  const headers = rows[headerIndex] || [];
 
   for (let index = headerIndex + 1; index < rows.length; index += 1) {
-    if (isLikelyResponseRow(rows[index])) {
+    if (isLikelyResponseRow(rows[index], headers)) {
       lastDataRow = index + 1;
     }
   }
@@ -387,7 +355,7 @@ export async function appendDocenteRow(data, links = {}) {
 
     const row = headers.length > 0
       ? headers.map((header) => resolveValueForHeader(header, values))
-      : buildLegacyRow(values);
+      : buildDefaultRow(values);
 
     await copyRowFormat(sheets, formatSourceRow, targetRow, Math.max(headers.length, row.length));
 
@@ -406,4 +374,55 @@ export async function appendDocenteRow(data, links = {}) {
   }
 
   throw new Error('No se pudo encontrar una fila segura para guardar la respuesta.');
+}
+
+export async function readAllDocentes() {
+  assertSheetsConfig();
+  const sheets = getSheetsClient();
+  const sheetName = await resolveSheetName(sheets);
+  const rows = await getSheetValues(sheets, sheetName);
+  const headerIndex = findHeaderIndex(rows);
+  const headers = rows[headerIndex] || [];
+
+  const docentes = [];
+  for (let i = headerIndex + 1; i < rows.length; i += 1) {
+    const row = rows[i];
+    if (!isLikelyResponseRow(row, headers)) continue;
+
+    const data = {};
+    headers.forEach((header, colIdx) => {
+      const key = resolveHeaderKey(header);
+      if (key) data[key] = String(row[colIdx] || '').trim();
+    });
+
+    docentes.push({
+      id: `sheet_row_${i + 1}`,
+      source: 'sheets',
+      rowIndex: i + 1,
+      codigo: data.code || '',
+      nombre: data.nombre || '',
+      documento: data.documento || '',
+      email: data.correo || '',
+      telefono: data.telefono || '',
+      fechaNacimiento: data.fechaNacimiento || '',
+      profesion: data.profesion || '',
+      institucion: data.institucion || '',
+      marcas: data.institucion ? [data.institucion] : [],
+      softwares: data.softwares || '',
+      cursoInteres: data.cursoSonado || '',
+      mejoraAdministrativa: data.mejoraAdmin || '',
+      comentarios: data.comentarios || '',
+      metodoPago: data.metodoPago || '',
+      numeroCuenta: data.numeroCuenta || '',
+      cvUrl: data.cv || '',
+      fotoUrl: data.foto || '',
+      pdfUrl: data.pdf || '',
+      folderUrl: data.folderUrl || '',
+      conformidadCompleta: data.conformidadCompleta === 'Si',
+      timestamp: data.timestamp || '',
+      estado: 'activo',
+    });
+  }
+
+  return docentes;
 }

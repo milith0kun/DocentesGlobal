@@ -8,20 +8,18 @@ async function init() {
   const sheets = getSheetsClient();
   const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID;
   const headers = [
-    'Observaciones Admin', 'Marca temporal', 'Direccion de correo electronico', 'Nombre Completo',
+    'Marca temporal', 'Direccion de correo electronico', 'Nombre Completo',
     'Institucion a la que pertenece', 'Fecha de nacimiento', 'Numero de contacto preferente whatsapp',
-    'Metodo de pago', 'Numero de cuenta', 'Profesion',
+    'Metodo de pago', 'Numero de cuenta', 'Monto Honorarios', 'Profesion',
     'Adjuntar Curriculum Vitae', 'Adjuntar Fotografia Profesional', 'Comentarios', 'Curso Sonado',
     'Mejora Admin', 'Softwares', 'Documento Identidad',
-    'Direccion de vivienda', 'Domicilio', 'Resumen Docente', 'Honorarios',
-    'Columna 1', 'Codigo Sistema', 'Acepta Metodologia', 'Acepta Protocolo',
-    'Acepta Asistencia', 'Acepta Top', 'Disponibilidad Sabado', 'Disponibilidad Domingo',
-    'Disponibilidad Lunes', 'Link Carpeta Docente', 'Marca'
+    'Direccion de vivienda', 'Codigo Sistema', 'Conformidad Completa',
+    'Link Carpeta Docente', 'PDF de Conformidad'
   ];
   
   await sheets.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
-    range: 'A1:AF1',
+    range: 'A1:V1',
     valueInputOption: 'USER_ENTERED',
     requestBody: { values: [headers] }
   });
