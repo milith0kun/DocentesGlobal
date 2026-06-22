@@ -519,6 +519,7 @@ img {
 .adm-rate-message { grid-column: 1 / -1; font-weight: 650; }
 .adm-rate-error { color: #9d3535 !important; }
 .adm-rate-success { color: #27724d !important; }
+.adm-contract-note { margin: 0; color: #667386; font-size: 0.82rem; }
 
 /* ── Responsive admin ── */
 @media (max-width: 640px) {

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { randomUUID } from 'node:crypto';
 import { createDocenteFolder, getFormResponseFolders, uploadFileToDrive } from '@/lib/google-drive.js';
-import { appendDocenteRow } from '@/lib/google-sheets.js';
+import { appendDocenteRow, clearDocenteRow } from '@/lib/google-sheets.js';
+import { upsertDocente } from '@/lib/docente-repository.js';
 import { validateGoogleAuthConfig } from '@/lib/google-auth.js';
 import { rateLimit } from '@/lib/request-security.js';
 import { generateDocentePdfBuffer } from '@/lib/pdf-generator.jsx';
@@ -21,6 +22,7 @@ const marcaAliases = {
 
 const REQUIRED_STORAGE_ENV = [
   'GOOGLE_SPREADSHEET_ID',
+  'MONGODB_URI',
 ];
 
 const PLACEHOLDER_ENV_MARKERS = {
@@ -336,7 +338,7 @@ export async function POST(request) {
       return NextResponse.json(
         {
           success: false,
-          error: `Falta configurar variables para Drive/Sheets: ${missing.join(', ')}`,
+          error: `Falta configurar almacenamiento: ${missing.join(', ')}`,
         },
         { status: 500 }
       );
@@ -488,35 +490,46 @@ export async function POST(request) {
       links.folderUrl = links.folderUrl || `PENDIENTE: ${warning}`;
     }
 
-    await appendDocenteRow(
-      {
-        code,
-        nombre: fields.nombre,
-        correo: fields.correo,
-        documento: fields.documento,
-        fechaNacimiento: fields.fechaNacimiento,
-        institucion,
-        marca,
-        telefono: fields.telefono,
-        metodoPago: fields.metodoPago,
-        metodoPagoOtro: fields.metodoPagoOtro,
-        numeroCuenta: fields.numeroCuenta,
-        direccion: fields.direccion,
-        profesion: fields.profesion,
-        softwares: fields.softwares,
-        cursoSonado: fields.cursoSonado,
-        mejoraAdmin: fields.mejoraAdmin,
-        comentarios: fields.comentarios,
-        aceptaMetodologia: fields.aceptaMetodologia,
-        aceptaSabado: fields.aceptaSabado,
-        aceptaDomingo: fields.aceptaDomingo,
-        aceptaLunes: fields.aceptaLunes,
-        aceptaProtocolo: fields.aceptaProtocolo,
-        aceptaAsistencia: fields.aceptaAsistencia,
-        aceptaTop: fields.aceptaTop,
-      },
-      links
-    );
+    const docenteData = {
+      code,
+      nombre: fields.nombre,
+      correo: fields.correo,
+      documento: fields.documento,
+      fechaNacimiento: fields.fechaNacimiento,
+      marca,
+      telefono: fields.telefono,
+      metodoPago: fields.metodoPago,
+      metodoPagoOtro: fields.metodoPagoOtro,
+      numeroCuenta: fields.numeroCuenta,
+      direccion: fields.direccion,
+      profesion: fields.profesion,
+      softwares: fields.softwares,
+      cursoSonado: fields.cursoSonado,
+      mejoraAdmin: fields.mejoraAdmin,
+      comentarios: fields.comentarios,
+      aceptaMetodologia: fields.aceptaMetodologia,
+      aceptaSabado: fields.aceptaSabado,
+      aceptaDomingo: fields.aceptaDomingo,
+      aceptaLunes: fields.aceptaLunes,
+      aceptaProtocolo: fields.aceptaProtocolo,
+      aceptaAsistencia: fields.aceptaAsistencia,
+      aceptaTop: fields.aceptaTop,
+    };
+
+    let sheetWrite;
+    try {
+      sheetWrite = await appendDocenteRow(docenteData, links);
+      await upsertDocente(docenteData, links, { source: 'onboarding-web' });
+    } catch (storageError) {
+      if (sheetWrite?.targetRow) {
+        try {
+          await clearDocenteRow(sheetWrite.targetRow);
+        } catch (rollbackError) {
+          console.error('No se pudo revertir la fila de Sheets:', rollbackError);
+        }
+      }
+      throw storageError;
+    }
 
     return NextResponse.json({
       success: true,

@@ -25,7 +25,7 @@ export default function DocentesTable({
               <th>DNI / Doc.</th>
               <th>Email</th>
               <th>Teléfono</th>
-              <th>Institución</th>
+              <th>Marca</th>
               <th>Monto / hora</th>
               <th>Pago</th>
               <th>Fecha</th>

@@ -17,9 +17,9 @@ export default function Step01Marca({ formData, setFormData, onNext, onClose }) 
 
   return (
     <div className="wz-fade">
-      <h2 className="wz-title" style={{ textAlign: 'center' }}>Selecciona tu Institución</h2>
+      <h2 className="wz-title" style={{ textAlign: 'center' }}>Selecciona la marca</h2>
       <p className="wz-sub" style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-        Elige la institución a la que perteneces (puedes marcar hasta 2 opciones).
+        Elige la marca con la que dictarás clases (puedes marcar hasta 2 opciones).
       </p>
 
       <div className="custom-brand-list" style={{ maxWidth: '100%', margin: '0 auto' }}>

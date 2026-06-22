@@ -16,7 +16,6 @@ export const SHEET_COLUMNS = [
   ['fechaNacimiento', 'Fecha de nacimiento'],
   ['direccion', 'Dirección de vivienda'],
   ['marca', 'Marca(s)'],
-  ['institucion', 'Institución'],
   ['profesion', 'Profesión'],
   ['softwares', 'Softwares especializados'],
   ['metodoPago', 'Método de pago'],
@@ -27,15 +26,7 @@ export const SHEET_COLUMNS = [
   ['cursoSonado', 'Curso o especialización propuesta'],
   ['mejoraAdmin', 'Mejora académica o administrativa'],
   ['comentarios', 'Comentarios del docente'],
-  ['conformidadCompleta', 'Conformidad completa'],
-  ['aceptaMetodologia', 'Acepta metodología'],
-  ['aceptaProtocolo', 'Acepta protocolo'],
-  ['aceptaAsistencia', 'Acepta asistencia'],
-  ['aceptaTop', 'Acepta Docente TOP'],
-  ['aceptaSabado', 'Disponibilidad sábado'],
-  ['aceptaDomingo', 'Disponibilidad domingo'],
-  ['aceptaLunes', 'Disponibilidad lunes'],
-  ['folderUrl', 'Carpeta del docente en Drive'],
+  ['conformidadCompleta', 'Contrato aceptado'],
   ['pdf', 'PDF de conformidad'],
   ['observacionesAdmin', 'Observaciones administrativas'],
 ];
@@ -123,15 +114,7 @@ function rowValues(data, links) {
     honorarios: data.honorarios || '',
     code: data.code || '',
     conformidadCompleta: acceptances.every((value) => booleanText(value) === 'Si') ? 'Si' : 'No',
-    folderUrl: links.folderUrl || '',
     pdf: links.pdfUrl || '',
-    aceptaMetodologia: booleanText(data.aceptaMetodologia),
-    aceptaProtocolo: booleanText(data.aceptaProtocolo),
-    aceptaAsistencia: booleanText(data.aceptaAsistencia),
-    aceptaTop: booleanText(data.aceptaTop),
-    aceptaSabado: booleanText(data.aceptaSabado),
-    aceptaDomingo: booleanText(data.aceptaDomingo),
-    aceptaLunes: booleanText(data.aceptaLunes),
     observacionesAdmin: '',
   });
 }
@@ -144,10 +127,6 @@ const HEADER_MATCHERS = [
   },
   { key: 'nombre', aliases: ['1 nombre completo', 'nombre completo', 'nombres y apellidos'] },
   { key: 'marca', aliases: ['marca s', 'marca', 'marcas'] },
-  {
-    key: 'institucion',
-    aliases: ['3 institucion a la que pertenece', 'institucion a la que pertenece', 'institucion'],
-  },
   {
     key: 'fechaNacimiento',
     aliases: ['4 fecha de nacimiento', 'fecha de nacimiento', 'nacimiento'],
@@ -210,15 +189,7 @@ const HEADER_MATCHERS = [
   },
   { key: 'honorarios', aliases: ['monto honorarios', 'monto', 'honorarios'] },
   { key: 'code', aliases: ['codigo sistema', 'codigo', 'id sistema'] },
-  { key: 'aceptaMetodologia', aliases: ['acepta metodologia'] },
-  { key: 'aceptaProtocolo', aliases: ['acepta protocolo'] },
-  { key: 'aceptaAsistencia', aliases: ['acepta asistencia'] },
-  { key: 'aceptaTop', aliases: ['acepta docente top', 'acepta top'] },
-  { key: 'aceptaSabado', aliases: ['disponibilidad sabado', 'acepta sabado'] },
-  { key: 'aceptaDomingo', aliases: ['disponibilidad domingo', 'acepta domingo'] },
-  { key: 'aceptaLunes', aliases: ['disponibilidad lunes', 'acepta lunes'] },
   { key: 'conformidadCompleta', aliases: ['conformidad completa', 'conformidad'] },
-  { key: 'folderUrl', aliases: ['link carpeta docente', 'carpeta docente', 'carpeta drive'] },
   { key: 'pdf', aliases: ['pdf de conformidad', 'pdf', 'conformidad pdf', 'declaracion pdf'] },
   { key: 'observacionesAdmin', aliases: ['observaciones administrativas', 'observaciones admin'] },
 ];
@@ -423,6 +394,16 @@ export async function appendDocenteRow(data, links = {}) {
   throw new Error('No se pudo encontrar una fila segura para guardar la respuesta.');
 }
 
+export async function clearDocenteRow(rowNumber) {
+  assertSheetsConfig();
+  const sheets = getSheetsClient();
+  const sheetName = await resolveSheetName(sheets);
+  await sheets.spreadsheets.values.clear({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${quoteSheetName(sheetName)}!A${rowNumber}:V${rowNumber}`,
+  });
+}
+
 export async function updateDocenteHonorarios(identity, honorariosHora) {
   assertSheetsConfig();
   const sheets = getSheetsClient();
@@ -499,7 +480,6 @@ export async function readAllDocentes() {
       telefono: data.telefono || '',
       fechaNacimiento: data.fechaNacimiento || '',
       profesion: data.profesion || '',
-      institucion: data.institucion || '',
       marcas: data.marca ? data.marca.split('&').map((item) => item.trim()) : [],
       softwares: data.softwares || '',
       cursoInteres: data.cursoSonado || '',
@@ -511,7 +491,6 @@ export async function readAllDocentes() {
       cvUrl: data.cv || '',
       fotoUrl: data.foto || '',
       pdfUrl: data.pdf || '',
-      folderUrl: data.folderUrl || '',
       conformidadCompleta: data.conformidadCompleta === 'Si',
       timestamp: data.timestamp || '',
       estado: 'activo',

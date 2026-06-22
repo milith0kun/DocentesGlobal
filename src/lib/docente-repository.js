@@ -56,7 +56,6 @@ function buildDocenteUpdate(data, links = {}, source) {
     mejoraAdministrativa: cleanText(data.mejoraAdmin),
     comentarios: cleanText(data.comentarios),
     marcas: selectedMarcas(data.marca),
-    institucion: cleanText(data.institucion),
     'datosPago.metodoPago': cleanText(data.metodoPago),
     'datosPago.metodoPagoDetalle': cleanText(paymentMethod(data)),
     'datosPago.metodoPagoOtro': cleanText(data.metodoPagoOtro),
@@ -77,7 +76,7 @@ function buildDocenteUpdate(data, links = {}, source) {
       aceptaAsistencia: data.aceptaAsistencia === true || data.aceptaAsistencia === 'true' || data.aceptaAsistencia === 'Si',
       aceptaTop: data.aceptaTop === true || data.aceptaTop === 'true' || data.aceptaTop === 'Si',
     },
-    searchText: buildSearchText([data.documento, data.nombre, data.correo, data.telefono, data.institucion, data.marca]),
+    searchText: buildSearchText([data.documento, data.nombre, data.correo, data.telefono, data.marca]),
     updatedAt: now,
     lastSource: source,
   };

@@ -34,18 +34,7 @@ function DocLink({ href, label }) {
   );
 }
 
-const CONFORM_FIELDS = [
-  { key: 'aceptaMetodologia', label: 'Metodología' },
-  { key: 'aceptaSabado', label: 'Sábado' },
-  { key: 'aceptaDomingo', label: 'Domingo' },
-  { key: 'aceptaLunes', label: 'Lunes' },
-  { key: 'aceptaProtocolo', label: 'Protocolo' },
-  { key: 'aceptaAsistencia', label: 'Asistencia' },
-  { key: 'aceptaTop', label: 'Docente TOP' },
-];
-
 export default function DocenteModal({ docente, onClose, onUpdated }) {
-  const conf = docente.conformidad || {};
   const [honorariosHora, setHonorariosHora] = useState(docente.honorariosHora ?? '');
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
@@ -102,7 +91,6 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
               <Field label="Teléfono" value={docente.telefono} />
               <Field label="F. Nacimiento" value={docente.fechaNacimiento} />
               <Field label="Profesión" value={docente.profesion} />
-              <Field label="Institución" value={docente.institucion} />
               <Field label="Marcas" value={brandTag(docente.marcas)} />
             </div>
           </section>
@@ -164,18 +152,9 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
 
           <section>
             <h3 className="adm-modal-section-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              Conformidad <ConformidadBadge ok={docente.conformidadCompleta} />
+              Contrato <ConformidadBadge ok={docente.conformidadCompleta} />
             </h3>
-            <div className="adm-conform-grid">
-              {CONFORM_FIELDS.map(({ key, label }) => (
-                <div key={key} className="adm-conform-item">
-                  <span className={conf[key] === true ? 'adm-check' : 'adm-cross'}>
-                    {conf[key] === true ? '✓' : '✗'}
-                  </span>
-                  <span>{label}</span>
-                </div>
-              ))}
-            </div>
+            <p className="adm-contract-note">El detalle de las condiciones aceptadas se conserva en el PDF de conformidad.</p>
           </section>
 
           {docente.source === 'mongodb' && (

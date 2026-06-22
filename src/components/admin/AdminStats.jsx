@@ -4,7 +4,7 @@ export default function AdminStats({ stats }) {
     ['CIIP Latam', stats.ciip],
     ['Geomina', stats.geomina],
     ['Biomedic', stats.biomedic],
-    ['Con conformidad', stats.conformidad],
+    ['Contrato aceptado', stats.conformidad],
   ];
 
   return (

@@ -12,7 +12,7 @@ async function init() {
   
   await sheets.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
-    range: 'A1:AE1',
+    range: 'A1:V1',
     valueInputOption: 'USER_ENTERED',
     requestBody: { values: [headers] }
   });
