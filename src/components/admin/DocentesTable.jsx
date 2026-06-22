@@ -11,7 +11,7 @@ function ConformidadBadge({ ok }) {
 }
 
 export default function DocentesTable({
-  docentes, loading, total, totalPages, page, source,
+  docentes, loading, total, totalPages, page,
   onRowClick, onPageChange,
 }) {
   return (
@@ -72,7 +72,7 @@ export default function DocentesTable({
           )}
           <span className="adm-page-info">
             {totalPages > 1 ? `Página ${page} de ${totalPages} · ` : ''}
-            {total} registro{total !== 1 ? 's' : ''} · {source === 'sheets' ? 'Google Sheets' : 'MongoDB'}
+            {total} registro{total !== 1 ? 's' : ''}
           </span>
           {totalPages > 1 && (
             <button

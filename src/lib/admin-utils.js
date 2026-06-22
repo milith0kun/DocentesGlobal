@@ -1,8 +1,8 @@
 export const MARCA_OPTIONS = [
   { value: '', label: 'Todas las marcas' },
-  { value: 'CIIP Latam', label: 'CIIP Latam' },
-  { value: 'Geomina', label: 'Geomina' },
-  { value: 'Biomedic', label: 'Biomedic' },
+  { value: 'ciip', label: 'CIIP Latam' },
+  { value: 'geomina', label: 'Geomina' },
+  { value: 'biomedic', label: 'Biomedic' },
 ];
 
 const BRAND_LABELS = {

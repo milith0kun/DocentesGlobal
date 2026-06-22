@@ -5,7 +5,6 @@ import { MARCA_OPTIONS } from '@/lib/admin-utils';
 export default function AdminControls({
   searchInput, onSearchChange,
   marca, onMarcaChange,
-  source, onSourceChange,
   onExportCsv, canExport,
 }) {
   return (
@@ -30,22 +29,11 @@ export default function AdminControls({
       </div>
 
       <div className="adm-controls-right">
-        <div className="adm-source-toggle">
-          <button
-            className={source === 'mongodb' ? 'adm-toggle-active' : 'adm-toggle-btn'}
-            onClick={() => onSourceChange('mongodb')}
-          >
-            MongoDB
-          </button>
-          <button
-            className={source === 'sheets' ? 'adm-toggle-active' : 'adm-toggle-btn'}
-            onClick={() => onSourceChange('sheets')}
-          >
-            Google Sheets
-          </button>
-        </div>
+        <a className="adm-drive-btn" href="/api/admin/google-sheet" target="_blank" rel="noopener noreferrer">
+          Abrir hoja en Drive <span aria-hidden="true">↗</span>
+        </a>
         <button className="adm-export-btn" onClick={onExportCsv} disabled={!canExport}>
-          Exportar CSV
+          Exportar CSV <span aria-hidden="true">↓</span>
         </button>
       </div>
     </div>

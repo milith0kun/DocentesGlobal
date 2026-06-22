@@ -19,7 +19,7 @@ export default function AdminDashboard() {
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [marca, setMarca] = useState('');
-  const [source, setSource] = useState('mongodb');
+  const [stats, setStats] = useState({ total: 0, ciip: 0, geomina: 0, biomedic: 0, conformidad: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selected, setSelected] = useState(null);
@@ -40,7 +40,7 @@ export default function AdminDashboard() {
       setLoading(true);
       setError('');
       try {
-        const q = new URLSearchParams({ source, page: String(page), limit: '25', search, marca });
+        const q = new URLSearchParams({ page: String(page), limit: '25', search, marca });
         const res = await fetch(`/api/admin/docentes?${q}`, {
           credentials: 'include',
           signal: controller.signal,
@@ -51,6 +51,7 @@ export default function AdminDashboard() {
         setDocentes(data.docentes || []);
         setTotal(data.total || 0);
         setTotalPages(data.totalPages || 1);
+        setStats(data.stats || { total: data.total || 0, ciip: 0, geomina: 0, biomedic: 0, conformidad: 0 });
       } catch (err) {
         if (err.name !== 'AbortError') setError('Error de conexión.');
       } finally {
@@ -60,7 +61,7 @@ export default function AdminDashboard() {
 
     load();
     return () => controller.abort();
-  }, [source, page, search, marca, router]);
+  }, [page, search, marca, router]);
 
   async function handleLogout() {
     await fetch('/api/admin/logout', { method: 'POST', credentials: 'include' });
@@ -68,21 +69,8 @@ export default function AdminDashboard() {
   }
 
   function exportCsv() {
-    if (!docentes.length) return;
-    const cols = ['codigo', 'nombre', 'documento', 'email', 'telefono', 'fechaNacimiento',
-      'profesion', 'institucion', 'metodoPago', 'numeroCuenta', 'conformidadCompleta', 'createdAt', 'estado'];
-    const csv = [
-      cols.join(','),
-      ...docentes.map((d) =>
-        cols.map((k) => `"${String(d[k] ?? '').replace(/"/g, '""')}"`).join(',')
-      ),
-    ].join('\n');
-    const a = Object.assign(document.createElement('a'), {
-      href: URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })),
-      download: `docentes_${new Date().toISOString().slice(0, 10)}.csv`,
-    });
-    a.click();
-    URL.revokeObjectURL(a.href);
+    const q = new URLSearchParams({ format: 'csv', search, marca });
+    window.location.assign(`/api/admin/docentes?${q}`);
   }
 
   return (
@@ -90,17 +78,24 @@ export default function AdminDashboard() {
       <AdminTopbar onLogout={handleLogout} />
 
       <main className="adm-main">
-        <AdminStats total={total} docentes={docentes} source={source} />
+        <section className="adm-dashboard-heading">
+          <div>
+            <p className="adm-eyebrow">Directorio académico</p>
+            <h1>Docentes</h1>
+            <p>Consulta registros, conformidades y documentación desde un solo lugar.</p>
+          </div>
+          <span className="adm-sync-note">Datos sincronizados con el formulario</span>
+        </section>
+
+        <AdminStats stats={stats} />
 
         <AdminControls
           searchInput={searchInput}
           onSearchChange={setSearchInput}
           marca={marca}
           onMarcaChange={(v) => { setMarca(v); setPage(1); }}
-          source={source}
-          onSourceChange={(v) => { setSource(v); setPage(1); }}
           onExportCsv={exportCsv}
-          canExport={docentes.length > 0}
+          canExport={total > 0}
         />
 
         {error && <div className="adm-error-banner">{error}</div>}
@@ -111,7 +106,6 @@ export default function AdminDashboard() {
           total={total}
           totalPages={totalPages}
           page={page}
-          source={source}
           onRowClick={setSelected}
           onPageChange={setPage}
         />

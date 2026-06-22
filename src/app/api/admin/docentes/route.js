@@ -1,7 +1,39 @@
 import { NextResponse } from 'next/server';
 import { verifyAdminToken, ADMIN_COOKIE } from '@/lib/admin-auth.js';
 import { getMongoDb, hasMongoConfig } from '@/lib/mongodb.js';
-import { readAllDocentes } from '@/lib/google-sheets.js';
+
+const CSV_COLUMNS = [
+  ['codigo', 'Código'],
+  ['nombre', 'Nombre'],
+  ['documento', 'DNI / Documento'],
+  ['email', 'Email'],
+  ['telefono', 'Teléfono'],
+  ['fechaNacimiento', 'Fecha de nacimiento'],
+  ['profesion', 'Profesión'],
+  ['institucion', 'Institución'],
+  ['metodoPago', 'Método de pago'],
+  ['numeroCuenta', 'Número de cuenta'],
+  ['conformidadCompleta', 'Conformidad completa'],
+  ['createdAt', 'Fecha de registro'],
+  ['estado', 'Estado'],
+];
+
+function csvCell(value) {
+  return `"${String(value ?? '').replace(/"/g, '""')}"`;
+}
+
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function toCsv(docentes) {
+  return [
+    CSV_COLUMNS.map(([, label]) => csvCell(label)).join(','),
+    ...docentes.map((docente) =>
+      CSV_COLUMNS.map(([key]) => csvCell(docente[key])).join(',')
+    ),
+  ].join('\n');
+}
 
 function normalizeMongoDocente(doc) {
   const conf = doc.conformidad || {};
@@ -47,20 +79,10 @@ export async function GET(request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const source = searchParams.get('source') || 'mongodb';
   const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
   const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '25', 10)));
   const search = (searchParams.get('search') || '').trim();
   const marca = (searchParams.get('marca') || '').trim();
-
-  if (source === 'sheets') {
-    try {
-      const docentes = await readAllDocentes();
-      return NextResponse.json({ docentes, total: docentes.length, source: 'sheets' });
-    } catch (error) {
-      return NextResponse.json({ error: `Error al leer Google Sheets: ${error.message}` }, { status: 500 });
-    }
-  }
 
   if (!hasMongoConfig()) {
     return NextResponse.json({ error: 'MongoDB no está configurado.' }, { status: 503 });
@@ -71,19 +93,50 @@ export async function GET(request) {
     const query = {};
 
     if (search) {
+      const safeSearch = escapeRegex(search);
       query.$or = [
-        { searchText: { $regex: search.toLowerCase(), $options: 'i' } },
-        { nombreCompleto: { $regex: search, $options: 'i' } },
-        { documentoNumero: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
+        { searchText: { $regex: safeSearch.toLowerCase(), $options: 'i' } },
+        { nombreCompleto: { $regex: safeSearch, $options: 'i' } },
+        { documentoNumero: { $regex: safeSearch, $options: 'i' } },
+        { email: { $regex: safeSearch, $options: 'i' } },
       ];
     }
 
     if (marca) {
-      query.marcas = { $in: [marca] };
+      query.marcas = { $in: [new RegExp(`^${escapeRegex(marca)}(?: latam)?$`, 'i')] };
     }
 
-    const total = await db.collection('docentes').countDocuments(query);
+    const collection = db.collection('docentes');
+    const conformidadQuery = {
+      ...query,
+      ...Object.fromEntries(
+        ['aceptaMetodologia', 'aceptaSabado', 'aceptaDomingo', 'aceptaLunes', 'aceptaProtocolo', 'aceptaAsistencia', 'aceptaTop']
+          .map((key) => [`conformidad.${key}`, true])
+      ),
+    };
+    const brandQuery = (brand) => ({
+      $and: [query, { marcas: { $in: [new RegExp(`^${brand}(?: latam)?$`, 'i')] } }],
+    });
+
+    if (searchParams.get('format') === 'csv') {
+      const exportDocs = await collection.find(query).sort({ createdAt: -1 }).toArray();
+      const csv = toCsv(exportDocs.map(normalizeMongoDocente));
+      const date = new Date().toISOString().slice(0, 10);
+      return new NextResponse(`\uFEFF${csv}`, {
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': `attachment; filename="docentes_${date}.csv"`,
+        },
+      });
+    }
+
+    const [total, totalCiip, totalGeo, totalBio, totalConf] = await Promise.all([
+      collection.countDocuments(query),
+      collection.countDocuments(brandQuery('ciip')),
+      collection.countDocuments(brandQuery('geomina')),
+      collection.countDocuments(brandQuery('biomedic')),
+      collection.countDocuments(conformidadQuery),
+    ]);
     const docs = await db
       .collection('docentes')
       .find(query)
@@ -99,6 +152,7 @@ export async function GET(request) {
       limit,
       totalPages: Math.ceil(total / limit),
       source: 'mongodb',
+      stats: { total, ciip: totalCiip, geomina: totalGeo, biomedic: totalBio, conformidad: totalConf },
     });
   } catch (error) {
     return NextResponse.json({ error: `Error de base de datos: ${error.message}` }, { status: 500 });
