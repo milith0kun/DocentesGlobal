@@ -99,13 +99,31 @@ function buildDocenteUpdate(data, links = {}, source) {
 }
 
 export async function ensureDocenteIndexes(db) {
-  await Promise.all([
-    db.collection('docentes').createIndex({ documentoNumero: 1 }, { unique: true, sparse: true }),
-    db.collection('docentes').createIndex({ email: 1 }),
-    db.collection('docentes').createIndex({ marcas: 1 }),
-    db.collection('docentes').createIndex({ searchText: 'text' }),
-    db.collection('importaciones').createIndex({ createdAt: -1 }),
-  ]);
+  const desired = [
+    [db.collection('docentes'), { documentoNumero: 1 }, { unique: true, sparse: true }],
+    [db.collection('docentes'), { email: 1 }, {}],
+    [db.collection('docentes'), { marcas: 1 }, {}],
+    [db.collection('importaciones'), { createdAt: -1 }, {}],
+  ];
+
+  for (const [collection, key, options] of desired) {
+    let indexes = [];
+    try {
+      indexes = await collection.listIndexes().toArray();
+    } catch (error) {
+      if (error.code !== 26) throw error;
+    }
+
+    const keyEntries = Object.entries(key);
+    const exists = indexes.some((index) => {
+      const entries = Object.entries(index.key || {});
+      return entries.length === keyEntries.length && entries.every(
+        ([field, direction], position) => field === keyEntries[position][0] && direction === keyEntries[position][1]
+      );
+    });
+
+    if (!exists) await collection.createIndex(key, options);
+  }
 }
 
 export async function upsertDocente(data, links = {}, { source = 'manual-docentes' } = {}) {
