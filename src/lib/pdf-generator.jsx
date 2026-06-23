@@ -1,6 +1,7 @@
 import { renderToStream, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import path from 'path';
 import fs from 'fs';
+import { DELIVERY_DEADLINES_CONTRACT } from './delivery-deadlines.js';
 
 // ─────────────────────────────────────────────
 //  Tokens de diseño
@@ -502,7 +503,7 @@ const COMPROMISOS = [
   {
     letra: 'B',
     titulo: 'Fechas de corte innegociables',
-    cuerpo: 'El docente se compromete a cumplir estrictamente con los plazos institucionales establecidos para: (1) Entrega de material académico (syllabus, guías, recursos) 5 días antes de cada módulo. (2) Actas de calificaciones completas dentro de 48 horas de finalizada cada evaluación. (3) Grabaciones y retroalimentaciones de sesiones dentro de 24 horas. (4) Disponibilidad para reporte de asistencia semanal. El incumplimiento de estas fechas afecta directamente la operatividad institucional y conlleva sanciones progresivas.',
+    cuerpo: DELIVERY_DEADLINES_CONTRACT,
   },
   {
     letra: 'C',

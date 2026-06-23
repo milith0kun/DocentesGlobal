@@ -1,33 +1,8 @@
 'use client';
 
-export default function Step04Fechas({ formData, setFormData, onNext, onBack }) {
-  const items = [
-    {
-      key: 'aceptaSabado',
-      day: 'Sábado',
-      time: 'Hasta 1:00 PM',
-      label: 'Material Sesión 1',
-      desc: 'Diapositivas (PPTs), guías (PDFs), datasets y recursos para la clase del sábado.',
-      color: '#0ea5e9',
-    },
-    {
-      key: 'aceptaDomingo',
-      day: 'Domingo',
-      time: 'Hasta 1:00 PM',
-      label: 'Material Sesión 2',
-      desc: 'Diapositivas, casos prácticos y guías de la clase dominical. Sin excepciones.',
-      color: '#0284c7',
-    },
-    {
-      key: 'aceptaLunes',
-      day: 'Lunes',
-      time: 'Hasta 9:00 AM',
-      label: 'Examen Final',
-      desc: 'Confirmar entrega de 3 archivos: 10 Preguntas de opción aleatoria, Caso práctico (sin resolver) y Caso práctico resuelto.',
-      color: '#7c3aed',
-    },
-  ];
+import { DELIVERY_DEADLINES } from '@/lib/delivery-deadlines';
 
+export default function Step04Fechas({ formData, setFormData, onNext, onBack }) {
   const allAccepted = formData.aceptaSabado && formData.aceptaDomingo && formData.aceptaLunes;
 
   return (
@@ -40,7 +15,7 @@ export default function Step04Fechas({ formData, setFormData, onNext, onBack }) 
       </p>
 
       <div className="wz-agenda">
-        {items.map((item, i) => {
+        {DELIVERY_DEADLINES.map((item, i) => {
           const on = formData[item.key];
           return (
             <div
@@ -56,7 +31,7 @@ export default function Step04Fechas({ formData, setFormData, onNext, onBack }) 
               </div>
               <div className="wz-agenda-content">
                 <h4 className="wz-a-label">{item.label}</h4>
-                <p className="wz-a-desc">{item.desc}</p>
+                <p className="wz-a-desc">{item.description}</p>
               </div>
             </div>
           );
