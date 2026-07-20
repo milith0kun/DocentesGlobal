@@ -415,10 +415,10 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               Reconocimiento Especial
             </span>
             <h3 className="wz-modal-title" style={{ marginTop: '0.6rem' }}>
-              Suma Puntos por Puntualidad y Agiliza tus Procesos 🏆✨
+              Suma Puntos por Puntualidad y Agiliza tus Procesos
             </h3>
             <p className="wz-modal-desc">
-              La entrega proactiva de tus materiales (sin recordatorios) suma <strong>puntos de excelencia</strong> en tu <strong>Evaluación Docente</strong> y, además, es el requisito indispensable para <strong>autorizar tu pago</strong> ante el área de Finanzas. 💳💼
+              La entrega proactiva de tus materiales (sin recordatorios) suma <strong>puntos de excelencia</strong> en tu <strong>Evaluación Docente</strong> y, además, es el requisito indispensable para <strong>autorizar tu pago</strong> ante el área de Finanzas.
               <br /><br />
               <strong style={{ color: 'var(--brand-navy)' }}>¡Confiamos en tu compromiso!</strong>
             </p>
