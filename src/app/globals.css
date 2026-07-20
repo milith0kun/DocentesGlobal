@@ -2021,13 +2021,73 @@ img {
   overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
 }
-.wz-certificate-image {
-  display:block;
-  width:auto;
-  height:auto;
-  max-width:100%;
-  max-height:calc(100dvh - 6rem);
-  object-fit:contain;
+/* ── PANTALLA DE ÉXITO (STEP SUCCESS) ── */
+.wz-success-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+}
+.wz-success-media {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+.wz-success-video {
+  width: 240px;
+  height: auto;
+  max-width: 100%;
+  display: block;
+}
+.wz-success-copy {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.wz-success-panel {
+  background: var(--brand-light-mid);
+  border: 1.5px solid var(--brand-light-deep);
+  border-radius: 16px;
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.wz-sum-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 0;
+  border-bottom: 1.5px solid var(--brand-light-deep);
+  font-size: 0.9rem;
+}
+.wz-sum-row span {
+  color: rgba(9, 42, 96, 0.6);
+  font-weight: 600;
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.wz-sum-row strong {
+  color: var(--brand-navy);
+  font-weight: 750;
+}
+.wz-success-note {
+  font-size: 0.82rem;
+  color: var(--brand-red);
+  font-weight: 600;
+  text-align: center;
+  margin-top: -0.5rem;
+  margin-bottom: 1.2rem;
+}
+.wz-success-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 /* ── RESPONSIVE ── */
