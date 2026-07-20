@@ -55,7 +55,6 @@ const REQUIRED_ACCEPTANCES = [
   'aceptaLunes',
   'aceptaProtocolo',
   'aceptaAsistencia',
-  'aceptaTop',
 ];
 
 const FIELD_LIMITS = {
