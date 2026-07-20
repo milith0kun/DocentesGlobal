@@ -179,12 +179,12 @@ export default function Step10Documentacion({ formData, setFormData, onNext, onB
         </h4>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', fontSize: '0.78rem', color: 'rgba(9, 42, 96, 0.75)', lineHeight: '1.45', textAlign: 'left' }}>
           <div>
-            <strong style={{ color: 'var(--brand-navy)', display: 'block', marginBottom: '0.2rem' }}>Requisitos del CV:</strong>
-            Debe ser su CV actualizado (preferiblemente en formato PDF) y detallar su formación, especialización técnica e historial docente pertinente.
+            <strong style={{ color: 'var(--brand-navy)', display: 'block', marginBottom: '0.35rem' }}>Requisitos del CV:</strong>
+            Adjunte su CV actualizado en formato PDF. Debe incluir formación académica, especialización técnica e historial docente relevante. Asegúrese de que la información esté vigente y sea verificable.
           </div>
           <div>
-            <strong style={{ color: 'var(--brand-navy)', display: 'block', marginBottom: '0.2rem' }}>Política de la Fotografía:</strong>
-            La fotografía será utilizada para sus accesos, portales institucionales y aulas virtuales. Debe ser formal (tipo pasaporte/profesional), con fondo neutro y buena iluminación. Evitar selfies o imágenes casuales.
+            <strong style={{ color: 'var(--brand-navy)', display: 'block', marginBottom: '0.35rem' }}>Autorización y Uso de Imagen:</strong>
+            Al subir su fotografía, usted autoriza expresamente a <strong>CGB Academy y sus instituciones aliadas</strong> (CIIP Latam, Geomina, Biomedic) a utilizar su imagen con fines institucionales y publicitarios: perfil en portales públicos, sección <em>«Nuestros Docentes»</em>, materiales de marketing, redes sociales y talleres. La foto debe ser formal (tipo pasaporte/profesional), fondo neutro, buena iluminación. Evitar selfies o imágenes casuales.
           </div>
         </div>
       </div>
