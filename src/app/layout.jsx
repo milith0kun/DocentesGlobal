@@ -2,8 +2,8 @@ import './globals.css';
 
 export const metadata = {
   metadataBase: new URL('https://docentesglobal.vercel.app'),
-  title: 'Manual Digital Docente 2026 | CIIP Latam - Geomina - Biomedic',
-  description: 'Manual operativo para docentes del ecosistema CIIP Latam, Geomina y Biomedic. Guía de metodología práctica, horarios de entrega, normas de imagen y programa Docente TOP 2026.',
+  title: 'Manual Digital Docente 2026 | CGB Academy & Instituciones',
+  description: 'Guía oficial de estándares metodológicos, de imagen y excelencia para los docentes de CGB Academy, CIIP Latam, Geomina y Biomedic 2026.',
   robots: {
     index: true,
     follow: true,
@@ -12,15 +12,15 @@ export const metadata = {
   },
   openGraph: {
     type: 'website',
-    title: 'Manual Digital Docente 2026 | CIIP Latam',
-    description: 'Guía de estándares metodológicos, de imagen y calidad para el ecosistema educativo de CIIP Latam, Geomina y Biomedic.',
+    title: 'Manual Digital Docente 2026 | CGB Academy',
+    description: 'Guía oficial de estándares metodológicos, de imagen y calidad para los docentes de CGB Academy, CIIP Latam, Geomina y Biomedic.',
     locale: 'es_PE',
-    siteName: 'CIIP LATAM - Ecosistema Digital de Capacitación',
+    siteName: 'CGB Academy - Ecosistema Educativo Global',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Manual Digital Docente 2026 | CIIP Latam',
-    description: 'Guía de estándares metodológicos, de imagen y calidad para el ecosistema educativo de CIIP Latam, Geomina y Biomedic.',
+    title: 'Manual Digital Docente 2026 | CGB Academy',
+    description: 'Guía oficial de estándares metodológicos, de imagen y calidad para los docentes de CGB Academy, CIIP Latam, Geomina y Biomedic.',
   },
   alternates: {
     canonical: 'https://docentesglobal.vercel.app/',
@@ -41,10 +41,10 @@ export default function RootLayout({ children }) {
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'EducationalOrganization',
-              name: 'CIIP LATAM',
-              alternateName: ['Geomina', 'Biomedic'],
+              name: 'CGB Academy',
+              alternateName: ['CIIP LATAM', 'Geomina', 'Biomedic'],
               url: 'https://docentesglobal.vercel.app/',
-              description: 'Ecosistema digital de capacitación profesional en Latinoamérica. Formación práctica en ingeniería, minería y salud.',
+              description: 'Ecosistema digital de capacitación profesional global. Formación práctica en ingeniería, minería, gestión y salud.',
               areaServed: 'Latin America',
               contactPoint: {
                 '@type': 'ContactPoint',
