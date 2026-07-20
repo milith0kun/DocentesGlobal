@@ -49,9 +49,9 @@ export default function WizardHeader({ step, formData, onClose }) {
           src={cgbLogo}
           alt="CGB Academy"
           style={{
-            height: '48px',
+            height: '46px',
             width: 'auto',
-            aspectRatio: '1341 / 473',
+            objectFit: 'contain',
             flexShrink: 0,
             opacity: 0.95,
             filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.3))',

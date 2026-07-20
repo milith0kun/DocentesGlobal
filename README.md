@@ -326,4 +326,4 @@ El proyecto incluye un archivo nixpacks.toml preconfigurado.
 
 ---
 
-Desarrollado para el ecosistema educativo de CIIP Latam.
+#no usar iconos basicos ni generados por IA. Usar iconos de calidad profesional que se encuentren en la carpeta public/assets

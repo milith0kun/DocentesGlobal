@@ -58,21 +58,30 @@
   align-items: center;
   justify-content: center;
   min-height: 42px;
-  padding: 0.52rem 0.92rem;
-  border-radius: 8px;
-  background: #0f2f52;
-  color: #ffffff;
-  font-size: 0.84rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 9999px;
+  background: #4DC4D3;
+  color: #092A60;
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
   font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   text-align: center;
   white-space: nowrap;
-  box-shadow: 0 10px 22px rgba(15, 47, 82, 0.16);
+  box-shadow: 0 4px 14px rgba(77, 196, 211, 0.35);
   cursor: pointer;
   line-height: 1.15;
+  transition: all 0.2s ease;
+}
+
+.contactsSection :global(.contactSummaryAction:hover) {
+  background: #5ed2e1;
+  transform: translateY(-1px);
 }
 
 .contactsSection :global(.contactSummaryAction[aria-expanded="true"]) {
-  background: #144068;
+  background: #092A60;
   color: #ffffff;
 }
 

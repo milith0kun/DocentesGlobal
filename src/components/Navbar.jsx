@@ -29,8 +29,8 @@ export default function Navbar() {
           z-index: 1000;
           font-family: var(--font-body);
           transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-          background: linear-gradient(135deg, #060e1a 0%, #0a1e35 40%, #0c2844 100%);
-          border-bottom: 1px solid rgba(56, 189, 248, 0.08);
+          background: #092A60;
+          border-bottom: 1px solid rgba(77, 196, 211, 0.15);
           padding: 0.9rem 0;
         }
 

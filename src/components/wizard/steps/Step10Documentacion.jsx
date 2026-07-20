@@ -18,13 +18,13 @@ export default function Step10Documentacion({ formData, setFormData, onNext, onB
             className="wz-upload-zone"
             onClick={() => !formData.cvFile && document.getElementById('cv-upload').click()}
             style={{
-              border: formData.cvFile ? '1px solid #e2e8f0' : '2px dashed #cbd5e1',
+              border: formData.cvFile ? '1.5px solid var(--brand-light-deep)' : '2px dashed rgba(20, 98, 135, 0.3)',
               borderRadius: '16px',
               padding: formData.cvFile ? '1rem' : '1.25rem 1rem',
               textAlign: 'center',
               cursor: formData.cvFile ? 'default' : 'pointer',
-              background: formData.cvFile ? '#ffffff' : '#f8fafc',
-              boxShadow: formData.cvFile ? '0 4px 6px -1px rgba(0, 0, 0, 0.05)' : 'none',
+              background: formData.cvFile ? '#ffffff' : 'var(--brand-light-mid)',
+              boxShadow: formData.cvFile ? '0 4px 6px -1px rgba(9, 42, 96, 0.05)' : 'none',
               transition: 'all 0.3s ease',
               display: 'flex',
               flexDirection: 'column',
@@ -41,10 +41,10 @@ export default function Step10Documentacion({ formData, setFormData, onNext, onB
             {formData.cvFile ? (
               <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <h4 style={{ fontSize: '1rem', color: '#0f172a', margin: '0', fontWeight: 800 }}>Curriculum Vitae</h4>
+                  <h4 style={{ fontSize: '1rem', color: 'var(--brand-navy)', margin: '0', fontWeight: 800 }}>Curriculum Vitae</h4>
                   <button
                     onClick={(e) => { e.stopPropagation(); setFormData({ ...formData, cvFile: null }); }}
-                    style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', padding: '0.2rem 0.5rem', fontSize: '1.4rem', lineHeight: 1 }}
+                    style={{ background: 'transparent', border: 'none', color: 'var(--brand-red)', cursor: 'pointer', fontWeight: 'bold', padding: '0.2rem 0.5rem', fontSize: '1.4rem', lineHeight: 1 }}
                     title="Eliminar archivo"
                   >×</button>
                 </div>
@@ -52,11 +52,11 @@ export default function Step10Documentacion({ formData, setFormData, onNext, onB
                   {formData.cvFile.type === 'application/pdf' ? (
                     <iframe
                       src={URL.createObjectURL(formData.cvFile)}
-                      style={{ width: '100%', height: '100%', border: '1px solid #e2e8f0', borderRadius: '8px' }}
+                      style={{ width: '100%', height: '100%', border: '1.5px solid var(--brand-light-deep)', borderRadius: '8px' }}
                       title="CV Preview"
                     />
                   ) : (
-                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', color: '#64748b', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', color: 'rgba(9, 42, 96, 0.65)', border: '1.5px solid var(--brand-light-deep)', borderRadius: '8px' }}>
                       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '0.5rem' }}>
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                         <polyline points="14 2 14 8 20 8"></polyline>
@@ -71,7 +71,7 @@ export default function Step10Documentacion({ formData, setFormData, onNext, onB
               </div>
             ) : (
               <>
-                <div className="wz-upload-svg" style={{ color: '#64748b', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+                <div className="wz-upload-svg" style={{ color: 'var(--brand-blue)', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                     <polyline points="14 2 14 8 20 8"></polyline>
@@ -80,16 +80,16 @@ export default function Step10Documentacion({ formData, setFormData, onNext, onB
                     <polyline points="10 9 9 9 8 9"></polyline>
                   </svg>
                 </div>
-                <h4 style={{ fontSize: '1.05rem', color: '#0f172a', margin: '0 0 0.25rem 0', fontWeight: 800 }}>Curriculum Vitae</h4>
-                <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '0', fontWeight: 500 }}>PDF o DOC • Máx. 10 MB</p>
+                <h4 style={{ fontSize: '1.05rem', color: 'var(--brand-navy)', margin: '0 0 0.25rem 0', fontWeight: 800 }}>Curriculum Vitae</h4>
+                <p style={{ fontSize: '0.8rem', color: 'rgba(9, 42, 96, 0.65)', margin: '0', fontWeight: 500 }}>PDF o DOC • Máx. 10 MB</p>
               </>
             )}
           </div>
 
           {formData.cvFile && (
             <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0f172a', wordBreak: 'break-all', textAlign: 'center' }}>{formData.cvFile.name}</span>
-              <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.1rem' }}>{(formData.cvFile.size / 1024 / 1024).toFixed(2)} MB</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--brand-navy)', wordBreak: 'break-all', textAlign: 'center' }}>{formData.cvFile.name}</span>
+              <span style={{ fontSize: '0.75rem', color: 'rgba(9, 42, 96, 0.65)', marginTop: '0.1rem' }}>{(formData.cvFile.size / 1024 / 1024).toFixed(2)} MB</span>
             </div>
           )}
         </div>
@@ -100,13 +100,13 @@ export default function Step10Documentacion({ formData, setFormData, onNext, onB
             className="wz-upload-zone"
             onClick={() => !formData.fotoFile && document.getElementById('foto-upload').click()}
             style={{
-              border: formData.fotoFile ? '1px solid #e2e8f0' : '2px dashed #cbd5e1',
+              border: formData.fotoFile ? '1.5px solid var(--brand-light-deep)' : '2px dashed rgba(20, 98, 135, 0.3)',
               borderRadius: '16px',
               padding: formData.fotoFile ? '1rem' : '1.25rem 1rem',
               textAlign: 'center',
               cursor: formData.fotoFile ? 'default' : 'pointer',
-              background: formData.fotoFile ? '#ffffff' : '#f8fafc',
-              boxShadow: formData.fotoFile ? '0 4px 6px -1px rgba(0, 0, 0, 0.05)' : 'none',
+              background: formData.fotoFile ? '#ffffff' : 'var(--brand-light-mid)',
+              boxShadow: formData.fotoFile ? '0 4px 6px -1px rgba(9, 42, 96, 0.05)' : 'none',
               transition: 'all 0.3s ease',
               display: 'flex',
               flexDirection: 'column',
@@ -123,10 +123,10 @@ export default function Step10Documentacion({ formData, setFormData, onNext, onB
             {formData.fotoFile ? (
               <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <h4 style={{ fontSize: '1rem', color: '#0f172a', margin: '0', fontWeight: 800 }}>Fotografía Profesional</h4>
+                  <h4 style={{ fontSize: '1rem', color: 'var(--brand-navy)', margin: '0', fontWeight: 800 }}>Fotografía Profesional</h4>
                   <button
                     onClick={(e) => { e.stopPropagation(); setFormData({ ...formData, fotoFile: null }); }}
-                    style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold', padding: '0.2rem 0.5rem', fontSize: '1.4rem', lineHeight: 1 }}
+                    style={{ background: 'transparent', border: 'none', color: 'var(--brand-red)', cursor: 'pointer', fontWeight: 'bold', padding: '0.2rem 0.5rem', fontSize: '1.4rem', lineHeight: 1 }}
                     title="Eliminar foto"
                   >×</button>
                 </div>
@@ -136,23 +136,23 @@ export default function Step10Documentacion({ formData, setFormData, onNext, onB
               </div>
             ) : (
               <>
-                <div className="wz-upload-svg" style={{ color: '#64748b', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+                <div className="wz-upload-svg" style={{ color: 'var(--brand-blue)', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                     <circle cx="8.5" cy="8.5" r="1.5"></circle>
                     <polyline points="21 15 16 10 5 21"></polyline>
                   </svg>
                 </div>
-                <h4 style={{ fontSize: '1.05rem', color: '#0f172a', margin: '0 0 0.25rem 0', fontWeight: 800 }}>Fotografía Profesional</h4>
-                <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '0', fontWeight: 500 }}>JPG o PNG • Máx. 10 MB</p>
+                <h4 style={{ fontSize: '1.05rem', color: 'var(--brand-navy)', margin: '0 0 0.25rem 0', fontWeight: 800 }}>Fotografía Profesional</h4>
+                <p style={{ fontSize: '0.8rem', color: 'rgba(9, 42, 96, 0.65)', margin: '0', fontWeight: 500 }}>JPG o PNG • Máx. 10 MB</p>
               </>
             )}
           </div>
 
           {formData.fotoFile && (
             <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0f172a', wordBreak: 'break-all', textAlign: 'center' }}>{formData.fotoFile.name}</span>
-              <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.1rem' }}>{(formData.fotoFile.size / 1024 / 1024).toFixed(2)} MB</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--brand-navy)', wordBreak: 'break-all', textAlign: 'center' }}>{formData.fotoFile.name}</span>
+              <span style={{ fontSize: '0.75rem', color: 'rgba(9, 42, 96, 0.65)', marginTop: '0.1rem' }}>{(formData.fotoFile.size / 1024 / 1024).toFixed(2)} MB</span>
             </div>
           )}
         </div>
@@ -162,14 +162,14 @@ export default function Step10Documentacion({ formData, setFormData, onNext, onB
       <div style={{
         marginTop: '1.5rem',
         padding: '1rem 1.25rem',
-        background: 'rgba(56, 189, 248, 0.04)',
-        border: '1px solid rgba(56, 189, 248, 0.15)',
+        background: 'rgba(20, 98, 135, 0.08)',
+        border: '1px solid rgba(20, 98, 135, 0.18)',
         borderRadius: '12px',
         display: 'flex',
         flexDirection: 'column',
         gap: '0.75rem',
       }}>
-        <h4 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--bc)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+        <h4 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--brand-navy)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -177,13 +177,13 @@ export default function Step10Documentacion({ formData, setFormData, onNext, onB
           </svg>
           Políticas de Uso y Requisitos
         </h4>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', fontSize: '0.78rem', color: '#475569', lineHeight: '1.45', textAlign: 'left' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', fontSize: '0.78rem', color: 'rgba(9, 42, 96, 0.75)', lineHeight: '1.45', textAlign: 'left' }}>
           <div>
-            <strong style={{ color: '#0f172a', display: 'block', marginBottom: '0.2rem' }}>Requisitos del CV:</strong>
+            <strong style={{ color: 'var(--brand-navy)', display: 'block', marginBottom: '0.2rem' }}>Requisitos del CV:</strong>
             Debe ser su CV actualizado (preferiblemente en formato PDF) y detallar su formación, especialización técnica e historial docente pertinente.
           </div>
           <div>
-            <strong style={{ color: '#0f172a', display: 'block', marginBottom: '0.2rem' }}>Política de la Fotografía:</strong>
+            <strong style={{ color: 'var(--brand-navy)', display: 'block', marginBottom: '0.2rem' }}>Política de la Fotografía:</strong>
             La fotografía será utilizada para sus accesos, portales institucionales y aulas virtuales. Debe ser formal (tipo pasaporte/profesional), con fondo neutro y buena iluminación. Evitar selfies o imágenes casuales.
           </div>
         </div>

@@ -4,30 +4,27 @@ export default function Step07Asistencia({ formData, setFormData, onNext, onBack
   const cards = [
     {
       number: '01',
-      title: 'Permiso Justificado',
-      badge: 'Mínimo 4 días',
-      text: 'El docente debe solicitar este permiso con mínimo de 4 días de anticipación, para evitar inconvenientes en la ejecución de los cursos',
+      title: 'Permisos con tiempo',
+      text: 'Solicítalos con un mínimo de 4 días de anticipación (solo casos excepcionales).',
       bullets: [
-        'IMPORTANTE: Esto es en caso excepcional, si en caso ocurren los permisos de forma reiterada y sin justificación, se observará en su evaluación docente. Los docentes no pueden solicitar permiso el mismo día, sábado o domingo',
+        'Nota: No se aceptan solicitudes el mismo día de clase, ni sábados o domingos.',
       ],
     },
     {
       number: '02',
-      title: 'Gestión de Reemplazos',
+      title: 'Coordinación de Reemplazos',
       badge: 'Autorización previa',
-      text: 'Si por una situación muy particular y excepcional el docente no puede asistir, deberá proponer un reemplazo de igual o mayor nivel profesional, sujeto a la autorización previa de la Dirección Académica.',
+      text: 'En caso de fuerza mayor, propón un docente de igual o mayor nivel académico para su aprobación previa.',
     },
     {
       number: '03',
-      title: 'Frecuencia y Penalidades',
-      badge: 'Según contrato',
-      text: 'Esta medida es viable únicamente en casos de extrema urgencia y de forma muy esporádica. Las faltas injustificadas no están permitidas. El incumplimiento de sesiones o las ausencias frecuentes impactarán en el récord docente y se aplicará la penalidad correspondiente según el contrato.',
+      title: 'Continuidad Académica',
+      text: 'Las ausencias reiteradas o no justificadas afectan tu historial docente; ante faltas frecuentes, la Dirección Académica podrá designar a otro docente para el módulo.',
     },
     {
       number: '04',
-      title: 'Aporte de Valor',
-      badge: 'Compromiso activo',
-      text: 'Compartir materiales adicional para los estudiantes, nos permite ver su dedicación, este punto será considerado para su evaluación docente',
+      title: 'Destaca y Suma Puntos',
+      text: 'Compartir materiales adicionales demuestra tu dedicación y suma puntos extra en tu evaluación docente.',
     },
   ];
 
@@ -35,9 +32,7 @@ export default function Step07Asistencia({ formData, setFormData, onNext, onBack
     <div className="wz-fade">
       <h2 className="wz-title">Política de Asistencia y Compromiso Académico</h2>
       <p className="wz-sub">
-        El contrato firmado representa un compromiso sagrado con la institución y, principalmente, con los
-        alumnos que confían en su guía. Para garantizar una experiencia educativa sin interrupciones,
-        establecemos los siguientes lineamientos:
+        Para asegurar una experiencia de aprendizaje de alta calidad y sin interrupciones, nos organizamos bajo estos lineamientos clave:
       </p>
 
       <div className="wz-attendance-grid">
@@ -45,7 +40,7 @@ export default function Step07Asistencia({ formData, setFormData, onNext, onBack
           <article className={`wz-attendance-card card-${item.number}`} key={item.number}>
             <div className="wz-attendance-card-head">
               <span className="wz-attendance-number">{item.number}</span>
-              <span className="wz-attendance-badge">{item.badge}</span>
+              {item.badge && <span className="wz-attendance-badge">{item.badge}</span>}
             </div>
             <h3>{item.title}</h3>
             <p>{item.text}</p>
@@ -77,7 +72,7 @@ export default function Step07Asistencia({ formData, setFormData, onNext, onBack
 
       <div className="wz-nav">
         <button onClick={onBack} className="wz-btn-ghost">Atrás</button>
-        <button onClick={onNext} disabled={!formData.aceptaAsistencia} className="wz-btn-main">Aceptar Política</button>
+        <button onClick={onNext} disabled={!formData.aceptaAsistencia} className="wz-btn-main">Siguiente</button>
       </div>
     </div>
   );

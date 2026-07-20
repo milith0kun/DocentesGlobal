@@ -9,8 +9,6 @@ export default function Footer() {
 
   return (
     <footer className="site-footer">
-      <div className="footer-glow" aria-hidden="true" />
-
       <div className="container footer-container">
         <div className="footer-panel">
           <div className="footer-copy-block">
@@ -35,23 +33,10 @@ export default function Footer() {
           position: relative;
           z-index: 10;
           overflow: hidden;
-          color: #dbeafe;
-          background:
-            linear-gradient(180deg, rgba(7, 18, 31, 0) 0%, rgba(7, 18, 31, 0.34) 18%, rgba(7, 18, 31, 0.84) 52%, #06101d 100%),
-            linear-gradient(135deg, #07121f 0%, #0a213a 58%, #06101d 100%);
-          padding: 1.85rem 0 1.25rem;
-          border-top: 0;
-        }
-
-        .footer-glow {
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          background:
-            radial-gradient(90% 42px at 50% 0%, rgba(56, 189, 248, 0.12), rgba(56, 189, 248, 0) 74%),
-            linear-gradient(90deg, rgba(56, 189, 248, 0) 0%, rgba(56, 189, 248, 0.1) 50%, rgba(56, 189, 248, 0) 100%),
-            repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 84px);
-          opacity: 0.72;
+          color: #ffffff;
+          background: #092A60;
+          padding: 1.6rem 0 1.2rem;
+          border-top: 1px solid rgba(77, 196, 211, 0.2);
         }
 
         .footer-container {
@@ -64,18 +49,18 @@ export default function Footer() {
           display: grid;
           grid-template-columns: minmax(0, 1fr) auto;
           gap: clamp(1rem, 3vw, 2.6rem);
-          align-items: end;
-          min-height: 92px;
+          align-items: center;
+          min-height: 70px;
         }
 
         .footer-copy-block {
           display: grid;
-          gap: 0.32rem;
+          gap: 0.25rem;
         }
 
         .footer-kicker {
-          color: rgba(186, 230, 253, 0.9);
-          font-family: var(--font-body);
+          color: #4DC4D3;
+          font-family: var(--font-heading);
           font-size: 0.68rem;
           font-weight: 800;
           letter-spacing: 1.6px;
@@ -85,10 +70,10 @@ export default function Footer() {
         .footer-copy {
           max-width: 58ch;
           margin: 0;
-          color: rgba(226, 232, 240, 0.88);
+          color: rgba(255, 255, 255, 0.88);
           font-family: var(--font-body);
           font-size: 0.78rem;
-          font-weight: 560;
+          font-weight: 500;
           line-height: 1.55;
         }
 
@@ -97,16 +82,16 @@ export default function Footer() {
           align-items: center;
           justify-content: flex-end;
           gap: clamp(0.82rem, 1.5vw, 1.1rem);
-          padding: 0.78rem 0 0.78rem clamp(1rem, 2vw, 1.55rem);
-          border-left: 1px solid rgba(186, 230, 253, 0.18);
+          padding: 0.4rem 0 0.4rem clamp(1rem, 2vw, 1.55rem);
+          border-left: 1px solid rgba(77, 196, 211, 0.2);
         }
 
         .footer-logo {
           display: block;
           width: auto;
           object-fit: contain;
-          opacity: 0.82;
-          transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+          opacity: 0.9;
+          transition: opacity 0.2s ease, transform 0.2s ease;
         }
 
         .footer-logo:hover {
@@ -115,24 +100,21 @@ export default function Footer() {
         }
 
         .footer-logo-ciip {
-          height: 42px;
-          filter: drop-shadow(0 8px 18px rgba(56, 189, 248, 0.12));
+          height: 38px;
         }
 
         .footer-logo-geomina {
-          height: 28px;
-          margin-top: 2px;
-          filter: drop-shadow(0 8px 18px rgba(56, 189, 248, 0.1));
+          height: 26px;
         }
 
         .footer-logo-biomedic {
-          height: 38px;
+          height: 34px;
         }
 
         .footer-logo-sep {
           width: 1px;
-          height: 28px;
-          background: linear-gradient(180deg, transparent, rgba(186, 230, 253, 0.25), transparent);
+          height: 24px;
+          background: rgba(77, 196, 211, 0.25);
         }
 
         @media (max-width: 768px) {

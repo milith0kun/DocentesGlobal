@@ -74,7 +74,7 @@ export default function Step06Protocolo({ formData, setFormData, onNext, onBack,
 
       <div className="wz-nav">
         <button onClick={onBack} className="wz-btn-ghost">Atrás</button>
-        <button onClick={onNext} disabled={!formData.aceptaProtocolo} className="wz-btn-main">Aceptar Protocolo</button>
+        <button onClick={onNext} disabled={!formData.aceptaProtocolo} className="wz-btn-main">Siguiente</button>
       </div>
     </div>
   );

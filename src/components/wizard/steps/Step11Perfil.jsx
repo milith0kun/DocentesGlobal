@@ -59,7 +59,7 @@ export default function Step11Perfil({ formData, setFormData, onNext, onBack, is
       <div className="wz-field">
         <span className="wz-label">
           Comentarios adicionales{' '}
-          <span style={{ color: '#94a3b8', fontWeight: 500 }}>(opcional)</span>
+          <span style={{ color: 'rgba(9, 42, 96, 0.5)', fontWeight: 500 }}>(opcional)</span>
         </span>
         <textarea
           placeholder="¿Alguna observación, recomendación o información adicional?"

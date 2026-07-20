@@ -15,21 +15,21 @@ export default function Step03Metodologia({
   const principles = [
     {
       n: '01',
-      t: 'Enfoque 100% Práctico y Aplicado',
-      d: 'Creemos firmemente en el poder de aprender haciendo. Por ello, transformamos la teoría en experiencia directa: cada nuevo concepto cobra vida al resolver casos reales de la industria en vivo. El software es nuestro gran escenario para que los estudiantes comprueben la aplicación inmediata de su conocimiento.',
+      t: 'Práctica en Vivo',
+      d: 'La teoría cobra vida en la acción. Prioriza la resolución de casos reales del mercado usando el software de la sesión para asegurar un aprendizaje aplicable y de alta calidad.',
       img: '/assets/pilar-01.png',
     },
     {
       n: '02',
-      t: 'Inmersión Total en las Herramientas',
-      d: 'Evolucionamos la educación dejando atrás la exposición tradicional. Les invitamos a sustituir las extensas presentaciones por una inmersión directa en el entorno de trabajo digital. Queremos que sus sesiones sean espacios dinámicos y de acción pura, donde el estudiante alcance el dominio técnico interactuando con la herramienta desde el primer minuto.',
-      img: '/assets/pilar-02.png',
+      t: 'Metodológico Activo',
+      d: 'Menos teoría pasiva y más práctica real. Diseña clases dinámicas donde el estudiante domine las herramientas y programas interactuando directamente con ellos desde el primer minuto.',
+      img: '/assets/pilar-03.png',
     },
     {
       n: '03',
-      t: 'Liderazgo y Fluidez del Aprendizaje',
-      d: 'Usted es el guía que marca el ritmo del éxito grupal. Confiamos en su liderazgo para mantener un avance constante y motivador, gestionando con agilidad las consultas o incidencias técnicas individuales. De esta manera, garantizamos que la energía de la clase fluya sin interrupciones y todo el equipo alcance su meta de aprendizaje.',
-      img: '/assets/pilar-03.png',
+      t: 'Continuidad y Prevención Técnica',
+      d: 'Prevén inconvenientes técnicos verificando tus accesos, materiales y software antes de iniciar. Resuelve dudas técnicas de forma ágil para que la clase fluya con calidad y sin interrupciones.',
+      img: '/assets/pilar-02.png',
     },
   ];
 
@@ -71,7 +71,7 @@ export default function Step03Metodologia({
                       {p.t}
                     </h4>
                   </div>
-                  <div className="wz-principle-arrow" style={{ color: isOpen ? 'var(--bc)' : '#94a3b8' }}>
+                  <div className="wz-principle-arrow" style={{ color: isOpen ? 'var(--brand-blue)' : 'rgba(9, 42, 96, 0.4)' }}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -108,13 +108,13 @@ export default function Step03Metodologia({
           style={{
             marginTop: '1.5rem',
             padding: '1rem 1.25rem',
-            background: 'rgba(14,165,233,0.08)',
+            background: 'rgba(20, 98, 135, 0.08)',
             borderRadius: '12px',
-            border: '1px solid rgba(14,165,233,0.15)',
+            border: '1px solid rgba(20, 98, 135, 0.18)',
           }}
         >
-          <p style={{ margin: 0, fontSize: '0.9rem', color: '#334155', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '500' }}>
-            <span style={{ color: 'var(--bc)', fontWeight: 'bold', fontSize: '1.2rem' }}>ℹ</span> Por favor,
+          <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--brand-navy)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '600' }}>
+            <span style={{ color: 'var(--brand-blue)', fontWeight: 'bold', fontSize: '1.1rem' }}>ℹ</span> Por favor,
             visualiza los 3 pilares para poder aceptar la metodología.
           </p>
         </div>
@@ -130,7 +130,7 @@ export default function Step03Metodologia({
           disabled={!allPrinciplesViewed}
           className="wz-btn-main"
         >
-          Aceptar Metodología
+          Siguiente
         </button>
       </div>
     </div>

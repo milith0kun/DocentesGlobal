@@ -92,8 +92,9 @@ export default function Hero({ onStartWizard }) {
           inset: 0;
           pointer-events: none;
           background:
-            radial-gradient(80% 60% at 18% 8%, rgba(56, 189, 248, 0.08) 0%, rgba(56, 189, 248, 0) 58%),
-            radial-gradient(54% 44% at 88% 82%, rgba(14, 165, 233, 0.06) 0%, rgba(14, 165, 233, 0) 72%);
+            radial-gradient(80% 60% at 18% 8%, rgba(77, 196, 211, 0.12) 0%, transparent 58%),
+            radial-gradient(54% 44% at 88% 82%, rgba(20, 98, 135, 0.06) 0%, transparent 72%),
+            #f9fafb;
           overflow: hidden;
         }
 
@@ -108,16 +109,16 @@ export default function Hero({ onStartWizard }) {
 
         .hero-grid-pattern {
           background-image: 
-            linear-gradient(to right, rgba(14, 165, 233, 0.08) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(14, 165, 233, 0.08) 1px, transparent 1px);
+            linear-gradient(to right, rgba(9, 42, 96, 0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(9, 42, 96, 0.05) 1px, transparent 1px);
           mask-image: radial-gradient(ellipse at 50% 50%, black 50%, transparent 80%);
           -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 50%, transparent 80%);
         }
 
         .hero-grid-interactive {
           background-image: 
-            linear-gradient(to right, rgba(14, 165, 233, 0.45) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(14, 165, 233, 0.45) 1px, transparent 1px);
+            linear-gradient(to right, rgba(77, 196, 211, 0.35) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(77, 196, 211, 0.35) 1px, transparent 1px);
           mask-image: radial-gradient(175px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), black, transparent);
           -webkit-mask-image: radial-gradient(175px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), black, transparent);
           opacity: 0;
@@ -155,47 +156,52 @@ export default function Hero({ onStartWizard }) {
           display: inline-flex;
           align-items: center;
           gap: 0;
-          padding: 0.38rem 0.72rem;
-          border-radius: 999px;
-          border: 1px solid rgba(15, 47, 82, 0.14);
-          background: rgba(255, 255, 255, 0.72);
-          color: #0f2f52;
-          font-size: 0.66rem;
-          font-weight: 700;
-          letter-spacing: 1.3px;
+          padding: 0.38rem 0.85rem;
+          border-radius: 9999px;
+          border: 1.5px solid rgba(9, 42, 96, 0.15);
+          background: #eef2f7;
+          color: #092A60;
+          font-family: var(--font-heading);
+          font-size: 0.72rem;
+          font-weight: 800;
+          letter-spacing: 1.5px;
           margin-bottom: 0.88rem;
         }
 
         .clean-hero .hero-kicker {
           margin: -0.38rem 0 0.42rem;
-          color: #0f172a;
+          color: #146287;
           font-family: var(--font-heading);
           font-size: clamp(1.58rem, 2.3vw, 2.25rem);
           line-height: 1.12;
-          font-weight: 760;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
         }
 
         .clean-hero .hero-title {
           margin: 0 0 0.95rem;
-          color: #0f172a;
+          color: #092A60;
           font-family: var(--font-heading);
           font-size: clamp(2.45rem, 3.2vw, 3.25rem);
-          line-height: 1.04;
-          letter-spacing: 0;
-          font-weight: 760;
+          line-height: 1.06;
+          letter-spacing: -0.5px;
+          font-weight: 800;
         }
 
         .clean-hero .hero-title-accent {
-          color: #124a74;
+          color: #146287;
+          font-weight: 800;
         }
 
         .clean-hero .hero-subtitle {
-          margin: 0 0 1.2rem;
+          margin: 0 0 1.5rem;
           max-width: 560px;
-          color: #475569;
-          font-size: 1rem;
+          color: rgba(9, 42, 96, 0.75);
+          font-family: var(--font-body);
+          font-size: 1.05rem;
           line-height: 1.6;
-          font-weight: 520;
+          font-weight: 500;
         }
 
         .clean-hero .hero-badge,
@@ -313,34 +319,34 @@ export default function Hero({ onStartWizard }) {
         }
 
         .clean-hero .hero-cta {
-          min-height: 48px;
+          min-height: 52px;
           min-width: clamp(210px, 23vw, 250px);
-          border: 1px solid #0f3356;
-          border-radius: 12px;
-          background: #0f2f52;
-          color: #f7fbff;
-          font-family: var(--font-body);
-          font-size: 0.92rem;
-          font-weight: 700;
-          letter-spacing: 0.1px;
+          border: none;
+          border-radius: 9999px;
+          background: #4DC4D3;
+          color: #092A60;
+          font-family: var(--font-heading);
+          font-size: 0.85rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
           cursor: pointer;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          padding: 0.58rem 1.05rem;
-          box-shadow: 0 2px 8px rgba(15, 47, 82, 0.16);
-          transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+          padding: 0.75rem 2.2rem;
+          box-shadow: 0 4px 18px rgba(77, 196, 211, 0.4);
+          transition: all 0.2s ease;
         }
 
         .clean-hero .hero-cta:hover {
-          transform: translateY(-1px);
-          background: #144068;
-          border-color: #16466f;
+          transform: translateY(-2px);
+          background: #5ed2e1;
+          box-shadow: 0 6px 24px rgba(77, 196, 211, 0.55);
         }
 
         .clean-hero .hero-cta:active {
           transform: translateY(0);
-          background: #0d2844;
         }
 
         .clean-hero .hero-cta:focus-visible {

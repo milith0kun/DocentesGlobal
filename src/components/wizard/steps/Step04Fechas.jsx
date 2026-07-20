@@ -7,11 +7,11 @@ export default function Step04Fechas({ formData, setFormData, onNext, onBack }) 
 
   return (
     <div className="wz-fade">
-      <h2 className="wz-title">Límites de Entrega Innegociables</h2>
+      <h2 className="wz-title">Compromiso de Entrega y Calidad Académica</h2>
       <p className="wz-sub">
-        Estos horarios representan el <strong>límite estricto y máximo</strong> para la entrega de materiales.
-        Debes subir tus recursos a la Carpeta Drive asignada por tu directora académica. No esperes
-        recordatorios; el incumplimiento de estos plazos afecta directamente la ejecución de la clase.
+        Como integrante de nuestro selecto equipo docente CGB, tu liderazgo y profesionalismo son el motor
+        de nuestro estándar de excelencia. Para asegurar que el equipo de soporte valide tus recursos y nuestros
+        estudiantes accedan a sus materiales a tiempo, asumimos juntos el compromiso de cumplir con los siguientes plazos:
       </p>
 
       <div className="wz-agenda">
@@ -40,7 +40,7 @@ export default function Step04Fechas({ formData, setFormData, onNext, onBack }) 
 
       <div className="wz-nav">
         <button onClick={onBack} className="wz-btn-ghost">Atrás</button>
-        <button onClick={onNext} disabled={!allAccepted} className="wz-btn-main">Aceptar Plazos</button>
+        <button onClick={onNext} disabled={!allAccepted} className="wz-btn-main">Siguiente</button>
       </div>
     </div>
   );

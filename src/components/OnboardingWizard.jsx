@@ -98,7 +98,6 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     if (step === 4) { setShowPenaltyAlert(true); return; }
     if (step === 6 && !formData.aceptaProtocolo) return;
     if (step === 7 && !formData.aceptaAsistencia) return;
-    if (step === 8 && !formData.aceptaTop) return;
     if (step === 9 && (!telefonoValido || !formData.metodoPago || !formData.numeroCuenta.trim() || !formData.direccion.trim())) return;
     if (step === 9 && formData.metodoPago === 'otro' && !formData.metodoPagoOtro.trim()) return;
     if (step === 10 && (!formData.cvFile || !formData.fotoFile)) return;
@@ -408,23 +407,26 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         </div>
       )}
 
-      {/* Modal Penalidad (Step 4) */}
+      {/* Modal Reconocimiento y Plazos (Step 4 → 6) */}
       {showPenaltyAlert && (
         <div className="wz-modal-overlay fade-in">
           <div className="wz-modal-content condition-modal">
-            <span className="wz-modal-tag">Importante</span>
-            <h3 className="wz-modal-title">Penalidad por Incumplimiento</h3>
+            <span className="wz-modal-tag" style={{ background: 'rgba(77, 196, 211, 0.18)', color: 'var(--brand-navy)' }}>
+              Reconocimiento Especial
+            </span>
+            <h3 className="wz-modal-title" style={{ marginTop: '0.6rem' }}>
+              Suma Puntos por Puntualidad y Agiliza tus Procesos 🏆✨
+            </h3>
             <p className="wz-modal-desc">
-              Si la Dirección Académica se ve en la necesidad de <strong>solicitarte el material</strong> por
-              falta de entrega a tiempo en los plazos que acabas de aceptar, se contabilizará
-              automáticamente como una <strong>penalidad de desempeño</strong> en tu perfil. Confiamos en su
-              compromiso.
+              La entrega proactiva de tus materiales (sin recordatorios) suma <strong>puntos de excelencia</strong> en tu <strong>Evaluación Docente</strong> y, además, es el requisito indispensable para <strong>autorizar tu pago</strong> ante el área de Finanzas. 💳💼
+              <br /><br />
+              <strong style={{ color: 'var(--brand-navy)' }}>¡Confiamos en tu compromiso!</strong>
             </p>
             <button
               onClick={() => { setShowPenaltyAlert(false); setShowDriveAlert(true); }}
               className="wz-btn-firm"
             >
-              Comprendo y Acepto la Condición
+              Acepto el Compromiso de Excelencia
             </button>
           </div>
         </div>
@@ -433,8 +435,8 @@ export default function OnboardingWizard({ isOpen, onClose }) {
       {/* Modal Drive (Step 4 → 6) */}
       {showDriveAlert && (
         <div className="wz-modal-overlay fade-in">
-          <div className="wz-modal-content condition-modal" style={{ borderTop: '4px solid #0ea5e9' }}>
-            <span className="wz-modal-tag" style={{ background: 'rgba(14, 165, 233, 0.1)', color: '#0ea5e9', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+          <div className="wz-modal-content condition-modal" style={{ borderTop: '4px solid var(--brand-cyan)' }}>
+            <span className="wz-modal-tag" style={{ background: 'rgba(77, 196, 211, 0.15)', color: 'var(--brand-navy)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
               </svg>
@@ -445,14 +447,13 @@ export default function OnboardingWizard({ isOpen, onClose }) {
               No es necesario que crees ninguna carpeta por tu cuenta. LA DIRECCIÓN ACADÉMICA encargada le
               hará llegar los enlaces correspondientes a su correo o WhatsApp.
               <br /><br />
-              <strong style={{ color: '#0ea5e9' }}>No olvide:</strong>{' '}
+              <strong style={{ color: 'var(--brand-navy)' }}>No olvide:</strong>{' '}
               <u>Esta carpeta no puede ser compartida con otros estudiantes.</u>
             </p>
-            <div style={{ display: 'flex', gap: '0.8rem' }}>
+            <div style={{ display: 'flex', width: '100%' }}>
               <button
                 onClick={() => { setShowDriveAlert(false); setStep(6); }}
                 className="wz-btn-firm"
-                style={{ flex: 1, background: 'var(--bc)', boxShadow: '0 8px 24px -8px rgba(14,165,233,0.5)' }}
               >
                 Entendido, Continuar
               </button>
