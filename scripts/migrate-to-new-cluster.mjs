@@ -1,8 +1,12 @@
+import nextEnv from '@next/env';
 import { MongoClient } from 'mongodb';
 
-const SOURCE_URI = 'mongodb://174449_db_user:1997281qA@ac-joqursp-shard-00-00.feeeugl.mongodb.net:27017,ac-joqursp-shard-00-01.feeeugl.mongodb.net:27017,ac-joqursp-shard-00-02.feeeugl.mongodb.net:27017/?ssl=true&replicaSet=atlas-p47xno-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0';
-const TARGET_URI = 'mongodb://grupocgblatam_db_user:jampier1997281qA@ac-hch6tnu-shard-00-00.losigdp.mongodb.net:27017,ac-hch6tnu-shard-00-01.losigdp.mongodb.net:27017,ac-hch6tnu-shard-00-02.losigdp.mongodb.net:27017/?ssl=true&replicaSet=atlas-9ttg3j-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0';
-const DB_NAME = 'contrata_docentes';
+const { loadEnvConfig } = nextEnv;
+loadEnvConfig(process.cwd());
+
+const SOURCE_URI = process.env.SOURCE_MONGODB_URI;
+const TARGET_URI = process.env.TARGET_MONGODB_URI || process.env.MONGODB_URI;
+const DB_NAME = process.env.MONGODB_DB_NAME || 'contrata_docentes';
 
 async function migrate() {
   console.log('Connecting to SOURCE MongoDB...');

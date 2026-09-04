@@ -1,8 +1,12 @@
+import nextEnv from '@next/env';
 import { MongoClient, ObjectId } from 'mongodb';
 import { PAYMENT_REGIONS, findMethodConfig, formatPaymentSummary } from '../src/components/wizard/config/payment-config.js';
 
-const URI = 'mongodb://grupocgblatam_db_user:jampier1997281qA@ac-hch6tnu-shard-00-00.losigdp.mongodb.net:27017,ac-hch6tnu-shard-00-01.losigdp.mongodb.net:27017,ac-hch6tnu-shard-00-02.losigdp.mongodb.net:27017/?ssl=true&replicaSet=atlas-9ttg3j-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0';
-const DB_NAME = 'contrata_docentes';
+const { loadEnvConfig } = nextEnv;
+loadEnvConfig(process.cwd());
+
+const URI = process.env.MONGODB_URI;
+const DB_NAME = process.env.MONGODB_DB_NAME || 'contrata_docentes';
 
 async function runTests() {
   console.log('--- 1. Probando configuración de pagos y helpers ---');
