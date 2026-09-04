@@ -1,6 +1,6 @@
 'use client';
 
-export default function Step08TopDocente({ formData, setFormData, onNext, onBack, onShowCertificate }) {
+export default function Step08TopDocente({ onNext, onBack, onShowCertificate }) {
   const kpis = [
     { id: '01', title: 'Opinión del Alumno', text: 'Alta calificación en las encuestas de satisfacción estudiantil (por estrellas del 1 al 5, 5 siendo la mejor puntuación).' },
     { id: '02', title: 'Puntualidad en Clases', text: 'Inicio y cierre de tus sesiones exactamente a la hora programada.' },

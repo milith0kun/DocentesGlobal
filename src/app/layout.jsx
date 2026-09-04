@@ -1,7 +1,7 @@
 import './globals.css';
 
 export const metadata = {
-  metadataBase: new URL('https://docentesglobal.vercel.app'),
+  metadataBase: new URL('https://manualdocente.cgbacademy.tech'),
   title: 'Manual Digital Docente 2026 | CGB Academy & Instituciones',
   description: 'Guía oficial de estándares metodológicos, de imagen y excelencia para los docentes de CGB Academy, CIIP Latam, Geomina y Biomedic 2026.',
   robots: {
@@ -23,13 +23,13 @@ export const metadata = {
     description: 'Guía oficial de estándares metodológicos, de imagen y calidad para los docentes de CGB Academy, CIIP Latam, Geomina y Biomedic.',
   },
   alternates: {
-    canonical: 'https://docentesglobal.vercel.app/',
+    canonical: 'https://manualdocente.cgbacademy.tech/',
   },
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -43,7 +43,7 @@ export default function RootLayout({ children }) {
               '@type': 'EducationalOrganization',
               name: 'CGB Academy',
               alternateName: ['CIIP LATAM', 'Geomina', 'Biomedic'],
-              url: 'https://docentesglobal.vercel.app/',
+              url: 'https://manualdocente.cgbacademy.tech/',
               description: 'Ecosistema digital de capacitación profesional global. Formación práctica en ingeniería, minería, gestión y salud.',
               areaServed: 'Latin America',
               contactPoint: {
@@ -56,7 +56,7 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {children}
       </body>
     </html>

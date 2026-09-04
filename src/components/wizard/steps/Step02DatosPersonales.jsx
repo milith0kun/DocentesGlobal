@@ -21,22 +21,6 @@ export default function Step02DatosPersonales({
   const correoValido = isValidEmail(formData.correo);
   const mostrarErrorCorreo = formData.correo.trim().length > 0 && !correoValido;
 
-  const handleFechaNacimientoChange = (e) => {
-    let val = e.target.value.replace(/\D/g, '');
-    if (val.length > 8) val = val.substring(0, 8);
-    let formatted = '';
-    if (val.length > 0) {
-      formatted = val.substring(0, 2);
-      if (val.length > 2) {
-        formatted += '/' + val.substring(2, 4);
-        if (val.length > 4) {
-          formatted += '/' + val.substring(4, 8);
-        }
-      }
-    }
-    setFormData((prev) => ({ ...prev, fechaNacimiento: formatted }));
-  };
-
   const openCalendar = () => {
     if (formData.fechaNacimiento) {
       const partes = formData.fechaNacimiento.split('/');

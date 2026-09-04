@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { isValidEmail } from '../utils/emailValidation.js';
 
 import { marcaConfig, stepWidths, parseJsonResponse, phoneCountries } from './wizard/config/wizard-config.js';
+import { formatPaymentSummary } from './wizard/config/payment-config.js';
 import WizardHeader from './wizard/WizardHeader.jsx';
 import WizardStepper from './wizard/WizardStepper.jsx';
 
@@ -45,6 +46,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     aceptaSabado: false, aceptaDomingo: false, aceptaLunes: false,
     aceptaProtocolo: false, aceptaAsistencia: false, aceptaTop: false,
     telefono: '', metodoPago: '', metodoPagoOtro: '', numeroCuenta: '', direccion: '',
+    paisPago: '', monedaPago: '', bancoNombre: '', titularCuenta: '', detallesPagoExtra: {},
     cvFile: null, fotoFile: null,
     profesion: '', softwares: '', cursoSonado: '', mejoraAdmin: '', comentarios: '',
   });
@@ -117,12 +119,16 @@ export default function OnboardingWizard({ isOpen, onClose }) {
     try {
       const formDataToSend = new FormData();
       Object.keys(formData).forEach((key) => {
-        if (key !== 'cvFile' && key !== 'fotoFile') {
-          formDataToSend.append(key, formData[key] || '');
+        if (key === 'cvFile' && formData.cvFile) {
+          formDataToSend.append('cv', formData.cvFile);
+        } else if (key === 'fotoFile' && formData.fotoFile) {
+          formDataToSend.append('foto', formData.fotoFile);
+        } else if (key === 'detallesPagoExtra') {
+          formDataToSend.append('detallesPagoExtra', JSON.stringify(formData.detallesPagoExtra || {}));
+        } else if (key !== 'cvFile' && key !== 'fotoFile') {
+          formDataToSend.append(key, formData[key] ?? '');
         }
       });
-      if (formData.cvFile) formDataToSend.append('cv', formData.cvFile);
-      if (formData.fotoFile) formDataToSend.append('foto', formData.fotoFile);
 
       const response = await fetch('/api/submit', {
         method: 'POST',
@@ -139,7 +145,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
         setGeneratedCode(resData.code);
         setSubmissionWarning(resData.warning || '');
         const cfg = marcaConfig[formData.marca];
-        const metodo = formData.metodoPago === 'otro' ? formData.metodoPagoOtro : formData.metodoPago?.toUpperCase();
+        const metodo = formatPaymentSummary(formData);
         const comentarios = formData.comentarios ? `\nComentarios: ${formData.comentarios}` : '';
         const msg = [
           '*FORMULARIO DOCENTE - CONFORMIDAD*', '',
@@ -187,6 +193,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
       aceptaMetodologia: false, aceptaSabado: false, aceptaDomingo: false, aceptaLunes: false,
       aceptaProtocolo: false, aceptaAsistencia: false, aceptaTop: false,
       telefono: '', metodoPago: '', metodoPagoOtro: '', numeroCuenta: '', direccion: '',
+      paisPago: '', monedaPago: '', bancoNombre: '', titularCuenta: '', detallesPagoExtra: {},
       cvFile: null, fotoFile: null,
       profesion: '', softwares: '', cursoSonado: '', mejoraAdmin: '', comentarios: '',
     });
@@ -356,7 +363,7 @@ export default function OnboardingWizard({ isOpen, onClose }) {
                     <div className="wz-sum-row"><span>Correo</span><strong>{formData.correo}</strong></div>
                     <div className="wz-sum-row"><span>Institución</span><strong style={{ color: brandColor }}>{marcaConfig[formData.marca]?.nombre}</strong></div>
                     <div className="wz-sum-row"><span>Teléfono</span><strong>{formData.telefono}</strong></div>
-                    <div className="wz-sum-row"><span>Método de Pago</span><strong>{formData.metodoPago === 'otro' ? formData.metodoPagoOtro : formData.metodoPago?.toUpperCase()}</strong></div>
+                    <div className="wz-sum-row"><span>Método de Pago</span><strong>{formatPaymentSummary(formData)}</strong></div>
                     <div className="wz-sum-row" style={{ borderBottom: 'none' }}><span>Compromisos</span><strong style={{ color: '#059669' }}>Todos Aceptados</strong></div>
                   </div>
                   <div className="wz-nav">

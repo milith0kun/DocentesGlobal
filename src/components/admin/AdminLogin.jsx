@@ -1,19 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const cgbLogo = '/assets/cgb-logo-clean.png';
-const ciipLogo = '/assets/ciip-white.png';
-const geominaLogo = '/assets/geomina-new.png';
-const biomedicLogo = '/assets/biomedic-logo-white.png';
+const ciipLogo = '/assets/logociip.png';
+const geominaLogo = '/assets/logogeomina.png';
+const biomedicLogo = '/assets/logobiomedic.png';
 
 export default function AdminLogin() {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [username, setUsername] = useState('cgbacademy');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -39,9 +44,17 @@ export default function AdminLogin() {
     }
   }
 
+  if (!mounted) {
+    return (
+      <div className="adm-login-shell" suppressHydrationWarning>
+        <div className="adm-login-card" style={{ minHeight: '360px', opacity: 0 }} suppressHydrationWarning />
+      </div>
+    );
+  }
+
   return (
-    <div className="adm-login-shell">
-      <div className="adm-login-card">
+    <div className="adm-login-shell" suppressHydrationWarning>
+      <div className="adm-login-card" suppressHydrationWarning>
         <div className="adm-login-header">
           <div className="adm-login-logo">
             <img src={cgbLogo} alt="CGB Academy" className="main-logo" />

@@ -53,7 +53,12 @@ export default function DocentesTable({
                       : '—'}
                   </td>
                   <td className="adm-rate-cell">{formatAmount(d.honorariosHora)}</td>
-                  <td>{d.metodoPago || '—'}</td>
+                  <td>
+                    <div className="adm-pay-tag">
+                      {d.monedaPago && <span className="adm-pay-tag-currency">{d.monedaPago}</span>}
+                      <span>{d.metodoPago || '—'}</span>
+                    </div>
+                  </td>
                   <td>{formatDate(d.createdAt || d.timestamp)}</td>
                   <td><ConformidadBadge ok={d.conformidadCompleta} /></td>
                 </tr>
@@ -71,7 +76,7 @@ export default function DocentesTable({
               onClick={() => onPageChange(page - 1)}
               disabled={page <= 1 || loading}
             >
-              ← Anterior
+              Anterior
             </button>
           )}
           <span className="adm-page-info">
@@ -84,7 +89,7 @@ export default function DocentesTable({
               onClick={() => onPageChange(page + 1)}
               disabled={page >= totalPages || loading}
             >
-              Siguiente →
+              Siguiente
             </button>
           )}
         </div>

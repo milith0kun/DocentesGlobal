@@ -26,7 +26,22 @@ function selectedMarcas(value) {
 }
 
 function paymentMethod(data) {
-  return data.metodoPago === 'otro' ? data.metodoPagoOtro : data.metodoPago;
+  if (data.metodoPago === 'otro') {
+    return data.metodoPagoOtro || 'Otro';
+  }
+  const bankOrMethod = data.bancoNombre || data.metodoPago || '';
+  const currency = data.monedaPago ? ` (${data.monedaPago})` : '';
+  return `${bankOrMethod}${currency}`.trim() || data.metodoPago;
+}
+
+function parseDetallesExtra(extra) {
+  if (!extra) return {};
+  if (typeof extra === 'object') return extra;
+  try {
+    return JSON.parse(extra);
+  } catch {
+    return {};
+  }
 }
 
 function buildSearchText(parts) {
@@ -60,6 +75,11 @@ function buildDocenteUpdate(data, links = {}, source) {
     'datosPago.metodoPagoDetalle': cleanText(paymentMethod(data)),
     'datosPago.metodoPagoOtro': cleanText(data.metodoPagoOtro),
     'datosPago.cuentaAbono': cleanText(data.numeroCuenta),
+    'datosPago.pais': cleanText(data.paisPago),
+    'datosPago.moneda': cleanText(data.monedaPago || 'USD'),
+    'datosPago.banco': cleanText(data.bancoNombre),
+    'datosPago.titularCuenta': cleanText(data.titularCuenta),
+    'datosPago.detallesExtra': parseDetallesExtra(data.detallesPagoExtra),
     documentos: {
       cvUrl: cleanText(links.cvUrl || data.cv),
       fotoUrl: cleanText(links.fotoUrl || data.foto),

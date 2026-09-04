@@ -30,10 +30,10 @@ export default function AdminControls({
 
       <div className="adm-controls-right">
         <a className="adm-drive-btn" href="/api/admin/google-sheet" target="_blank" rel="noopener noreferrer">
-          Abrir hoja en Drive <span aria-hidden="true">↗</span>
+          Abrir hoja en Drive
         </a>
         <button className="adm-export-btn" onClick={onExportCsv} disabled={!canExport}>
-          Exportar CSV <span aria-hidden="true">↓</span>
+          Exportar CSV
         </button>
       </div>
     </div>

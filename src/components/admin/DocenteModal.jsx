@@ -38,7 +38,7 @@ function DocLink({ href, label }) {
   return (
     <a href={href} target="_blank" rel="noopener noreferrer" className="adm-doc-link">
       <span>{label}</span>
-      <small>Abrir ↗</small>
+      <small>Abrir</small>
     </a>
   );
 }
@@ -49,11 +49,62 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
   const [saveError, setSaveError] = useState('');
   const [saved, setSaved] = useState(false);
 
+  // Estado de edición de datos de pago
+  const [isEditingPayment, setIsEditingPayment] = useState(false);
+  const [paymentForm, setPaymentForm] = useState({
+    moneda: docente.monedaPago || 'USD',
+    metodoPago: docente.metodoPago || '',
+    banco: docente.bancoNombre || '',
+    cuentaAbono: docente.numeroCuenta || '',
+    titularCuenta: docente.titularCuenta || '',
+    pais: docente.paisPago || '',
+  });
+  const [savingPayment, setSavingPayment] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
+  const [paymentSaved, setPaymentSaved] = useState(false);
+
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
+
+  async function savePayment(event) {
+    event.preventDefault();
+    setSavingPayment(true);
+    setPaymentError('');
+    setPaymentSaved(false);
+
+    try {
+      const response = await fetch('/api/admin/docentes', {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: docente.id,
+          action: 'update_payment',
+          paymentData: {
+            moneda: paymentForm.moneda,
+            metodoPago: paymentForm.metodoPago,
+            metodoPagoDetalle: paymentForm.metodoPago,
+            banco: paymentForm.banco,
+            cuentaAbono: paymentForm.cuentaAbono,
+            titularCuenta: paymentForm.titularCuenta,
+            pais: paymentForm.pais,
+          },
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'No se pudo actualizar los datos de pago.');
+      onUpdated(data.docente);
+      setPaymentSaved(true);
+      setIsEditingPayment(false);
+    } catch (error) {
+      setPaymentError(error.message);
+    } finally {
+      setSavingPayment(false);
+    }
+  }
 
   async function saveHonorarios(event) {
     event.preventDefault();
@@ -88,7 +139,7 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
             <h2 className="adm-modal-name">{docente.nombre || '—'}</h2>
             {docente.codigo && <p className="adm-modal-code">{docente.codigo}</p>}
           </div>
-          <button className="adm-modal-close" onClick={onClose} aria-label="Cerrar">✕</button>
+          <button className="adm-modal-close" onClick={onClose} aria-label="Cerrar">Cerrar</button>
         </div>
 
         <div className="adm-modal-body">
@@ -106,11 +157,106 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
           </section>
 
           <section>
-            <h3 className="adm-modal-section-title">Datos de Pago</h3>
-            <div className="adm-modal-grid">
-              <Field label="Método de Pago" value={docente.metodoPago} />
-              <Field label="N.° Cuenta / Celular" value={docente.numeroCuenta} />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+              <h3 className="adm-modal-section-title" style={{ margin: 0 }}>Datos de Pago & Honorarios</h3>
+              {!isEditingPayment && (
+                <button
+                  type="button"
+                  className="adm-pay-edit-btn"
+                  onClick={() => setIsEditingPayment(true)}
+                >
+                  Modificar información de pago
+                </button>
+              )}
             </div>
+
+            {/* Formulario de Edición de Datos de Pago */}
+            {isEditingPayment ? (
+              <form onSubmit={savePayment} style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #cbd5e1', marginBottom: '1rem' }}>
+                <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.9rem', color: '#0f172a' }}>Modificar Información Bancaria / Abono</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.65rem', marginBottom: '0.75rem' }}>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>Moneda</label>
+                    <input
+                      type="text"
+                      placeholder="USD, PEN, BOB, COP..."
+                      value={paymentForm.moneda}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, moneda: e.target.value.toUpperCase() })}
+                      style={{ width: '100%', padding: '0.4rem 0.6rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>Método / Entidad</label>
+                    <input
+                      type="text"
+                      placeholder="BCP, Zelle, PayPal, BNB..."
+                      value={paymentForm.metodoPago}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, metodoPago: e.target.value })}
+                      style={{ width: '100%', padding: '0.4rem 0.6rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>N.° Cuenta / Celular / Email</label>
+                    <input
+                      type="text"
+                      placeholder="Número o identificador"
+                      value={paymentForm.cuentaAbono}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, cuentaAbono: e.target.value })}
+                      style={{ width: '100%', padding: '0.4rem 0.6rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>Titular de la cuenta</label>
+                    <input
+                      type="text"
+                      placeholder="Nombre del titular"
+                      value={paymentForm.titularCuenta}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, titularCuenta: e.target.value })}
+                      style={{ width: '100%', padding: '0.4rem 0.6rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                    />
+                  </div>
+                </div>
+
+                {paymentError && <p style={{ color: '#dc2626', fontSize: '0.8rem', margin: '0 0 0.5rem 0' }}>{paymentError}</p>}
+
+                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingPayment(false)}
+                    style={{ padding: '0.4rem 0.8rem', borderRadius: '6px', border: '1px solid #94a3b8', background: '#fff', cursor: 'pointer', fontSize: '0.8rem' }}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={savingPayment}
+                    style={{ padding: '0.4rem 0.8rem', borderRadius: '6px', border: 'none', background: '#0284c7', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '0.8rem' }}
+                  >
+                    {savingPayment ? 'Guardando…' : 'Guardar Datos'}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="adm-modal-grid">
+                <Field label="Moneda de Abono" value={docente.monedaPago || 'USD'} />
+                <Field label="Método / Entidad" value={docente.metodoPago} />
+                <Field label="N.° Cuenta / Identificador" value={docente.numeroCuenta} />
+                <Field label="Titular de la Cuenta" value={docente.titularCuenta || '—'} />
+                <Field label="País / Región" value={docente.paisPago ? docente.paisPago.toUpperCase() : '—'} />
+                {docente.detallesPagoExtra?.swift && (
+                  <Field label="Código SWIFT / BIC" value={docente.detallesPagoExtra.swift} />
+                )}
+                {docente.detallesPagoExtra?.cci && (
+                  <Field label="CCI Interbancario" value={docente.detallesPagoExtra.cci} />
+                )}
+              </div>
+            )}
+
+            {paymentSaved && <p className="adm-rate-message adm-rate-success" style={{ margin: '0.5rem 0' }}>Datos de pago actualizados correctamente.</p>}
+
             <form className="adm-rate-editor" onSubmit={saveHonorarios}>
               <div>
                 <label className="adm-rate-label" htmlFor="honorarios-hora">Monto por hora</label>
