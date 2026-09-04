@@ -47,32 +47,52 @@ export default function AdminLogin() {
   if (!mounted) {
     return (
       <div className="adm-login-shell" suppressHydrationWarning>
-        <div className="adm-login-card" style={{ minHeight: '360px', opacity: 0 }} suppressHydrationWarning />
+        <div className="adm-login-card" style={{ minHeight: '440px', opacity: 0 }} suppressHydrationWarning />
       </div>
     );
   }
 
   return (
     <div className="adm-login-shell" suppressHydrationWarning>
+      <div className="adm-login-bg" aria-hidden="true">
+        <div className="adm-grid-pattern" />
+      </div>
+
       <div className="adm-login-card" suppressHydrationWarning>
         <div className="adm-login-header">
-          <div className="adm-login-logo">
-            <img src={cgbLogo} alt="CGB Academy" className="main-logo" />
-            <div className="adm-login-brand-logos">
-              <img src={ciipLogo} alt="CIIP" style={{ height: '22px' }} />
-              <div className="adm-login-sep" />
-              <img src={geominaLogo} alt="Geomina" style={{ height: '15px' }} />
-              <div className="adm-login-sep" />
-              <img src={biomedicLogo} alt="Biomedic" style={{ height: '18px' }} />
+          <span className="adm-login-badge">ACCESO ADMINISTRATIVO 2026</span>
+
+          <div className="adm-login-cgb-wrap">
+            <img src={cgbLogo} alt="CGB Academy" className="adm-login-cgb-img" />
+          </div>
+
+          <div className="adm-login-ecosystem">
+            <span className="adm-login-eco-line" />
+            <span className="adm-login-eco-label">ECOSISTEMA ACADÉMICO</span>
+            <span className="adm-login-eco-line" />
+          </div>
+
+          <div className="adm-login-brand-grid">
+            <div className="adm-login-brand-box">
+              <img src={ciipLogo} alt="CIIP Latam" />
+            </div>
+            <div className="adm-login-brand-box">
+              <img src={geominaLogo} alt="Geomina" />
+            </div>
+            <div className="adm-login-brand-box">
+              <img src={biomedicLogo} alt="Biomedic" />
             </div>
           </div>
-          <h1 className="adm-login-title">Panel Administrativo</h1>
-          <p className="adm-login-sub">CGB Academy · Gestión de Docentes</p>
+
+          <h1 className="adm-login-title">
+            Panel de <span>Gestión Docente</span>
+          </h1>
+          <p className="adm-login-sub">Directorio centralizado de docentes, conformidades y contratos</p>
         </div>
 
         <form className="adm-login-form" onSubmit={handleSubmit} noValidate>
           <div className="adm-field">
-            <label htmlFor="adm-username" className="adm-label">Usuario</label>
+            <label htmlFor="adm-username" className="adm-label">Usuario administrativo</label>
             <input
               id="adm-username"
               type="text"
@@ -82,11 +102,12 @@ export default function AdminLogin() {
               autoComplete="username"
               required
               disabled={loading}
+              placeholder="cgbacademy"
             />
           </div>
 
           <div className="adm-field">
-            <label htmlFor="adm-password" className="adm-label">Contraseña</label>
+            <label htmlFor="adm-password" className="adm-label">Contraseña de acceso</label>
             <input
               id="adm-password"
               type="password"
@@ -103,7 +124,7 @@ export default function AdminLogin() {
           {error && <p className="adm-error">{error}</p>}
 
           <button type="submit" className="adm-login-btn" disabled={loading || !password}>
-            {loading ? 'Ingresando…' : 'Ingresar'}
+            {loading ? 'Verificando credenciales…' : 'Ingresar al Directorio'}
           </button>
         </form>
       </div>

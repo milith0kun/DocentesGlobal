@@ -24,9 +24,11 @@ export default function AdminDashboard() {
   const [error, setError] = useState('');
   const [selected, setSelected] = useState(null);
 
-  // Debounce search 400ms
+  // Debounce search 400ms sin re-disparar en el montaje inicial
   useEffect(() => {
-    const t = setTimeout(() => { setSearch(searchInput); setPage(1); }, 400);
+    const t = setTimeout(() => {
+      setSearch((prev) => (prev !== searchInput ? searchInput : prev));
+    }, 400);
     return () => clearTimeout(t);
   }, [searchInput]);
 
@@ -80,16 +82,26 @@ export default function AdminDashboard() {
 
   return (
     <div className="adm-shell">
+      <div className="adm-shell-bg" aria-hidden="true">
+        <div className="adm-grid-pattern" />
+      </div>
       <AdminTopbar onLogout={handleLogout} />
 
       <main className="adm-main">
         <section className="adm-dashboard-heading">
           <div>
-            <p className="adm-eyebrow">Directorio académico</p>
-            <h1>Docentes</h1>
-            <p>Consulta registros, conformidades y documentación desde un solo lugar.</p>
+            <span className="adm-eyebrow">DIRECTORIO ACADÉMICO OFICIAL</span>
+            <h1 className="adm-dashboard-title">
+              Gestión de <span>Docentes</span>
+            </h1>
+            <p className="adm-dashboard-desc">
+              Control centralizado de registros, conformidades metodológicas y cuentas de abono CGB.
+            </p>
           </div>
-          <span className="adm-sync-note">Datos sincronizados con el formulario</span>
+          <div className="adm-sync-badge">
+            <span className="adm-sync-dot" />
+            <span>Datos sincronizados</span>
+          </div>
         </section>
 
         <AdminStats stats={stats} />

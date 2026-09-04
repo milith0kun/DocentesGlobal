@@ -1,18 +1,21 @@
 export default function AdminStats({ stats }) {
   const items = [
-    ['Total docentes', stats.total],
-    ['CIIP Latam', stats.ciip],
-    ['Geomina', stats.geomina],
-    ['Biomedic', stats.biomedic],
-    ['Contrato aceptado', stats.conformidad],
+    { key: 'total', label: 'Total Docentes', value: stats.total, badge: 'General' },
+    { key: 'ciip', label: 'CIIP Latam', value: stats.ciip, badge: 'Institución' },
+    { key: 'geomina', label: 'Geomina', value: stats.geomina, badge: 'Institución' },
+    { key: 'biomedic', label: 'Biomedic', value: stats.biomedic, badge: 'Institución' },
+    { key: 'conformidad', label: 'Contrato Aceptado', value: stats.conformidad, badge: 'Conformidad' },
   ];
 
   return (
-    <div className="adm-stats-row">
-      {items.map(([label, value], index) => (
-        <div className={`adm-stat-card${index === items.length - 1 ? ' adm-stat-card-status' : ''}`} key={label}>
-          <span className="adm-stat-label">{label}</span>
-          <span className="adm-stat-value">{value}</span>
+    <div className="adm-stats-grid">
+      {items.map((item) => (
+        <div className={`adm-stat-card adm-stat-${item.key}`} key={item.key}>
+          <div className="adm-stat-top">
+            <span className="adm-stat-label">{item.label}</span>
+            <span className="adm-stat-pill">{item.badge}</span>
+          </div>
+          <span className="adm-stat-value">{item.value}</span>
         </div>
       ))}
     </div>

@@ -1,45 +1,20 @@
 import { MongoClient } from 'mongodb';
 
 const MONGO_CLIENT_OPTIONS = {
-  maxPoolSize: 10,
-  minPoolSize: 0,
-  maxIdleTimeMS: 30000,
-  serverSelectionTimeoutMS: 8000,
+  maxPoolSize: 20,
+  minPoolSize: 1,
+  serverSelectionTimeoutMS: 10000,
   socketTimeoutMS: 45000,
   connectTimeoutMS: 10000,
 };
-
-let cachedClient = null;
-let cachedDb = null;
-
-function isClientAlive(client) {
-  if (!client) return false;
-  try {
-    const topology = client.topology;
-    if (!topology) return false;
-    if (typeof topology.isDestroyed === 'function' && topology.isDestroyed()) return false;
-    if (typeof topology.isConnected === 'function' && !topology.isConnected()) return false;
-    if (topology.s?.state === 'closed' || topology.s?.state === 'destroying') return false;
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 export function hasMongoConfig() {
   return Boolean(process.env.MONGODB_URI);
 }
 
 export function clearMongoCache() {
-  if (cachedClient) {
-    try {
-      cachedClient.close().catch(() => {});
-    } catch {
-      // Ignorar fallos al cerrar
-    }
-  }
-  cachedClient = null;
-  cachedDb = null;
+  globalThis._mongoClient = null;
+  globalThis._mongoClientPromise = null;
 }
 
 export async function getMongoDb() {
@@ -50,19 +25,26 @@ export async function getMongoDb() {
     throw new Error('Falta MONGODB_URI en variables de entorno');
   }
 
-  // Si el cliente en caché sigue vivo y conectado, retornamos la DB en caché
-  if (cachedClient && cachedDb && isClientAlive(cachedClient)) {
-    return cachedDb;
+  // Si ya existe una promesa de conexión en el runtime global, validamos su salud
+  if (globalThis._mongoClient && globalThis._mongoClientPromise) {
+    try {
+      const client = await globalThis._mongoClientPromise;
+      const db = client.db(dbName);
+      await db.command({ ping: 1 });
+      return db;
+    } catch (err) {
+      console.warn('Conexión MongoDB inactiva, recreando cliente:', err.message);
+      clearMongoCache();
+    }
   }
 
-  // Si estaba cerrado o nulo, limpiamos la referencia
-  clearMongoCache();
-
+  // Inicializar nuevo cliente con promesa global compartida
   try {
-    cachedClient = new MongoClient(uri, MONGO_CLIENT_OPTIONS);
-    await cachedClient.connect();
-    cachedDb = cachedClient.db(dbName);
-    return cachedDb;
+    const client = new MongoClient(uri, MONGO_CLIENT_OPTIONS);
+    globalThis._mongoClient = client;
+    globalThis._mongoClientPromise = client.connect();
+    const connectedClient = await globalThis._mongoClientPromise;
+    return connectedClient.db(dbName);
   } catch (error) {
     clearMongoCache();
     throw error;
@@ -84,7 +66,7 @@ export async function withMongoRetry(operation) {
       error.name === 'MongoServerSelectionError';
 
     if (isClosedError) {
-      console.warn('Conexión MongoDB cerrada detectada. Reconectando y reintentando operación...');
+      console.warn('Conexión cerrada detectada. Reintentando con nueva conexión...');
       clearMongoCache();
       const freshDb = await getMongoDb();
       return await operation(freshDb);
@@ -92,4 +74,3 @@ export async function withMongoRetry(operation) {
     throw error;
   }
 }
-

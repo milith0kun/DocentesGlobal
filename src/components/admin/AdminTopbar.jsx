@@ -1,25 +1,28 @@
 'use client';
 
 const cgbLogo = '/assets/cgb-logo-clean.png';
-const ciipLogo = '/assets/logociip.png';
-const geominaLogo = '/assets/logogeomina.png';
-const biomedicLogo = '/assets/logobiomedic.png';
+const ciipWhite = '/assets/ciip-white.png';
+const geominaWhite = '/assets/geomina-new.png';
+const biomedicWhite = '/assets/biomedic-logo-white.png';
 
 export default function AdminTopbar({ onLogout }) {
   return (
     <header className="adm-topbar">
       <div className="adm-topbar-left">
-        <img src={cgbLogo} alt="CGB Academy" className="adm-topbar-cgb-logo" />
-        <div className="adm-topbar-sep" />
-        <div className="adm-topbar-brand-logos">
-          <img src={ciipLogo} alt="CIIP Latam" style={{ height: '26px' }} />
-          <div className="adm-topbar-sep" />
-          <img src={geominaLogo} alt="Geomina" style={{ height: '20px' }} />
-          <div className="adm-topbar-sep" />
-          <img src={biomedicLogo} alt="Biomedic" style={{ height: '22px' }} />
+        <div className="adm-topbar-cgb-group">
+          <img src={cgbLogo} alt="CGB Academy" className="adm-topbar-cgb-logo" />
+          <span className="adm-topbar-tagline">ECOSISTEMA ACADÉMICO GLOBAL</span>
         </div>
         <div className="adm-topbar-sep" />
-        <div>
+        <div className="adm-topbar-brand-logos">
+          <img src={ciipWhite} alt="CIIP Latam" className="adm-topbar-brand-img adm-brand-ciip" />
+          <div className="adm-topbar-sep-sub" />
+          <img src={geominaWhite} alt="Geomina" className="adm-topbar-brand-img adm-brand-geomina" />
+          <div className="adm-topbar-sep-sub" />
+          <img src={biomedicWhite} alt="Biomedic" className="adm-topbar-brand-img adm-brand-biomedic" />
+        </div>
+        <div className="adm-topbar-sep" />
+        <div className="adm-topbar-titles">
           <p className="adm-topbar-title">Panel Administrativo</p>
           <p className="adm-topbar-sub">Gestión de Docentes · CGB Academy</p>
         </div>
@@ -40,3 +43,4 @@ export default function AdminTopbar({ onLogout }) {
     </header>
   );
 }
+
