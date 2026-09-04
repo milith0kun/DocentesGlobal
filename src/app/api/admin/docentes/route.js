@@ -200,6 +200,8 @@ export async function GET(request) {
           { nombreCompleto: { $regex: safeSearch, $options: 'i' } },
           { documentoNumero: { $regex: safeSearch, $options: 'i' } },
           { email: { $regex: safeSearch, $options: 'i' } },
+          { 'conformidad.codigo': { $regex: safeSearch, $options: 'i' } },
+          { telefono: { $regex: safeSearch, $options: 'i' } },
         ];
       }
 
