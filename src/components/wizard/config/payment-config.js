@@ -16,69 +16,9 @@ export const CURRENCIES = [
 
 export const PAYMENT_REGIONS = [
   {
-    id: 'internacional',
-    name: 'Dólar / Internacional',
-    defaultCurrency: 'USD',
-    methods: [
-      {
-        key: 'paypal',
-        label: 'PayPal',
-        currency: 'USD',
-        badge: 'Global USD',
-        accountLabel: 'Correo electrónico de su cuenta PayPal',
-        accountPlaceholder: 'ejemplo@correo.com',
-        accountType: 'email',
-        requiresHolder: false,
-      },
-      {
-        key: 'zelle_global',
-        label: 'Zelle (EE.UU.)',
-        currency: 'USD',
-        badge: 'USD',
-        accountLabel: 'Correo o teléfono registrado en Zelle',
-        accountPlaceholder: 'correo@ejemplo.com o +1 555-0199',
-        accountType: 'text',
-        requiresHolder: true,
-        holderLabel: 'Nombre del titular en Zelle',
-      },
-      {
-        key: 'swift_usd',
-        label: 'Transferencia SWIFT (USD)',
-        currency: 'USD',
-        badge: 'Interbancario USD',
-        accountLabel: 'Número de cuenta / IBAN en USD',
-        accountPlaceholder: 'Ej. 01234567890 o US123456789',
-        accountType: 'text',
-        requiresBankName: true,
-        requiresSwift: true,
-        requiresHolder: true,
-        holderLabel: 'Nombre completo del titular',
-      },
-      {
-        key: 'wise',
-        label: 'Wise (TransferWise)',
-        currency: 'USD',
-        badge: 'USD / Multi',
-        accountLabel: 'Correo registrado en Wise o número de cuenta',
-        accountPlaceholder: 'ejemplo@correo.com',
-        accountType: 'text',
-        requiresHolder: true,
-      },
-      {
-        key: 'payoneer',
-        label: 'Payoneer',
-        currency: 'USD',
-        badge: 'USD',
-        accountLabel: 'Correo electrónico de Payoneer',
-        accountPlaceholder: 'ejemplo@correo.com',
-        accountType: 'email',
-        requiresHolder: false,
-      },
-    ],
-  },
-  {
     id: 'peru',
     name: 'Perú',
+    flag: '🇵🇪',
     defaultCurrency: 'PEN',
     currencies: ['PEN', 'USD'],
     methods: [
@@ -172,6 +112,7 @@ export const PAYMENT_REGIONS = [
   {
     id: 'bolivia',
     name: 'Bolivia',
+    flag: '🇧🇴',
     defaultCurrency: 'BOB',
     currencies: ['BOB', 'USD'],
     methods: [
@@ -250,6 +191,7 @@ export const PAYMENT_REGIONS = [
   {
     id: 'colombia',
     name: 'Colombia',
+    flag: '🇨🇴',
     defaultCurrency: 'COP',
     methods: [
       {
@@ -317,6 +259,7 @@ export const PAYMENT_REGIONS = [
   {
     id: 'mexico',
     name: 'México',
+    flag: '🇲🇽',
     defaultCurrency: 'MXN',
     methods: [
       {
@@ -375,6 +318,7 @@ export const PAYMENT_REGIONS = [
   {
     id: 'chile',
     name: 'Chile',
+    flag: '🇨🇱',
     defaultCurrency: 'CLP',
     methods: [
       {
@@ -432,6 +376,7 @@ export const PAYMENT_REGIONS = [
   {
     id: 'argentina',
     name: 'Argentina',
+    flag: '🇦🇷',
     defaultCurrency: 'ARS',
     currencies: ['ARS', 'USD'],
     methods: [
@@ -471,6 +416,7 @@ export const PAYMENT_REGIONS = [
   {
     id: 'ecuador',
     name: 'Ecuador',
+    flag: '🇪🇨',
     defaultCurrency: 'USD',
     methods: [
       {
@@ -508,6 +454,7 @@ export const PAYMENT_REGIONS = [
   {
     id: 'norteamerica',
     name: 'Estados Unidos / Canadá',
+    flag: '🇺🇸',
     defaultCurrency: 'USD',
     currencies: ['USD', 'CAD'],
     methods: [
@@ -547,8 +494,71 @@ export const PAYMENT_REGIONS = [
     ],
   },
   {
+    id: 'internacional',
+    name: 'Dólar / Internacional',
+    flag: '🌐',
+    defaultCurrency: 'USD',
+    methods: [
+      {
+        key: 'paypal',
+        label: 'PayPal',
+        currency: 'USD',
+        badge: 'Global USD',
+        accountLabel: 'Correo electrónico de su cuenta PayPal',
+        accountPlaceholder: 'ejemplo@correo.com',
+        accountType: 'email',
+        requiresHolder: false,
+      },
+      {
+        key: 'zelle_global',
+        label: 'Zelle (EE.UU.)',
+        currency: 'USD',
+        badge: 'USD',
+        accountLabel: 'Correo o teléfono registrado en Zelle',
+        accountPlaceholder: 'correo@ejemplo.com o +1 555-0199',
+        accountType: 'text',
+        requiresHolder: true,
+        holderLabel: 'Nombre del titular en Zelle',
+      },
+      {
+        key: 'swift_usd',
+        label: 'Transferencia SWIFT (USD)',
+        currency: 'USD',
+        badge: 'Interbancario USD',
+        accountLabel: 'Número de cuenta / IBAN en USD',
+        accountPlaceholder: 'Ej. 01234567890 o US123456789',
+        accountType: 'text',
+        requiresBankName: true,
+        requiresSwift: true,
+        requiresHolder: true,
+        holderLabel: 'Nombre completo del titular',
+      },
+      {
+        key: 'wise',
+        label: 'Wise (TransferWise)',
+        currency: 'USD',
+        badge: 'USD / Multi',
+        accountLabel: 'Correo registrado en Wise o número de cuenta',
+        accountPlaceholder: 'ejemplo@correo.com',
+        accountType: 'text',
+        requiresHolder: true,
+      },
+      {
+        key: 'payoneer',
+        label: 'Payoneer',
+        currency: 'USD',
+        badge: 'USD',
+        accountLabel: 'Correo electrónico de Payoneer',
+        accountPlaceholder: 'ejemplo@correo.com',
+        accountType: 'email',
+        requiresHolder: false,
+      },
+    ],
+  },
+  {
     id: 'otros_latam',
     name: 'Otros Sudamérica',
+    flag: '🌎',
     defaultCurrency: 'USD',
     methods: [
       {
@@ -587,6 +597,7 @@ export const PAYMENT_REGIONS = [
   {
     id: 'otro_general',
     name: 'Otro Método',
+    flag: '💳',
     defaultCurrency: 'USD',
     methods: [
       {

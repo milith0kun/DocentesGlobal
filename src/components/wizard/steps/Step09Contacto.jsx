@@ -38,7 +38,7 @@ export default function Step09Contacto({
   const initialRegion =
     formData.paisPago ||
     countryToRegionMap[phoneCountryCode] ||
-    'internacional';
+    'peru';
 
   const [selectedRegion, setSelectedRegion] = useState(initialRegion);
 
@@ -129,16 +129,23 @@ export default function Step09Contacto({
       <span className="wz-label" style={{ display: 'block', marginTop: '1.25rem', marginBottom: '0.5rem' }}>
         País o Región de Abono
       </span>
-      <div className="wz-region-scroll">
-        {PAYMENT_REGIONS.map((region) => (
-          <div
-            key={region.id}
-            className={`wz-region-chip ${selectedRegion === region.id ? 'active' : ''}`}
-            onClick={() => handleSelectRegion(region.id)}
-          >
-            <span>{region.name}</span>
-          </div>
-        ))}
+      <div className="wz-region-scroll" role="radiogroup" aria-label="País o Región de Abono">
+        {PAYMENT_REGIONS.map((region) => {
+          const isSelected = selectedRegion === region.id;
+          return (
+            <button
+              key={region.id}
+              type="button"
+              role="radio"
+              aria-checked={isSelected}
+              className={`wz-region-chip ${isSelected ? 'active' : ''}`}
+              onClick={() => handleSelectRegion(region.id)}
+            >
+              {region.flag && <span className="wz-region-chip-flag">{region.flag}</span>}
+              <span className="wz-region-chip-name">{region.name}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Selector de Moneda (si la región soporta más de una) */}

@@ -3792,55 +3792,63 @@ img {
 /* Barra de Pestañas de Países / Regiones */
 .wz-region-scroll {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  overflow-x: auto;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-  scrollbar-width: thin;
-}
-
-.wz-region-scroll::-webkit-scrollbar {
-  height: 4px;
-}
-
-.wz-region-scroll::-webkit-scrollbar-thumb {
-  background: rgba(14, 165, 233, 0.3);
-  border-radius: 4px;
+  padding: 0.2rem 0;
+  margin-bottom: 1.1rem;
 }
 
 .wz-region-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.5rem 0.85rem;
+  padding: 0.5rem 0.95rem;
   border-radius: 9999px;
   background: #ffffff;
-  border: 1px solid rgba(14, 165, 233, 0.2);
+  border: 1.5px solid #e2e8f0;
   color: #334155;
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.2s ease;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  outline: none;
+  line-height: 1.25;
+  font-family: inherit;
 }
 
 .wz-region-chip:hover {
   border-color: #0284c7;
   background: #f0f9ff;
-  color: #0369a1;
+  color: #0284c7;
   transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.12);
 }
 
 .wz-region-chip.active {
-  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
   border-color: #0284c7;
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
+  transform: translateY(-1px);
+}
+
+.wz-region-chip.active:hover {
+  color: #ffffff;
 }
 
 .wz-region-chip-flag {
-  font-size: 1rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.wz-region-chip-name {
+  white-space: nowrap;
 }
 
 /* Badge de moneda y tarjeta mejorada */
@@ -4005,3 +4013,9 @@ img {
   border-color: #0284c7;
 }
 
+
+@media (max-width: 540px) {
+  .wz-payment-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
