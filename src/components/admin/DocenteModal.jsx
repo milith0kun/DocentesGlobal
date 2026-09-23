@@ -64,6 +64,7 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
   const [paymentSaved, setPaymentSaved] = useState(false);
   const [statusSaving, setStatusSaving] = useState(false);
   const [statusError, setStatusError] = useState('');
+  const [statusMessage, setStatusMessage] = useState('');
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -111,6 +112,7 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
   async function updateEstado(nextEstado) {
     setStatusSaving(true);
     setStatusError('');
+    setStatusMessage('');
 
     try {
       const response = await fetch('/api/admin/docentes', {
@@ -122,8 +124,10 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'No se pudo actualizar el estado.');
       onUpdated(data.docente);
+      setStatusMessage(nextEstado === 'activo' ? 'Docente activado correctamente.' : 'Docente desactivado correctamente.');
     } catch (error) {
       setStatusError(error.message);
+      setStatusMessage('');
     } finally {
       setStatusSaving(false);
     }
@@ -192,6 +196,7 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
               </div>
             </div>
             {statusError && <p className="adm-rate-message adm-rate-error">{statusError}</p>}
+            {statusMessage && <p className="adm-rate-message adm-rate-success">{statusMessage}</p>}
           </section>
 
           <section>
