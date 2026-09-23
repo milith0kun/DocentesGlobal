@@ -10,6 +10,15 @@ function ConformidadBadge({ ok }) {
   );
 }
 
+function EstadoBadge({ estado }) {
+  const activo = (estado || 'activo') === 'activo';
+  return (
+    <span className={activo ? 'adm-badge-ok' : 'adm-badge-pend'}>
+      {activo ? 'Activo' : 'Inactivo'}
+    </span>
+  );
+}
+
 export default function DocentesTable({
   docentes, loading, total, totalPages, page,
   onRowClick, onPageChange,
@@ -30,14 +39,15 @@ export default function DocentesTable({
               <th>Monto / hora</th>
               <th>Pago</th>
               <th>Fecha</th>
+              <th>Estado</th>
               <th>Conformidad</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={11} className="adm-empty-row">Cargando…</td></tr>
+              <tr><td colSpan={12} className="adm-empty-row">Cargando…</td></tr>
             ) : docentes.length === 0 ? (
-              <tr><td colSpan={11} className="adm-empty-row">Sin registros encontrados.</td></tr>
+              <tr><td colSpan={12} className="adm-empty-row">Sin registros encontrados.</td></tr>
             ) : (
               docentes.map((d) => (
                 <tr key={d.id} className="adm-row" onClick={() => onRowClick(d)}>
@@ -60,6 +70,7 @@ export default function DocentesTable({
                     </div>
                   </td>
                   <td>{formatDate(d.createdAt || d.timestamp)}</td>
+                  <td><EstadoBadge estado={d.estado} /></td>
                   <td><ConformidadBadge ok={d.conformidadCompleta} /></td>
                 </tr>
               ))

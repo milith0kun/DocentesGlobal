@@ -109,6 +109,27 @@ export async function PATCH(request) {
       return NextResponse.json({ error: 'Docente no encontrado.' }, { status: 404 });
     }
 
+    // Activar / desactivar docente
+    if (body.action === 'update_status') {
+      const nextEstado = String(body.estado || '').trim().toLowerCase();
+      const allowed = new Set(['activo', 'inactivo']);
+
+      if (!allowed.has(nextEstado)) {
+        return NextResponse.json({ error: 'Estado inválido. Usa activo o inactivo.' }, { status: 400 });
+      }
+
+      await collection.updateOne(
+        { _id: objectId },
+        {
+          $set: { estado: nextEstado, updatedAt: new Date() },
+          $push: { eventos: { tipo: 'actualiza_estado_admin', estado: nextEstado, at: new Date(), admin: session.sub } },
+        }
+      );
+
+      const updated = await collection.findOne({ _id: objectId });
+      return NextResponse.json({ docente: normalizeMongoDocente(updated) });
+    }
+
     // Actualización de datos de pago administrativos
     if (body.action === 'update_payment' || body.paymentData) {
       const p = body.paymentData || {};
