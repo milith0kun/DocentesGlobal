@@ -62,8 +62,6 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
   const [savingPayment, setSavingPayment] = useState(false);
   const [paymentError, setPaymentError] = useState('');
   const [paymentSaved, setPaymentSaved] = useState(false);
-  const [statusSaving, setStatusSaving] = useState(false);
-  const [statusError, setStatusError] = useState('');
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -108,27 +106,6 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
     }
   }
 
-  async function updateEstado(nextEstado) {
-    setStatusSaving(true);
-    setStatusError('');
-
-    try {
-      const response = await fetch('/api/admin/docentes', {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: docente.id, action: 'update_status', estado: nextEstado }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'No se pudo actualizar el estado.');
-      onUpdated(data.docente);
-    } catch (error) {
-      setStatusError(error.message);
-    } finally {
-      setStatusSaving(false);
-    }
-  }
-
   async function saveHonorarios(event) {
     event.preventDefault();
     setSaving(true);
@@ -166,34 +143,6 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
         </div>
 
         <div className="adm-modal-body">
-          <section>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
-              <div>
-                <h3 className="adm-modal-section-title" style={{ marginBottom: '0.25rem' }}>Estado del docente</h3>
-                <p style={{ margin: 0, color: '#64748b', fontSize: '0.82rem' }}>Estado actual: <strong style={{ color: docente.estado === 'activo' ? '#16a34a' : '#dc2626' }}>{docente.estado || 'activo'}</strong></p>
-              </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button
-                  type="button"
-                  onClick={() => updateEstado('activo')}
-                  disabled={statusSaving || docente.estado === 'activo'}
-                  style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', border: 'none', background: docente.estado === 'activo' ? '#bbf7d0' : '#16a34a', color: docente.estado === 'activo' ? '#166534' : '#fff', fontWeight: 700, cursor: statusSaving || docente.estado === 'activo' ? 'not-allowed' : 'pointer' }}
-                >
-                  {statusSaving ? 'Procesando…' : 'Activar'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => updateEstado('inactivo')}
-                  disabled={statusSaving || docente.estado === 'inactivo'}
-                  style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', border: 'none', background: docente.estado === 'inactivo' ? '#fecaca' : '#dc2626', color: docente.estado === 'inactivo' ? '#991b1b' : '#fff', fontWeight: 700, cursor: statusSaving || docente.estado === 'inactivo' ? 'not-allowed' : 'pointer' }}
-                >
-                  {statusSaving ? 'Procesando…' : 'Desactivar'}
-                </button>
-              </div>
-            </div>
-            {statusError && <p className="adm-rate-message adm-rate-error">{statusError}</p>}
-          </section>
-
           <section>
             <h3 className="adm-modal-section-title">Datos Personales</h3>
             <div className="adm-modal-grid">
