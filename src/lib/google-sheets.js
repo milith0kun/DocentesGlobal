@@ -383,8 +383,80 @@ export async function clearDocenteRow(rowNumber) {
   const sheetName = await resolveSheetName(sheets);
   await sheets.spreadsheets.values.clear({
     spreadsheetId: SPREADSHEET_ID,
-    range: `${quoteSheetName(sheetName)}!A${rowNumber}:U${rowNumber}`,
+    range: `${quoteSheetName(sheetName)}!A${rowNumber}:ZZ${rowNumber}`,
   });
+}
+
+export async function deleteOrClearDocenteRow(identity) {
+  assertSheetsConfig();
+  const sheets = getSheetsClient();
+  const sheetName = await resolveSheetName(sheets);
+  const rows = await getSheetValues(sheets, sheetName);
+  const headerIndex = findHeaderIndex(rows);
+  const headers = rows[headerIndex] || [];
+
+  const identityColumns = [
+    ['code', identity.codigo],
+    ['documento', identity.documento],
+    ['correo', identity.email],
+  ].map(([key, value]) => ({
+    column: columnIndex(headers, key, -1),
+    value: String(value || '').trim().toLowerCase(),
+  })).filter(({ column, value }) => column >= 0 && value);
+
+  if (identityColumns.length === 0) {
+    return { found: false, reason: 'Identidad vacía' };
+  }
+
+  const rowIndex = rows.findIndex((row, index) =>
+    index > headerIndex && identityColumns.some(({ column, value }) =>
+      String(row[column] || '').trim().toLowerCase() === value
+    )
+  );
+
+  if (rowIndex < 0) {
+    return { found: false, reason: 'No encontrado en Google Sheets' };
+  }
+
+  const rowNumber = rowIndex + 1;
+
+  // Intenta eliminar la fila física con deleteDimension para evitar dejar una fila vacía
+  try {
+    const meta = await sheets.spreadsheets.get({
+      spreadsheetId: SPREADSHEET_ID,
+      fields: 'sheets(properties(sheetId,title))',
+    });
+    const targetSheet = meta.data.sheets?.find(
+      (s) => s.properties?.title === sheetName || String(s.properties?.sheetId) === String(SHEET_GID)
+    );
+    const sheetId = targetSheet?.properties?.sheetId ?? 0;
+
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId: SPREADSHEET_ID,
+      requestBody: {
+        requests: [
+          {
+            deleteDimension: {
+              range: {
+                sheetId,
+                dimension: 'ROWS',
+                startIndex: rowIndex,
+                endIndex: rowIndex + 1,
+              },
+            },
+          },
+        ],
+      },
+    });
+    return { found: true, deleted: true, rowNumber };
+  } catch (deleteError) {
+    console.warn('deleteDimension falló, procediendo a limpiar celdas de la fila:', deleteError.message);
+    await sheets.spreadsheets.values.clear({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${quoteSheetName(sheetName)}!A${rowNumber}:ZZ${rowNumber}`,
+    });
+    return { found: true, cleared: true, rowNumber };
+  }
 }
 
 export async function updateDocenteHonorarios(identity, honorariosHora) {

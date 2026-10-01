@@ -45,19 +45,17 @@ async function main() {
   });
 
   const headerValues = headers.data.values?.[0] || [];
-  const requiredHeaderText = ['marca temporal', 'direccion de correo electronico', 'nombre completo'];
   const normalizedHeaders = headerValues.map((value) =>
     String(value || '')
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase()
   );
-  const missingHeaders = requiredHeaderText.filter(
-    (text) => !normalizedHeaders.some((header) => header.includes(text))
-  );
 
-  if (missingHeaders.length > 0) {
-    throw new Error(`La hoja no parece ser la respuesta esperada. Faltan encabezados: ${missingHeaders.join(', ')}`);
+  const hasName = normalizedHeaders.some((h) => h.includes('nombre completo') || h.includes('docente'));
+  const hasEmail = normalizedHeaders.some((h) => h.includes('correo') || h.includes('email'));
+  if (!hasName || !hasEmail) {
+    throw new Error(`La hoja no parece tener los encabezados esperados (falta nombre o correo): ${headerValues.join(', ')}`);
   }
 
   const drive = google.drive({ version: 'v3', auth: getGoogleDriveAuth() });

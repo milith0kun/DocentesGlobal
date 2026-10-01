@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { verifyAdminToken, ADMIN_COOKIE } from '@/lib/admin-auth.js';
 import { getMongoDb, withMongoRetry, hasMongoConfig } from '@/lib/mongodb.js';
-import { updateDocenteHonorarios } from '@/lib/google-sheets.js';
+import { updateDocenteHonorarios, deleteOrClearDocenteRow } from '@/lib/google-sheets.js';
 
 const CSV_COLUMNS = [
   ['codigo', 'Código'],
@@ -168,6 +168,88 @@ export async function PATCH(request) {
     return NextResponse.json({ docente: normalizeMongoDocente(updated) });
   } catch (error) {
     return NextResponse.json({ error: `No se pudo guardar la modificación: ${error.message}` }, { status: 500 });
+  }
+}
+
+export async function DELETE(request) {
+  const token = request.cookies.get(ADMIN_COOKIE)?.value;
+  const session = await verifyAdminToken(token);
+  if (!session) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+
+  if (!hasMongoConfig()) {
+    return NextResponse.json({ error: 'MongoDB no está configurado.' }, { status: 503 });
+  }
+
+  try {
+    const { searchParams } = new URL(request.url);
+    let id = searchParams.get('id');
+
+    if (!id) {
+      try {
+        const body = await request.json();
+        id = body.id;
+      } catch {
+        // ID proporcionado por searchParams o body no es JSON
+      }
+    }
+
+    if (!id || !ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'ID de docente inválido.' }, { status: 400 });
+    }
+
+    const db = await getMongoDb();
+    const collection = db.collection('docentes');
+    const objectId = new ObjectId(id);
+    const current = await collection.findOne({ _id: objectId });
+
+    if (!current) {
+      return NextResponse.json({ error: 'Docente no encontrado.' }, { status: 404 });
+    }
+
+    const identity = {
+      codigo: current.conformidad?.codigo,
+      documento: current.documentoNumero,
+      email: current.email,
+    };
+
+    // 1. Limpiar o eliminar la fila en Google Sheets
+    let sheetResult = null;
+    try {
+      sheetResult = await deleteOrClearDocenteRow(identity);
+    } catch (sheetError) {
+      console.error('Error al limpiar fila en Google Sheets:', sheetError);
+    }
+
+    // 2. Eliminar de la base de datos MongoDB
+    await collection.deleteOne({ _id: objectId });
+
+    // 3. Registrar auditoría
+    try {
+      await db.collection('auditoria').insertOne({
+        tipo: 'eliminar_docente',
+        docenteId: id,
+        docenteNombre: current.nombreCompleto,
+        docenteDocumento: current.documentoNumero,
+        docenteCodigo: current.conformidad?.codigo,
+        admin: session.sub,
+        at: new Date(),
+        sheetResult,
+      });
+    } catch (auditError) {
+      console.warn('No se pudo registrar auditoría de eliminación:', auditError.message);
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Docente eliminado correctamente.',
+      sheetCleaned: Boolean(sheetResult?.found),
+      sheetResult,
+    });
+  } catch (error) {
+    console.error('Error al eliminar docente en /api/admin/docentes:', error);
+    return NextResponse.json({ error: `No se pudo eliminar el docente: ${error.message}` }, { status: 500 });
   }
 }
 

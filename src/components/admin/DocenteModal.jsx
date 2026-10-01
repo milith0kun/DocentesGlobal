@@ -43,11 +43,16 @@ function DocLink({ href, label }) {
   );
 }
 
-export default function DocenteModal({ docente, onClose, onUpdated }) {
+export default function DocenteModal({ docente, onClose, onUpdated, onDeleted }) {
   const [honorariosHora, setHonorariosHora] = useState(docente.honorariosHora ?? '');
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
   const [saved, setSaved] = useState(false);
+
+  // Estado de eliminación
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   // Estado de edición de datos de pago
   const [isEditingPayment, setIsEditingPayment] = useState(false);
@@ -62,6 +67,30 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
   const [savingPayment, setSavingPayment] = useState(false);
   const [paymentError, setPaymentError] = useState('');
   const [paymentSaved, setPaymentSaved] = useState(false);
+
+  async function handleDelete() {
+    setDeleting(true);
+    setDeleteError('');
+    try {
+      const response = await fetch(`/api/admin/docentes?id=${encodeURIComponent(docente.id)}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'No se pudo eliminar el docente.');
+      }
+      if (onDeleted) {
+        onDeleted(docente.id, data);
+      }
+      onClose();
+    } catch (err) {
+      setDeleteError(err.message);
+    } finally {
+      setDeleting(false);
+      setConfirmDelete(false);
+    }
+  }
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -325,6 +354,58 @@ export default function DocenteModal({ docente, onClose, onUpdated }) {
               <Field label="Timestamp" value={docente.timestamp} />
             </section>
           )}
+
+          <section className="adm-danger-zone">
+            <div className="adm-danger-card">
+              <div className="adm-danger-info">
+                <span className="adm-danger-badge">ZONA DE GESTIÓN CRÍTICA</span>
+                <h4 className="adm-danger-title">Eliminar este registro docente</h4>
+                <p className="adm-danger-desc">
+                  Si este registro fue un envío duplicado o erróneo, puedes borrarlo definitivamente. Se eliminará de la base de datos (MongoDB) y se limpiará su fila correspondiente en Google Sheets (Drive).
+                </p>
+                {deleteError && <p className="adm-danger-error">{deleteError}</p>}
+              </div>
+
+              {!confirmDelete ? (
+                <button
+                  type="button"
+                  className="adm-btn-danger"
+                  onClick={() => setConfirmDelete(true)}
+                  disabled={deleting}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    <line x1="10" y1="11" x2="10" y2="17" />
+                    <line x1="14" y1="11" x2="14" y2="17" />
+                  </svg>
+                  Eliminar registro
+                </button>
+              ) : (
+                <div className="adm-confirm-actions">
+                  <span className="adm-confirm-prompt">¿Confirmas la eliminación definitiva?</span>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button
+                      type="button"
+                      className="adm-btn-cancel"
+                      onClick={() => setConfirmDelete(false)}
+                      disabled={deleting}
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      className="adm-btn-danger-confirm"
+                      onClick={handleDelete}
+                      disabled={deleting}
+                    >
+                      {deleting ? 'Eliminando...' : 'Sí, eliminar ahora'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
         </div>
       </div>
     </div>

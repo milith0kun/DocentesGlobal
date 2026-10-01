@@ -23,6 +23,9 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selected, setSelected] = useState(null);
+  const [docenteToDelete, setDocenteToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteFeedback, setDeleteFeedback] = useState('');
 
   // Debounce search 400ms sin re-disparar en el montaje inicial
   useEffect(() => {
@@ -80,6 +83,36 @@ export default function AdminDashboard() {
     setSelected(updated);
   }
 
+  function handleDocenteDeleted(deletedId, result) {
+    setDocentes((current) => current.filter((docente) => docente.id !== deletedId));
+    setTotal((prev) => Math.max(0, prev - 1));
+    setStats((prev) => ({ ...prev, total: Math.max(0, prev.total - 1) }));
+    if (selected?.id === deletedId) setSelected(null);
+    setDocenteToDelete(null);
+    const sheetMsg = result?.sheetCleaned ? ' y Google Sheets' : '';
+    setDeleteFeedback(`Registro docente eliminado exitosamente de MongoDB${sheetMsg}.`);
+    setTimeout(() => setDeleteFeedback(''), 5000);
+  }
+
+  async function confirmDeleteFromTable() {
+    if (!docenteToDelete) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/docentes?id=${encodeURIComponent(docenteToDelete.id)}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al eliminar');
+      handleDocenteDeleted(docenteToDelete.id, data);
+    } catch (err) {
+      alert(`No se pudo eliminar el docente: ${err.message}`);
+    } finally {
+      setIsDeleting(false);
+      setDocenteToDelete(null);
+    }
+  }
+
   return (
     <div className="adm-shell">
       <div className="adm-shell-bg" aria-hidden="true">
@@ -115,6 +148,16 @@ export default function AdminDashboard() {
           canExport={total > 0}
         />
 
+        {deleteFeedback && (
+          <div className="adm-success-banner" role="status">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+            <span>{deleteFeedback}</span>
+          </div>
+        )}
+
         {error && <div className="adm-error-banner">{error}</div>}
 
         <DocentesTable
@@ -125,6 +168,7 @@ export default function AdminDashboard() {
           page={page}
           onRowClick={setSelected}
           onPageChange={setPage}
+          onDeleteDocente={setDocenteToDelete}
         />
       </main>
 
@@ -133,7 +177,46 @@ export default function AdminDashboard() {
           docente={selected}
           onClose={() => setSelected(null)}
           onUpdated={handleDocenteUpdated}
+          onDeleted={handleDocenteDeleted}
         />
+      )}
+
+      {docenteToDelete && (
+        <div className="adm-confirm-modal-overlay" onClick={() => !isDeleting && setDocenteToDelete(null)}>
+          <div className="adm-confirm-modal-box" onClick={(e) => e.stopPropagation()}>
+            <div className="adm-confirm-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
+            <h3 className="adm-confirm-title">¿Eliminar registro docente?</h3>
+            <p className="adm-confirm-desc">
+              Estás a punto de eliminar a <strong>{docenteToDelete.nombre || 'este docente'}</strong>{' '}
+              {docenteToDelete.codigo ? `(${docenteToDelete.codigo})` : ''}.
+              Esta acción borrará el registro de la base de datos MongoDB y limpiará su fila correspondiente en Google Sheets.
+            </p>
+            <div className="adm-confirm-modal-actions">
+              <button
+                type="button"
+                className="adm-btn-cancel"
+                onClick={() => setDocenteToDelete(null)}
+                disabled={isDeleting}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="adm-btn-danger-confirm"
+                onClick={confirmDeleteFromTable}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Eliminando...' : 'Sí, eliminar registro'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

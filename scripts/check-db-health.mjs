@@ -1,4 +1,8 @@
+import nextEnv from '@next/env';
 import { MongoClient } from 'mongodb';
+
+const { loadEnvConfig } = nextEnv;
+loadEnvConfig(process.cwd());
 
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB_NAME || 'contrata_docentes';

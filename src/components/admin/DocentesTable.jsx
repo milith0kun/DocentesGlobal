@@ -12,7 +12,7 @@ function ConformidadBadge({ ok }) {
 
 export default function DocentesTable({
   docentes, loading, total, totalPages, page,
-  onRowClick, onPageChange,
+  onRowClick, onPageChange, onDeleteDocente,
 }) {
   return (
     <>
@@ -31,13 +31,14 @@ export default function DocentesTable({
               <th>Pago</th>
               <th>Fecha</th>
               <th>Conformidad</th>
+              <th style={{ width: '56px', textAlign: 'center' }}>Acción</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={11} className="adm-empty-row">Cargando…</td></tr>
+              <tr><td colSpan={12} className="adm-empty-row">Cargando…</td></tr>
             ) : docentes.length === 0 ? (
-              <tr><td colSpan={11} className="adm-empty-row">Sin registros encontrados.</td></tr>
+              <tr><td colSpan={12} className="adm-empty-row">Sin registros encontrados.</td></tr>
             ) : (
               docentes.map((d) => (
                 <tr key={d.id} className="adm-row" onClick={() => onRowClick(d)}>
@@ -61,6 +62,26 @@ export default function DocentesTable({
                   </td>
                   <td>{formatDate(d.createdAt || d.timestamp)}</td>
                   <td><ConformidadBadge ok={d.conformidadCompleta} /></td>
+                  <td style={{ textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+                    {onDeleteDocente && (
+                      <button
+                        type="button"
+                        className="adm-row-del-btn"
+                        title="Eliminar este docente"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteDocente(d);
+                        }}
+                      >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          <line x1="10" y1="11" x2="10" y2="17" />
+                          <line x1="14" y1="11" x2="14" y2="17" />
+                        </svg>
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))
             )}
